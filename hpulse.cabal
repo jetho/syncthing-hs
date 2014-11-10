@@ -17,13 +17,16 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:   Pulse    
-  -- other-modules:       
+  exposed-modules:   Network.Pulse    
+  other-modules:     Network.Pulse.Session
+                     Network.Pulse.Types
   -- other-extensions:    
   hs-source-dirs:    src
   build-depends:       aeson >= 0.8.0.1
                      , base >=4.7 && <4.8
                      , either >= 4.3.1
+                     , http-client >=0.3.1.1
+                     , http-client-tls >=0.2
                      , lens >= 4.4 && < 4.5
                      , text >= 1.2.0.0
                      , transformers >= 0.3.0.0
