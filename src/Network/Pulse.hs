@@ -22,7 +22,6 @@ import Control.Monad.IO.Class     (MonadIO)
 import Data.Aeson                 (FromJSON)
 import Control.Lens               ((&), (^.), (.~))
 
-import Network.Pulse.Session
 import Network.Pulse.Types
 
 
