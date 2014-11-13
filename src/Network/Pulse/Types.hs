@@ -44,3 +44,4 @@ data PulseRequest = PulseRequest {
     
 data PulseError = InvalidApiKey
                 deriving (Typeable, Eq, Show)
+

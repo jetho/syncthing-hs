@@ -5,11 +5,15 @@ module Network.Pulse.Session
     ( PulseSession
     , newPulseSession
     , closePulseSession
+    , runSession
     ) where
 
 import Network.HTTP.Client     (newManager, closeManager)
 import Control.Lens            ((.~), (&), (^.))
-import Network.Pulse.Types
+import Data.Aeson              (FromJSON)
+
+import Network.Pulse.Types     
+import Network.Pulse           
 
 
 newtype PulseSession = PulseSession { getConfig :: PulseConfig }
@@ -20,11 +24,14 @@ newPulseSession config = do
     return . PulseSession $ config & pManager .~ Right mgr
     where
         createManager (Left settings)   = newManager settings
-        createManager (Right manager)   = return manager
+        createManager (Right mgr)       = return mgr
 
 closePulseSession :: PulseSession -> IO ()
 closePulseSession session = either doNothing closeManager mgr
     where
         doNothing   = const $ return ()
         mgr         = getConfig session ^. pManager
+
+runSession :: FromJSON a => PulseSession -> Pulse a -> IO (Either PulseError a)
+runSession = pulse . getConfig
 
