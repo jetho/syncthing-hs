@@ -18,12 +18,16 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:   Network.Pulse    
-  other-modules:     Network.Pulse.Session
-                     Network.Pulse.Types
+                     Network.Pulse.Session
+                     Network.Pulse.Get
+  other-modules:     Network.Pulse.Types
+                     Network.Pulse.Internal.Query
+                     Network.Pulse.Get.Ping
   -- other-extensions:    
   hs-source-dirs:    src
   build-depends:       aeson >= 0.8.0.1
                      , base >=4.7 && <4.8
+                     , bytestring
                      , either >= 4.3.1
                      , http-client >=0.3.1.1
                      , http-client-tls >=0.2

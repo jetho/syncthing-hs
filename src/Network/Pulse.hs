@@ -16,27 +16,21 @@ module Network.Pulse
 
 import qualified Network.Wreq     as W
 import Network.HTTP.Client.TLS    (tlsManagerSettings)
-import Control.Monad.Trans.Either (EitherT)
-import Control.Monad.Trans.Reader (ReaderT)
-import Control.Monad.IO.Class     (MonadIO)
+import Control.Monad.Trans.Either (runEitherT)
+import Control.Monad.Trans.Reader (runReaderT)
 import Data.Aeson                 (FromJSON)
 import Control.Lens               ((&), (^.), (.~))
 
 import Network.Pulse.Types
 
 
-type Pulse a = EitherT PulseError (ReaderT PulseConfig IO) a
-
 withManager :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
 withManager act = 
     W.withManager $ \opts -> 
         act $ defaultPulseConfig & pManager .~ (opts ^. W.manager)
     
-query :: FromJSON a => PulseRequest -> Pulse a
-query = undefined
-
 pulse :: FromJSON a => PulseConfig -> Pulse a -> IO (Either PulseError a)
-pulse = undefined
+pulse config action = flip runReaderT config $ runEitherT action
 
 defaultPulseConfig :: PulseConfig
 defaultPulseConfig = PulseConfig { 
