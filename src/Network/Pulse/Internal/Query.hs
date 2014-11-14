@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Network.Pulse.Internal.Query
-    ( query,
+    ( query
     ) where
 
 import qualified Network.Wreq     as W
@@ -32,7 +32,7 @@ prepareOptions cfg params' =   setManager (cfg ^. pManager)
         setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
         setApiKey Nothing       = id
     
-query :: FromJSON x => PulseRequest -> Pulse x
+query :: FromJSON a => PulseRequest -> Pulse a
 query request = do
     config <- lift ask
     let opts    = prepareOptions config (params request) W.defaults
