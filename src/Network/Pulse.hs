@@ -2,16 +2,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Network.Pulse 
-    ( PulseConfig
+    ( pulse
     , withManager
-    , defaultPulseConfig
-    , Pulse
-    , pulse
-    , PulseError(..)
+    , PulseConfig
     , pServer
     , pApiKey
     , pAuth
     , pManager
+    , defaultPulseConfig
+    , PulseError(..)
     ) where
 
 import qualified Network.Wreq     as W
