@@ -14,7 +14,6 @@ import Control.Lens               ((&), (^.), (.~), (^?))
 import Data.Text.Encoding         (encodeUtf8)
 import Data.Text                  (unpack)
 import Control.Monad.Trans.Either (left, right)
-import Control.Monad              (MonadPlus (mzero))
 
 import Network.Pulse.Types
 
