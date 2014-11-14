@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Pulse.Get.Ping 
+module Network.Pulse.Post.Ping 
     ( Ping(..)
     , ping
     ) where
@@ -9,7 +9,9 @@ module Network.Pulse.Get.Ping
 import Network.Pulse.Common.Ping
 import Network.Pulse.Internal.Query 
 import Network.Pulse.Types
+import Data.Aeson
 
 ping :: Pulse Ping
-ping = query $ PulseRequest { path = "/rest/ping", method = Get, params = [] }
+ping = query $ PulseRequest { path = "/rest/ping", method = Post payload, params = [] }
+    where payload = toJSON ()
 

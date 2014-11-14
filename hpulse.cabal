@@ -22,7 +22,9 @@ library
                      Network.Pulse.Get
   other-modules:     Network.Pulse.Types
                      Network.Pulse.Internal.Query
+                     Network.Pulse.Common.Ping
                      Network.Pulse.Get.Ping
+                     Network.Pulse.Post.Ping
   -- other-extensions:    
   hs-source-dirs:    src
   build-depends:       aeson >= 0.8.0.1

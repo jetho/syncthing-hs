@@ -38,7 +38,9 @@ query request = do
     let opts    = prepareOptions config (params request) W.defaults
     let server  = unpack $ config ^. pServer
     let url     = concat ["http://", server, path request]
-    response <- liftIO $ W.getWith opts url 
+    response <- liftIO $ case (method request) of
+        Get          -> W.getWith  opts url
+        Post payload -> W.postWith opts url payload
     case (response ^? W.responseBody) of
         Nothing -> left RequestError
         Just bs -> 
