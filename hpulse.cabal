@@ -20,6 +20,7 @@ library
   exposed-modules:   Network.Pulse    
                      Network.Pulse.Session
                      Network.Pulse.Get
+                     Network.Pulse.Post
   other-modules:     Network.Pulse.Types
                      Network.Pulse.Internal.Query
                      Network.Pulse.Common.Ping
