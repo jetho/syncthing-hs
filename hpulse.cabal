@@ -22,7 +22,7 @@ library
                      Network.Pulse.Get
                      Network.Pulse.Post
   other-modules:     Network.Pulse.Types
-                     Network.Pulse.Internal.Query
+                     Network.Pulse.Query
                      Network.Pulse.Common.Ping
                      Network.Pulse.Get.Ping
                      Network.Pulse.Post.Ping

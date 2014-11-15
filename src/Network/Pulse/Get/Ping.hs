@@ -7,7 +7,7 @@ module Network.Pulse.Get.Ping
     ) where
     
 import Network.Pulse.Common.Ping
-import Network.Pulse.Internal.Query 
+import Network.Pulse.Query 
 import Network.Pulse.Types
 
 ping :: Pulse Ping

@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Pulse.Internal.Query
+module Network.Pulse.Query
     ( query
     ) where
 

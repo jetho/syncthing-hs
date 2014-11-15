@@ -7,7 +7,7 @@ module Network.Pulse.Post.Ping
     ) where
     
 import Network.Pulse.Common.Ping
-import Network.Pulse.Internal.Query 
+import Network.Pulse.Query 
 import Network.Pulse.Types
 import Data.Aeson
 
