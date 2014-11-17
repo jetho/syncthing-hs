@@ -39,6 +39,15 @@ withManager act =
 pulse :: FromJSON a => PulseConfig -> Pulse a -> IO (Either PulseError a)
 pulse config action = flip runReaderT config $ runEitherT action
 
+-- | The default Pulse configuration. Customize it to your needs by using
+-- the PulseConfig Lenses.
+--
+-- Example:
+--
+-- >>> defaultPulseConfig
+-- PulseConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pManager = Left _ }
+-- >>> defaultPulseConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+-- PulseConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", pAuth = Nothing, pManager = Left _ }
 defaultPulseConfig :: PulseConfig
 defaultPulseConfig = PulseConfig { 
       _pServer   = "127.0.0.1:8080"

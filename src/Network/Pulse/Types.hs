@@ -1,5 +1,6 @@
 
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Network.Pulse.Types 
     ( Pulse
@@ -11,7 +12,7 @@ module Network.Pulse.Types
     ) where
 
 import Data.Typeable              (Typeable)
-import Data.Text                  as T
+import qualified Data.Text        as T
 import Network.Wreq               (Auth)
 import Network.HTTP.Client        (Manager, ManagerSettings)
 import Control.Monad.Trans.Either (EitherT)
@@ -24,7 +25,7 @@ data PulseConfig = PulseConfig {
     , _pApiKey    :: Maybe T.Text
     , _pAuth      :: Maybe Auth
     , _pManager   :: Either ManagerSettings Manager
-    } 
+    }
 
 type Pulse a = EitherT PulseError (ReaderT PulseConfig IO) a
 
@@ -48,4 +49,16 @@ data PulseError =
     | RequestError 
     | Unauthorized
     deriving (Typeable, Eq, Show)
+
+instance Show PulseConfig where
+    show (PulseConfig {..}) = 
+        concat ["PulseConfig { "
+               , "pServer = ", show _pServer
+               , ", pApiKey = ", show _pApiKey
+               , ", pAuth = ", show _pAuth
+               , ", pManager = ", case _pManager of
+                      Left _  -> "Left _"
+                      Right _ -> "Right _"
+               , " }"
+               ]
 
