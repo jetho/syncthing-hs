@@ -20,6 +20,8 @@ import Control.Monad.Trans.Reader (ReaderT)
 import Data.Aeson                 (Value)
 
 
+-- | The Pulse configuration for specifying the Pulse server,
+-- authentication, the API Key etc.
 data PulseConfig = PulseConfig { 
       _pServer    :: T.Text
     , _pApiKey    :: Maybe T.Text
