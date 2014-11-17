@@ -11,5 +11,10 @@ import Network.Pulse.Query
 import Network.Pulse.Types
 
 ping :: Pulse Ping
-ping = query $ PulseRequest { path = "/rest/ping", method = Get, params = [] }
+ping = query $ 
+    PulseRequest { 
+          path   = "/rest/ping"
+        , method = Get
+        , params = []
+    }
 

@@ -12,6 +12,11 @@ import Network.Pulse.Types
 import Data.Aeson
 
 ping :: Pulse Ping
-ping = query $ PulseRequest { path = "/rest/ping", method = Post payload, params = [] }
+ping = query $ 
+    PulseRequest { 
+          path   = "/rest/ping"
+        , method = Post payload
+        , params = []
+    }
     where payload = toJSON ()
 
