@@ -16,6 +16,7 @@ import Data.Text                  (unpack)
 import Control.Monad.Trans.Either (left, right)
 
 import Network.Pulse.Types
+import Network.Pulse.Lens
 
 
 prepareOptions :: PulseConfig -> [Param] -> W.Options -> W.Options

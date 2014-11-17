@@ -1,6 +1,5 @@
 
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Network.Pulse.Types 
     ( Pulse
@@ -9,17 +8,12 @@ module Network.Pulse.Types
     , HttpMethod(..)
     , PulseRequest(..)
     , PulseError(..)
-    , pServer
-    , pApiKey
-    , pAuth
-    , pManager
     ) where
 
 import Data.Typeable              (Typeable)
 import Data.Text                  as T
 import Network.Wreq               (Auth)
 import Network.HTTP.Client        (Manager, ManagerSettings)
-import Control.Lens               (makeLenses)
 import Control.Monad.Trans.Either (EitherT)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Aeson                 (Value)
@@ -31,8 +25,6 @@ data PulseConfig = PulseConfig {
     , _pAuth      :: Maybe Auth
     , _pManager   :: Either ManagerSettings Manager
     } 
-
-$(makeLenses ''PulseConfig)
 
 type Pulse a = EitherT PulseError (ReaderT PulseConfig IO) a
 
