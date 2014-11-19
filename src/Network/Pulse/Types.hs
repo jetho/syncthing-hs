@@ -29,6 +29,7 @@ data PulseConfig = PulseConfig {
     , _pManager   :: Either ManagerSettings Manager
     }
 
+-- | The Pulse Monad represents one or multiple Pulse requests.
 type Pulse a = EitherT PulseError (ReaderT PulseConfig IO) a
 
 type Param = (T.Text, T.Text)

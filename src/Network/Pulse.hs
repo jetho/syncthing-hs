@@ -12,8 +12,9 @@
 --
 -- Haskell bindings for the Pulse (Syncthing) REST API.
 --
--- The library is based on the fantastic 'Network.Wreq' package and it's
--- possible to reuse some Wreq functionalities for configuring your Pulse client.
+-- The library is based on the 'Network.Wreq' package and uses some of
+-- Wreq\'s functionalities for client configuration, so if you want to use
+-- authentication, you need to import the Network.Wreq module.
 --
 -- Example Usage:
 --
@@ -29,7 +30,9 @@
 -- \-\- A single Pulse request.
 -- single = 'pulse' 'defaultPulseConfig' 'Network.Pulse.Get.ping'
 --
--- \-\- Multiple Pulse requests with connection sharing.
+-- \-\- Using the default configuration for multiple requests is very inefficient because 
+-- \-\- a new connection manager gets created for each request. It's recommended to use 
+-- \-\- the 'withManager' function which allows connection sharing among multiple requests.
 -- multiple1 = 'withManager' $ \\cfg -> 
 --     'pulse' cfg $ do
 --         p <- 'Network.Pulse.Get.ping' 
@@ -48,7 +51,7 @@ module Network.Pulse
     -- * The Pulse Monad 
       Pulse
     , pulse
-    -- * Creating and releasing managers
+    -- * Multiple requests and connection sharing
     , withManager
     -- * Configuration
     , PulseConfig
@@ -74,7 +77,7 @@ import Network.Pulse.Types
 import qualified Network.Pulse.Lens as PL
 
 
--- | Create a default configuration with a new manager for connection
+-- | Creates a default configuration with a new manager for connection
 -- sharing. The manager is released after running the Pulse actions(s).
 --
 -- Examples:
@@ -93,7 +96,7 @@ withManager act =
     W.withManager $ \opts -> 
         act $ defaultPulseConfig & pManager .~ (opts ^. W.manager)
     
--- | Run a Pulse request.
+-- | Runs a single or multiple Pulse requests.
 pulse :: FromJSON a => PulseConfig -> Pulse a -> IO (Either PulseError a)
 pulse config action = flip runReaderT config $ runEitherT action
 
