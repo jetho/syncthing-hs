@@ -4,7 +4,9 @@
 name:                hpulse
 version:             0.1.0.0
 synopsis:            Haskell bindings for the Pulse (Syncthing) REST API
--- description:         
+description:         
+    .
+    see: <https://discourse.syncthing.net/t/the-rest-interface/85>
 homepage:            https://github.com/jetho/hpulse
 license:             BSD3
 license-file:        LICENSE
