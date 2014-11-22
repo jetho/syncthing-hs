@@ -1,4 +1,6 @@
 
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 -- |
 -- Module      : Network.Pulse.Post
 -- Copyright   : (c) 2014 Jens Thomas
