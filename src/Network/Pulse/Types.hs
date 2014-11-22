@@ -14,6 +14,8 @@ module Network.Pulse.Types
     , liftEither
     , liftReader
     , liftInner
+    , liftLeft
+    , liftRight
     ) where
 
 import Data.Typeable              (Typeable)
@@ -23,10 +25,11 @@ import Network.HTTP.Client        (Manager, ManagerSettings)
 import Control.Monad.Trans.Either (EitherT)
 import Control.Monad.Trans.Reader (ReaderT)
 import Control.Monad.Reader
+import Control.Monad.Trans.Either (left, right)
 import Data.Aeson                 (Value)
 import Control.Applicative
 import Control.Monad.Error 
-import Data.ByteString.Lazy hiding (concat, unpack)
+import Data.ByteString.Lazy hiding (concat)
 
 
 -- | The Pulse configuration for specifying the Pulse server,
@@ -50,15 +53,6 @@ newtype PulseM m a = PulseM { runPulse :: EitherT PulseError (ReaderT PulseConfi
 class (Monad m) => MonadPulse m where
     getMethod  :: W.Options -> String -> m (ByteString)
     postMethod :: W.Options -> String -> Value -> m (ByteString)
-
-liftEither :: Monad m => EitherT PulseError (ReaderT PulseConfig m) a -> PulseM m a
-liftEither = PulseM
-
-liftReader :: Monad m => (ReaderT PulseConfig m) a -> PulseM m a
-liftReader = liftEither . lift
-
-liftInner :: Monad m => m a -> PulseM m a
-liftInner = liftReader . lift
 
 type Param = (T.Text, T.Text)
 
@@ -92,4 +86,19 @@ instance Show PulseConfig where
                       Right _ -> "Right _"
                , " }"
                ]
+
+liftEither :: Monad m => EitherT PulseError (ReaderT PulseConfig m) a -> PulseM m a
+liftEither = PulseM
+
+liftReader :: Monad m => (ReaderT PulseConfig m) a -> PulseM m a
+liftReader = liftEither . lift
+
+liftInner :: Monad m => m a -> PulseM m a
+liftInner = liftReader . lift
+
+liftLeft :: Monad m => PulseError -> PulseM m a
+liftLeft = liftEither . left
+
+liftRight :: Monad m => a -> PulseM m a
+liftRight = liftEither . right
 

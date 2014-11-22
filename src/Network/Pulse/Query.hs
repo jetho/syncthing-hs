@@ -13,7 +13,6 @@ import Data.Aeson                 (FromJSON, eitherDecode, Value)
 import Control.Lens               ((&), (^.), (.~), (^?))
 import Data.Text.Encoding         (encodeUtf8)
 import Data.Text                  (unpack)
-import Control.Monad.Trans.Either (left, right)
 
 import Network.Pulse.Types
 import Network.Pulse.Lens
@@ -42,8 +41,7 @@ query request = do
     respBody   <- case (method request) of
         Get          -> getMethod opts url 
         Post payload -> postMethod opts url payload
-    liftEither $ 
-        case (eitherDecode respBody) of
-            Left e   -> left $ ParseError e
-            Right v  -> right v
+    case (eitherDecode respBody) of
+        Left e   -> liftLeft $ ParseError e
+        Right v  -> liftRight v
 
