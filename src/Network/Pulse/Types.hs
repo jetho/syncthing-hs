@@ -1,23 +1,30 @@
 
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Network.Pulse.Types 
-    ( Pulse
+    ( PulseM(..)
+    , MonadPulse(..)
     , PulseConfig(..)
     , Param
     , HttpMethod(..)
     , PulseRequest(..)
     , PulseError(..)
+    , liftPulse
     ) where
 
 import Data.Typeable              (Typeable)
 import qualified Data.Text        as T
-import Network.Wreq               (Auth)
+import qualified Network.Wreq     as W
 import Network.HTTP.Client        (Manager, ManagerSettings)
 import Control.Monad.Trans.Either (EitherT)
 import Control.Monad.Trans.Reader (ReaderT)
+import Control.Monad.Reader
 import Data.Aeson                 (Value)
+import Control.Applicative
+import Control.Monad.Error 
+import Data.ByteString.Lazy hiding (concat, unpack)
 
 
 -- | The Pulse configuration for specifying the Pulse server,
@@ -25,12 +32,24 @@ import Data.Aeson                 (Value)
 data PulseConfig = PulseConfig { 
       _pServer    :: T.Text
     , _pApiKey    :: Maybe T.Text
-    , _pAuth      :: Maybe Auth
+    , _pAuth      :: Maybe W.Auth
     , _pManager   :: Either ManagerSettings Manager
     }
 
--- | The Pulse Monad represents one or multiple Pulse requests.
-type Pulse a = EitherT PulseError (ReaderT PulseConfig IO) a
+-- | The PulseM Monad represents one or multiple Pulse requests.
+newtype PulseM m a = PulseM { runPulse :: EitherT PulseError (ReaderT PulseConfig m) a }
+                   deriving ( Functor
+                            , Applicative 
+                            , Monad
+                            , MonadReader PulseConfig
+                            , MonadError PulseError
+                            )
+
+class (Monad m) => MonadPulse m where
+    getMethod  :: W.Options -> String -> m (ByteString)
+    postMethod :: W.Options -> String -> Value -> m (ByteString)
+
+liftPulse  = PulseM
 
 type Param = (T.Text, T.Text)
 

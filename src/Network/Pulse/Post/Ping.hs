@@ -1,5 +1,6 @@
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Network.Pulse.Post.Ping 
     ( Ping(..)
@@ -11,7 +12,7 @@ import Network.Pulse.Query
 import Network.Pulse.Types
 import Data.Aeson
 
-ping :: Pulse Ping
+ping :: (MonadPulse (PulseM m), Monad m) => PulseM m Ping
 ping = query $ 
     PulseRequest { 
           path   = "/rest/ping"

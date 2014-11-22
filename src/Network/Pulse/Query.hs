@@ -1,15 +1,15 @@
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Network.Pulse.Query
     ( query
     ) where
 
 import qualified Network.Wreq     as W
-import Control.Monad.IO.Class     (liftIO)
 import Control.Monad.Trans.Class  (lift)
 import Control.Monad.Trans.Reader (ask)
-import Data.Aeson                 (FromJSON, eitherDecode)
+import Data.Aeson                 (FromJSON, eitherDecode, Value)
 import Control.Lens               ((&), (^.), (.~), (^?))
 import Data.Text.Encoding         (encodeUtf8)
 import Data.Text                  (unpack)
@@ -33,19 +33,16 @@ prepareOptions cfg params' =   setManager (cfg ^. pManager)
         setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
         setApiKey Nothing       = id
     
-query :: FromJSON a => PulseRequest -> Pulse a
+query :: (MonadPulse (PulseM m), Monad m, FromJSON a) => PulseRequest -> PulseM m a
 query request = do
-    config <- lift ask
+    config     <- liftPulse $ lift ask
     let opts    = prepareOptions config (params request) W.defaults
     let server  = unpack $ config ^. pServer
     let url     = concat ["http://", server, path request]
-    response <- liftIO $ case (method request) of
-        Get          -> W.getWith  opts url
-        Post payload -> W.postWith opts url payload
-    case (response ^? W.responseBody) of
-        Nothing -> left RequestError
-        Just bs -> 
-            case (eitherDecode bs) of
-                Left e   -> left $ ParseError e
-                Right v  -> right v
+    respBody   <- case (method request) of
+        Get          -> getMethod opts url 
+        Post payload -> postMethod opts url payload
+    liftPulse $ case (eitherDecode respBody) of
+        Left e   -> left $ ParseError e
+        Right v  -> right v
 

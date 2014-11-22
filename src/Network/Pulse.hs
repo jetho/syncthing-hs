@@ -1,5 +1,6 @@
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 -- |
 -- Module      : Network.Pulse
@@ -13,8 +14,8 @@
 -- Haskell bindings for the Pulse (Syncthing) REST API.
 --
 -- The library is based on the "Network.Wreq" package and uses some of
--- Wreq\'s functionalities for client configuration, so if you want to use
--- authentication, you need to import the "Network.Wreq" module.
+-- wreq\'s functionalities for client configuration. For example, if you 
+-- want to use authentication, you need to import the "Network.Wreq" module.
 --
 -- Example Usage:
 --
@@ -49,7 +50,7 @@
 module Network.Pulse 
     ( 
     -- * The Pulse Monad 
-      Pulse
+      PulseM
     , pulse
     -- * Multiple requests and connection sharing
     , withManager
@@ -68,6 +69,8 @@ import qualified Network.Wreq       as W
 import Network.HTTP.Client.TLS      (tlsManagerSettings)
 import Control.Monad.Trans.Either   (runEitherT)
 import Control.Monad.Trans.Reader   (runReaderT)
+import Control.Monad.Writer
+import Control.Monad.Reader         (lift)
 import Data.Aeson                   (FromJSON)
 import Control.Lens                 (Lens', (&), (^.), (.~))
 import Data.Text                    (Text)
@@ -97,8 +100,8 @@ withManager act =
         act $ defaultPulseConfig & pManager .~ (opts ^. W.manager)
     
 -- | Runs a single or multiple Pulse requests.
-pulse :: FromJSON a => PulseConfig -> Pulse a -> IO (Either PulseError a)
-pulse config action = flip runReaderT config $ runEitherT action
+pulse :: FromJSON a => PulseConfig -> PulseM IO a -> IO (Either PulseError a)
+pulse config action = flip runReaderT config $ runEitherT $ runPulse action 
 
 -- | The default Pulse configuration. Customize it to your needs by using
 -- the PulseConfig lenses.
@@ -157,4 +160,12 @@ pAuth    = PL.pAuth
 -- information, please refer to the "Network.HTTP.Client" package.
 pManager :: Lens' PulseConfig (Either ManagerSettings Manager)
 pManager = PL.pManager
+
+-- | Use Wreq's getWith and postWith functions when running in IO
+instance MonadPulse (PulseM IO) where
+    getMethod o s    = liftBody $ W.getWith o s
+    postMethod o s p = liftBody $ W.postWith o s p 
+
+liftBody :: IO (W.Response a) -> PulseM IO a
+liftBody = liftPulse . lift . lift . ((^. W.responseBody) `fmap`)
 

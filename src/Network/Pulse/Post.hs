@@ -1,6 +1,6 @@
 
 -- |
--- Module      : Network.Pulse.Get
+-- Module      : Network.Pulse.Post
 -- Copyright   : (c) 2014 Jens Thomas
 --
 -- License     : BSD-style
