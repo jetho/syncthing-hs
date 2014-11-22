@@ -164,8 +164,9 @@ pManager = PL.pManager
 
 -- | Use Wreq's getWith and postWith functions when running in IO
 instance MonadPulse (PulseM IO) where
-    getMethod o s    = liftPulse . lift . lift $ extractBody <$> W.getWith o s
-    postMethod o s p = liftPulse . lift . lift $ extractBody <$> W.postWith o s p 
+    getMethod o s    = liftBody $ W.getWith o s
+    postMethod o s p = liftBody $ W.postWith o s p 
 
-extractBody = (^. W.responseBody) 
+liftBody = liftPulse . lift . lift . ((^. W.responseBody) `fmap`)
+
 
