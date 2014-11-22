@@ -42,7 +42,8 @@ query request = do
     respBody   <- case (method request) of
         Get          -> getMethod opts url 
         Post payload -> postMethod opts url payload
-    liftEither $ case (eitherDecode respBody) of
-        Left e   -> left $ ParseError e
-        Right v  -> right v
+    liftEither $ 
+        case (eitherDecode respBody) of
+            Left e   -> left $ ParseError e
+            Right v  -> right v
 
