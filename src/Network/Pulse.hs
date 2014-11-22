@@ -13,11 +13,11 @@
 --
 -- Haskell bindings for the Pulse (Syncthing) REST API.
 --
--- The library is based on the "Network.Wreq" package and uses some of
--- wreq\'s functionalities for client configuration. 
--- For example, if you want to use authentication, you need to import the "Network.Wreq" module.
+-- The library is based on the "Network.Wreq" package and uses some of wreq\'s 
+-- functionalities for client configuration. For example, to use authentication, 
+-- you need to import the "Network.Wreq" module.
 --
--- __Example Usage:__
+-- __/Example Usage:/__
 --
 -- @
 -- \{\-\# LANGUAGE OverloadedStrings \#\-\}
@@ -82,7 +82,7 @@ import qualified Network.Pulse.Lens as PL
 -- | Creates a default configuration with a new manager for connection
 -- sharing. The manager is released after running the Pulse actions(s).
 --
--- Examples:
+-- /Examples:/
 --
 -- @
 -- 'withManager' $ \\cfg -> 
@@ -105,7 +105,7 @@ pulse config action = flip runReaderT config $ runEitherT $ runPulse action
 -- | The default Pulse configuration. Customize it to your needs by using
 -- the PulseConfig lenses.
 --
--- Example:
+-- /Example:/
 --
 -- >>> defaultPulseConfig
 -- PulseConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pManager = Left _ }
@@ -121,7 +121,7 @@ defaultPulseConfig = PulseConfig {
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
 --
--- Example:
+-- /Example:/
 --
 -- @
 -- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
@@ -132,7 +132,7 @@ pServer  = PL.pServer
 
 -- | A lens for specifying the Pulse API Key.
 --
--- Example:
+-- /Example:/
 --
 -- @
 -- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
@@ -144,7 +144,7 @@ pApiKey  = PL.pApiKey
 -- | A lens for the authentication functionality provided by the 'Network.Wreq'
 -- package (see 'Network.Wreq.Auth').
 --
--- Example:
+-- /Example:/
 --
 -- @
 -- import qualified "Network.Wreq" as Wreq
