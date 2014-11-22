@@ -18,11 +18,12 @@ import Network.Pulse.Lens
 
 
 prepareOptions :: PulseConfig -> [Param] -> W.Options -> W.Options
-prepareOptions cfg params' =   setManager (cfg ^. pManager)
-                             . setApiKey  (cfg ^. pApiKey)
-                             . setAuth    (cfg ^. pAuth)
-                             . setParams  
-                             . setJsonHeader
+prepareOptions cfg params' =   
+      setManager (cfg ^. pManager)
+    . setApiKey  (cfg ^. pApiKey)
+    . setAuth    (cfg ^. pAuth)
+    . setParams  
+    . setJsonHeader
     where
         setManager mgr          = (& W.manager .~ mgr)
         setAuth authInfo        = (& W.auth .~ authInfo)
