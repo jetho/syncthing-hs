@@ -1,5 +1,6 @@
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Network.Pulse.Get.Version
     ( Version(..)
@@ -21,7 +22,7 @@ data Version = Version {
     , getVersion     :: Text
     } deriving (Show)
 
-version :: Pulse Version
+version :: (MonadPulse (PulseM m), Monad m) => PulseM m Version
 version = query $ 
     PulseRequest { 
           path   = "/rest/version"
@@ -36,3 +37,4 @@ instance FromJSON Version where
                 <*> (v .: "os")
                 <*> (v .: "version")
     parseJSON _          = mzero
+

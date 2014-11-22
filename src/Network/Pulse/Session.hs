@@ -47,6 +47,6 @@ closePulseSession session = either doNothing closeManager mgr
         mgr         = getConfig session ^. pManager
 
 -- | Runs a Pulse request using connection sharing within a session. 
-runSession :: FromJSON a => PulseSession -> Pulse a -> IO (Either PulseError a)
+runSession :: FromJSON a => PulseSession -> PulseM IO a -> IO (Either PulseError a)
 runSession = pulse . getConfig
 
