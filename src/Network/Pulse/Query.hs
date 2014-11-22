@@ -7,10 +7,9 @@ module Network.Pulse.Query
     ) where
 
 import qualified Network.Wreq     as W
-import Control.Monad.Trans.Class  (lift)
 import Control.Monad.Trans.Reader (ask)
-import Data.Aeson                 (FromJSON, eitherDecode, Value)
-import Control.Lens               ((&), (^.), (.~), (^?))
+import Data.Aeson                 (FromJSON, eitherDecode)
+import Control.Lens               ((&), (^.), (.~))
 import Data.Text.Encoding         (encodeUtf8)
 import Data.Text                  (unpack)
 
