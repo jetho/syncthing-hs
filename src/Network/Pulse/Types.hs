@@ -18,17 +18,15 @@ module Network.Pulse.Types
     , liftRight
     ) where
 
-import Data.Typeable              (Typeable)
-import qualified Data.Text        as T
-import qualified Network.Wreq     as W
-import Network.HTTP.Client        (Manager, ManagerSettings)
-import Control.Monad.Trans.Either (EitherT)
-import Control.Monad.Trans.Reader (ReaderT)
-import Control.Monad.Reader
-import Control.Monad.Trans.Either (left, right)
-import Data.Aeson                 (Value)
-import Control.Applicative
-import Control.Monad.Error 
+import Data.Typeable               (Typeable)
+import qualified Data.Text         as T
+import qualified Network.Wreq      as W
+import Network.HTTP.Client         (Manager, ManagerSettings)
+import Control.Monad.Trans.Either  (EitherT, left, right)
+import Control.Monad.Trans.Reader  (ReaderT)
+import Control.Monad.Trans.Class   (lift)
+import Data.Aeson                  (Value)
+import Control.Applicative         (Applicative)
 import Data.ByteString.Lazy hiding (concat)
 
 
@@ -43,12 +41,7 @@ data PulseConfig = PulseConfig {
 
 -- | The PulseM Monad represents one or multiple Pulse requests.
 newtype PulseM m a = PulseM { runPulse :: EitherT PulseError (ReaderT PulseConfig m) a }
-                   deriving ( Functor
-                            , Applicative 
-                            , Monad
-                            , MonadReader PulseConfig
-                            , MonadError PulseError
-                            )
+                   deriving (Functor , Applicative , Monad)
 
 class (Monad m) => MonadPulse m where
     getMethod  :: W.Options -> String -> m (ByteString)
@@ -71,8 +64,8 @@ data PulseError =
       InvalidApiKey 
     | ParseError String 
     | NotFound 
-    | RequestError 
     | Unauthorized
+    | OtherError String
     deriving (Typeable, Eq, Show)
 
 instance Show PulseConfig where
