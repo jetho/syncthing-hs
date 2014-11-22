@@ -69,8 +69,7 @@ import qualified Network.Wreq       as W
 import Network.HTTP.Client.TLS      (tlsManagerSettings)
 import Control.Monad.Trans.Either   (runEitherT)
 import Control.Monad.Trans.Reader   (runReaderT)
-import Control.Monad.Writer
-import Control.Monad.Reader         (lift)
+import Control.Applicative          ((<$>))
 import Data.Aeson                   (FromJSON)
 import Control.Lens                 (Lens', (&), (^.), (.~))
 import Data.Text                    (Text)
@@ -163,9 +162,6 @@ pManager = PL.pManager
 
 -- | Use Wreq's getWith and postWith functions when running in IO
 instance MonadPulse (PulseM IO) where
-    getMethod o s    = liftBody $ W.getWith o s
-    postMethod o s p = liftBody $ W.postWith o s p 
-
-liftBody :: IO (W.Response a) -> PulseM IO a
-liftBody = liftPulse . lift . lift . ((^. W.responseBody) `fmap`)
+    getMethod o s    = liftInner $ (^. W.responseBody) <$> W.getWith o s
+    postMethod o s p = liftInner $ (^. W.responseBody) <$> W.postWith o s p 
 

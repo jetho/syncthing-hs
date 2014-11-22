@@ -35,14 +35,14 @@ prepareOptions cfg params' =   setManager (cfg ^. pManager)
     
 query :: (MonadPulse (PulseM m), Monad m, FromJSON a) => PulseRequest -> PulseM m a
 query request = do
-    config     <- liftPulse $ lift ask
+    config     <- liftReader ask
     let opts    = prepareOptions config (params request) W.defaults
     let server  = unpack $ config ^. pServer
     let url     = concat ["http://", server, path request]
     respBody   <- case (method request) of
         Get          -> getMethod opts url 
         Post payload -> postMethod opts url payload
-    liftPulse $ case (eitherDecode respBody) of
+    liftEither $ case (eitherDecode respBody) of
         Left e   -> left $ ParseError e
         Right v  -> right v
 

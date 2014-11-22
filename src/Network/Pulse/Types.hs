@@ -11,7 +11,9 @@ module Network.Pulse.Types
     , HttpMethod(..)
     , PulseRequest(..)
     , PulseError(..)
-    , liftPulse
+    , liftEither
+    , liftReader
+    , liftInner
     ) where
 
 import Data.Typeable              (Typeable)
@@ -49,7 +51,14 @@ class (Monad m) => MonadPulse m where
     getMethod  :: W.Options -> String -> m (ByteString)
     postMethod :: W.Options -> String -> Value -> m (ByteString)
 
-liftPulse  = PulseM
+liftEither :: Monad m => EitherT PulseError (ReaderT PulseConfig m) a -> PulseM m a
+liftEither = PulseM
+
+liftReader :: Monad m => (ReaderT PulseConfig m) a -> PulseM m a
+liftReader = liftEither . lift
+
+liftInner :: Monad m => m a -> PulseM m a
+liftInner = liftReader . lift
 
 type Param = (T.Text, T.Text)
 
