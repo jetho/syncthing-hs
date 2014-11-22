@@ -14,10 +14,10 @@
 -- Haskell bindings for the Pulse (Syncthing) REST API.
 --
 -- The library is based on the "Network.Wreq" package and uses some of
--- wreq\'s functionalities for client configuration. For example, if you 
--- want to use authentication, you need to import the "Network.Wreq" module.
+-- wreq\'s functionalities for client configuration. 
+-- For example, if you want to use authentication, you need to import the "Network.Wreq" module.
 --
--- Example Usage:
+-- __Example Usage:__
 --
 -- @
 -- \{\-\# LANGUAGE OverloadedStrings \#\-\}
