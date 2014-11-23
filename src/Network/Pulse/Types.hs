@@ -87,7 +87,7 @@ liftReader :: Monad m => (ReaderT PulseConfig m) a -> PulseM m a
 liftReader = liftEither . lift
 
 liftInner :: Monad m => m a -> PulseM m a
-liftInner = liftReader . lift
+liftInner = liftEither . lift . lift
 
 liftLeft :: Monad m => PulseError -> PulseM m a
 liftLeft = liftEither . left
