@@ -162,7 +162,7 @@ pManager :: Lens' PulseConfig (Either ManagerSettings Manager)
 pManager = PL.pManager
 
 -- | Use Wreq's getWith and postWith functions when running in IO
-instance MonadPulse (PulseM IO) where
-    getMethod o s    = liftInner $ (^. W.responseBody) <$> W.getWith o s
-    postMethod o s p = liftInner $ (^. W.responseBody) <$> W.postWith o s p 
+instance MonadPulse IO where
+    getMethod o s    = (^. W.responseBody) <$> W.getWith o s
+    postMethod o s p = (^. W.responseBody) <$> W.postWith o s p 
 

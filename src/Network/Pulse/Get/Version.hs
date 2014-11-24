@@ -22,7 +22,7 @@ data Version = Version {
     , getVersion     :: Text
     } deriving (Show)
 
-version :: (MonadPulse (PulseM m), Monad m) => PulseM m Version
+version :: (MonadPulse m) => PulseM m Version
 version = query $ 
     PulseRequest { 
           path   = "/rest/version"

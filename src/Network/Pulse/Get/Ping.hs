@@ -12,7 +12,7 @@ import Network.Pulse.Query
 import Network.Pulse.Types
 
 
-ping :: (MonadPulse (PulseM m), Monad m) => PulseM m Ping
+ping :: (MonadPulse m) => PulseM m Ping
 ping = query $ 
     PulseRequest { 
           path   = "/rest/ping"

@@ -32,16 +32,17 @@ prepareOptions cfg params' =
         setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
         setApiKey Nothing       = id
     
-query :: (MonadPulse (PulseM m), Monad m, FromJSON a) => PulseRequest -> PulseM m a
+query :: (MonadPulse m, FromJSON a) => PulseRequest -> PulseM m a
 query request = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params request) W.defaults
     let server  = unpack $ config ^. pServer
     let url     = concat ["http://", server, path request]
-    respBody   <- case (method request) of
-        Get          -> getMethod opts url 
-        Post payload -> postMethod opts url payload
-    case (eitherDecode respBody) of
-        Left e   -> liftLeft $ ParseError e
-        Right v  -> liftRight v
+    respBody   <- liftInner $ 
+        case (method request) of
+            Get          -> getMethod opts url 
+            Post payload -> postMethod opts url payload
+    either (liftLeft . ParseError)
+           liftRight
+           (eitherDecode respBody)
 
