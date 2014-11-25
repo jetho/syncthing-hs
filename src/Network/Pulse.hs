@@ -71,10 +71,12 @@ import Network.HTTP.Client.TLS      (tlsManagerSettings)
 import Control.Monad.Trans.Either   (runEitherT)
 import Control.Monad.Trans.Reader   (runReaderT)
 import Control.Applicative          ((<$>))
+import Control.Exception            (catch, throwIO)
 import Data.Aeson                   (FromJSON)
 import Control.Lens                 (Lens', (&), (^.), (.~))
 import Data.Text                    (Text)
-import Network.HTTP.Client          (Manager, ManagerSettings)
+import Network.HTTP.Client          (Manager, ManagerSettings, HttpException(..))
+import Data.ByteString.Lazy         (fromStrict)
 
 import Network.Pulse.Types
 import qualified Network.Pulse.Lens as PL
@@ -101,7 +103,14 @@ withManager act =
     
 -- | Runs a single or multiple Pulse requests.
 pulse :: FromJSON a => PulseConfig -> PulseM IO a -> IO (Either PulseError a)
-pulse config action = flip runReaderT config $ runEitherT $ runPulse action 
+pulse config action = 
+    (flip runReaderT config $ runEitherT $ runPulse action) `catch` handler
+    where
+        handler e@(StatusCodeException _ headers _)
+            | Just err <- extractError headers = pulseError err
+            | otherwise                        = throwIO e
+        extractError = (decodeError . fromStrict <$>) . lookup "X-Response-Body-Start" 
+        pulseError   = return . Left 
 
 -- | The default Pulse configuration. Customize it to your needs by using
 -- the PulseConfig lenses.

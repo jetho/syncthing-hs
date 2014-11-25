@@ -1,4 +1,5 @@
 
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -11,6 +12,7 @@ module Network.Pulse.Types
     , HttpMethod(..)
     , PulseRequest(..)
     , PulseError(..)
+    , decodeError
     , liftEither
     , liftReader
     , liftInner
@@ -25,19 +27,11 @@ import Network.HTTP.Client         (Manager, ManagerSettings)
 import Control.Monad.Trans.Either  (EitherT, left, right)
 import Control.Monad.Trans.Reader  (ReaderT)
 import Control.Monad.Trans.Class   (lift)
+import Control.Exception           (Exception)
 import Data.Aeson                  (Value)
 import Control.Applicative         (Applicative)
 import Data.ByteString.Lazy hiding (concat)
 
-
--- | The Pulse configuration for specifying the Pulse server,
--- authentication, the API Key etc.
-data PulseConfig = PulseConfig { 
-      _pServer    :: T.Text
-    , _pApiKey    :: Maybe T.Text
-    , _pAuth      :: Maybe W.Auth
-    , _pManager   :: Either ManagerSettings Manager
-    }
 
 -- | The PulseM Monad represents one or multiple Pulse requests.
 newtype PulseM m a = PulseM { runPulse :: EitherT PulseError (ReaderT PulseConfig m) a }
@@ -60,13 +54,14 @@ data PulseRequest = PulseRequest {
     , params    :: [Param]
     } deriving (Eq, Show)
     
-data PulseError = 
-      InvalidApiKey 
-    | ParseError String 
-    | NotFound 
-    | Unauthorized
-    | OtherError String
-    deriving (Typeable, Eq, Show)
+-- | The Pulse configuration for specifying the Pulse server,
+-- authentication, the API Key etc.
+data PulseConfig = PulseConfig { 
+      _pServer    :: T.Text
+    , _pApiKey    :: Maybe T.Text
+    , _pAuth      :: Maybe W.Auth
+    , _pManager   :: Either ManagerSettings Manager
+    }
 
 instance Show PulseConfig where
     show (PulseConfig {..}) = 
@@ -79,6 +74,25 @@ instance Show PulseConfig where
                       Right _ -> "Right _"
                , " }"
                ]
+
+data PulseError = 
+      ParseError String 
+    | NotAuthorized 
+    | CSRFError
+    | NotFound
+    | MethodNotAllowed
+    | OtherError String
+    deriving (Typeable, Eq, Show)
+
+instance Exception PulseError
+
+decodeError :: ByteString -> PulseError
+decodeError bs = 
+    case bs of
+        "CSRF Error\n"     -> CSRFError
+        "Not found\n"      -> NotFound
+        "Not Authorized\n" -> NotAuthorized
+        other              -> OtherError $ show other
 
 liftEither :: Monad m => EitherT PulseError (ReaderT PulseConfig m) a -> PulseM m a
 liftEither = PulseM
