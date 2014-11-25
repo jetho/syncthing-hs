@@ -104,7 +104,8 @@ withManager act =
     
 -- | Runs a single or multiple Pulse requests.
 pulse :: FromJSON a => PulseConfig -> PulseM IO a -> IO (Either PulseError a)
-pulse config action = (flip runReaderT config $ runEitherT $ runPulse action) `catch` handler
+pulse config action = 
+    (flip runReaderT config $ runEitherT $ runPulse action) `catch` handler
     where
         handler e@(StatusCodeException _ headers _) = 
             maybe (throwIO e) (return . Left) $ maybePulseError headers
