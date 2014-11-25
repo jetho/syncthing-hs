@@ -79,20 +79,15 @@ data PulseError =
       ParseError String 
     | NotAuthorized 
     | CSRFError
-    | NotFound
-    | MethodNotAllowed
-    | OtherError String
     deriving (Typeable, Eq, Show)
 
 instance Exception PulseError
 
-decodeError :: ByteString -> PulseError
-decodeError bs = 
-    case bs of
-        "CSRF Error\n"     -> CSRFError
-        "Not found\n"      -> NotFound
-        "Not Authorized\n" -> NotAuthorized
-        other              -> OtherError $ show other
+decodeError :: ByteString -> Maybe PulseError
+decodeError = flip lookup $
+    [ ("CSRF Error\n",      CSRFError)
+    , ("Not Authorized\n",  NotAuthorized)
+    ]
 
 liftEither :: Monad m => EitherT PulseError (ReaderT PulseConfig m) a -> PulseM m a
 liftEither = PulseM
