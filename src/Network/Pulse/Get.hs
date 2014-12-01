@@ -1,4 +1,3 @@
-
 {-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
@@ -15,7 +14,9 @@
 module Network.Pulse.Get
     ( module Network.Pulse.Get.Ping
     , module Network.Pulse.Get.Version
+    , module Network.Pulse.Get.Sync
     ) where
 
-import Network.Pulse.Get.Ping
-import Network.Pulse.Get.Version
+import           Network.Pulse.Get.Ping
+import           Network.Pulse.Get.Sync
+import           Network.Pulse.Get.Version

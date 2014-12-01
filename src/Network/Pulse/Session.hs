@@ -1,4 +1,3 @@
-
 {-# OPTIONS_HADDOCK show-extensions #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -13,19 +12,19 @@
 --
 -- This module provides functions for manual session handling.
 
-module Network.Pulse.Session 
+module Network.Pulse.Session
     ( PulseSession
     , newPulseSession
     , closePulseSession
     , runSession
     ) where
 
-import Network.HTTP.Client     (newManager, closeManager)
-import Control.Lens            ((.~), (&), (^.))
-import Data.Aeson              (FromJSON)
+import           Control.Lens        ((&), (.~), (^.))
+import           Data.Aeson          (FromJSON)
+import           Network.HTTP.Client (closeManager, newManager)
 
-import Network.Pulse.Types     
-import Network.Pulse           
+import           Network.Pulse
+import           Network.Pulse.Types
 
 -- | Holds the session configuration and the connection manager.
 newtype PulseSession = PulseSession { getConfig :: PulseConfig }
@@ -47,7 +46,5 @@ closePulseSession session = either doNothing closeManager mgr
         doNothing   = const $ return ()
         mgr         = getConfig session ^. pManager
 
--- | Runs a Pulse request using connection sharing within a session. 
+-- | Runs a Pulse request using connection sharing within a session.
 runSession :: FromJSON a => PulseSession -> PulseM IO a -> IO (Either PulseError a)
-runSession = pulse . getConfig
-
