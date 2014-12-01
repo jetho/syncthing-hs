@@ -6,7 +6,7 @@ module Network.Pulse.Get.Sync
     ( sync
     ) where
 
-import           Control.Applicative ((<$>), (<*>))
+import           Control.Applicative ((<$>))
 import           Control.Monad       (MonadPlus (mzero))
 import           Data.Aeson
 import           Network.Pulse.Query
