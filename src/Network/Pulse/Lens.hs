@@ -8,7 +8,7 @@ module Network.Pulse.Lens
     , pManager
     ) where
 
-import Control.Lens        (makeLenses)
-import Network.Pulse.Types (PulseConfig)
+import           Control.Lens        (makeLenses)
+import           Network.Pulse.Types (PulseConfig)
 
 $(makeLenses ''PulseConfig)

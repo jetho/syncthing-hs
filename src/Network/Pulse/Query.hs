@@ -1,28 +1,28 @@
 
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Network.Pulse.Query
     ( query
     ) where
 
-import qualified Network.Wreq     as W
-import Control.Monad.Trans.Reader (ask)
-import Data.Aeson                 (FromJSON, eitherDecode)
-import Control.Lens               ((&), (^.), (.~))
-import Data.Text.Encoding         (encodeUtf8)
-import Data.Text                  (unpack)
+import           Control.Lens               ((&), (.~), (^.))
+import           Control.Monad.Trans.Reader (ask)
+import           Data.Aeson                 (FromJSON, eitherDecode)
+import           Data.Text                  (unpack)
+import           Data.Text.Encoding         (encodeUtf8)
+import qualified Network.Wreq               as W
 
-import Network.Pulse.Types
-import Network.Pulse.Lens
+import           Network.Pulse.Lens
+import           Network.Pulse.Types
 
 
 prepareOptions :: PulseConfig -> [Param] -> W.Options -> W.Options
-prepareOptions cfg params' =   
+prepareOptions cfg params' =
       setManager (cfg ^. pManager)
     . setApiKey  (cfg ^. pApiKey)
     . setAuth    (cfg ^. pAuth)
-    . setParams  
+    . setParams
     . setJsonHeader
     where
         setManager mgr          = (& W.manager .~ mgr)
@@ -31,16 +31,16 @@ prepareOptions cfg params' =
         setParams               = (& W.params .~ params')
         setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
         setApiKey Nothing       = id
-    
+
 query :: (MonadPulse m, FromJSON a) => PulseRequest -> PulseM m a
 query request = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params request) W.defaults
     let server  = unpack $ config ^. pServer
     let url     = concat ["http://", server, path request]
-    respBody   <- liftInner $ 
-        case (method request) of
-            Get          -> getMethod opts url 
+    respBody   <- liftInner $
+        case method request of
+            Get          -> getMethod opts url
             Post payload -> postMethod opts url payload
     either (liftLeft . ParseError)
            liftRight

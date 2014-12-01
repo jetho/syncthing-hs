@@ -17,5 +17,5 @@ module Network.Pulse.Get
     , module Network.Pulse.Get.Version
     ) where
 
-import Network.Pulse.Get.Ping
-import Network.Pulse.Get.Version
+import           Network.Pulse.Get.Ping
+import           Network.Pulse.Get.Version

@@ -1,7 +1,7 @@
 
 {-# OPTIONS_HADDOCK show-extensions #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 -- |
 -- Module      : Network.Pulse
@@ -14,8 +14,8 @@
 --
 -- Haskell bindings for the Pulse (Syncthing) REST API.
 --
--- The library is based on the "Network.Wreq" package and uses some of wreq\'s 
--- functionalities for client configuration. For example, to use authentication, 
+-- The library is based on the "Network.Wreq" package and uses some of wreq\'s
+-- functionalities for client configuration. For example, to use authentication,
 -- you need to import the "Network.Wreq" module.
 --
 -- __/Example Usage:/__
@@ -32,25 +32,25 @@
 -- \-\- A single Pulse request.
 -- single = 'pulse' 'defaultPulseConfig' 'Network.Pulse.Get.ping'
 --
--- \-\- Using the default configuration for multiple requests is very inefficient because 
--- \-\- a new connection manager gets created for each request. It's recommended to use 
+-- \-\- Using the default configuration for multiple requests is very inefficient because
+-- \-\- a new connection manager gets created for each request. It's recommended to use
 -- \-\- the 'withManager' function which allows connection sharing among multiple requests.
--- multiple1 = 'withManager' $ \\cfg -> 
+-- multiple1 = 'withManager' $ \\cfg ->
 --     'pulse' cfg $ do
---         p <- 'Network.Pulse.Get.ping' 
---         v <- 'Network.Pulse.Get.version' 
+--         p <- 'Network.Pulse.Get.ping'
+--         v <- 'Network.Pulse.Get.version'
 --         return (p, v)
--- 
+--
 -- \-\- Multiple Pulse requests with connection sharing and customized configuration.
--- multiple2 = 'withManager' $ \\cfg -> do 
+-- multiple2 = 'withManager' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --                    'Control.Lens.&' 'pAuth'   'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
---     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version' 
+--     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
 
-module Network.Pulse 
-    ( 
-    -- * The Pulse Monad 
+module Network.Pulse
+    (
+    -- * The Pulse Monad
       PulseM
     , pulse
     -- * Multiple requests and connection sharing
@@ -66,21 +66,22 @@ module Network.Pulse
     , PulseError(..)
     ) where
 
-import qualified Network.Wreq       as W
-import Network.HTTP.Client.TLS      (tlsManagerSettings)
-import Control.Monad.Trans.Either   (runEitherT)
-import Control.Monad.Trans.Reader   (runReaderT)
-import Control.Monad                ((>=>))
-import Control.Applicative          ((<$>))
-import Control.Exception            (catch, throwIO)
-import Data.Aeson                   (FromJSON)
-import Control.Lens                 (Lens', (&), (^.), (.~))
-import Data.Text                    (Text)
-import Network.HTTP.Client          (Manager, ManagerSettings, HttpException(..))
-import Data.ByteString.Lazy         (fromStrict)
+import           Control.Applicative        ((<$>))
+import           Control.Exception          (catch, throwIO)
+import           Control.Lens               (Lens', (&), (.~), (^.))
+import           Control.Monad              ((>=>))
+import           Control.Monad.Trans.Either (runEitherT)
+import           Control.Monad.Trans.Reader (runReaderT)
+import           Data.Aeson                 (FromJSON)
+import           Data.ByteString.Lazy       (fromStrict)
+import           Data.Text                  (Text)
+import           Network.HTTP.Client        (HttpException (..), Manager,
+                                             ManagerSettings)
+import           Network.HTTP.Client.TLS    (tlsManagerSettings)
+import qualified Network.Wreq               as W
 
-import Network.Pulse.Types
-import qualified Network.Pulse.Lens as PL
+import qualified Network.Pulse.Lens         as PL
+import           Network.Pulse.Types
 
 
 -- | Creates a default configuration with a new manager for connection
@@ -89,28 +90,28 @@ import qualified Network.Pulse.Lens as PL
 -- /Examples:/
 --
 -- @
--- 'withManager' $ \\cfg -> 
---     'pulse' cfg $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version' 
+-- 'withManager' $ \\cfg ->
+--     'pulse' cfg $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
 -- @
 -- 'withManager' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
---     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version' 
+--     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
 withManager :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
-withManager act = 
-    W.withManager $ \opts -> 
+withManager act =
+    W.withManager $ \opts ->
         act $ defaultPulseConfig & pManager .~ (opts ^. W.manager)
-    
+
 -- | Runs a single or multiple Pulse requests.
 pulse :: FromJSON a => PulseConfig -> PulseM IO a -> IO (Either PulseError a)
-pulse config action = 
-    (flip runReaderT config $ runEitherT $ runPulse action) `catch` handler
+pulse config action =
+    runReaderT (runEitherT $ runPulse action) config `catch` handler
     where
-        handler e@(StatusCodeException _ headers _) = 
+        handler e@(StatusCodeException _ headers _) =
             maybe (throwIO e) (return . Left) $ maybePulseError headers
         handler unhandledErr                        = throwIO unhandledErr
-        maybePulseError                             = 
+        maybePulseError                             =
             lookup "X-Response-Body-Start" >=> decodeError . fromStrict
 
 -- | The default Pulse configuration. Customize it to your needs by using
@@ -123,11 +124,11 @@ pulse config action =
 -- >>> defaultPulseConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 -- PulseConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", pAuth = Nothing, pManager = Left _ }
 defaultPulseConfig :: PulseConfig
-defaultPulseConfig = PulseConfig { 
+defaultPulseConfig = PulseConfig {
       _pServer   = "127.0.0.1:8080"
     , _pApiKey   = Nothing
     , _pAuth     = Nothing
-    , _pManager  = Left tlsManagerSettings 
+    , _pManager  = Left tlsManagerSettings
     }
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
@@ -136,7 +137,7 @@ defaultPulseConfig = PulseConfig {
 --
 -- @
 -- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
--- 'pulse' cfg 'Network.Pulse.Get.ping' 
+-- 'pulse' cfg 'Network.Pulse.Get.ping'
 -- @
 pServer :: Lens' PulseConfig Text
 pServer  = PL.pServer
@@ -147,7 +148,7 @@ pServer  = PL.pServer
 --
 -- @
 -- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
--- 'pulse' cfg 'Network.Pulse.Get.ping' 
+-- 'pulse' cfg 'Network.Pulse.Get.ping'
 -- @
 pApiKey :: Lens' PulseConfig (Maybe Text)
 pApiKey  = PL.pApiKey
@@ -161,7 +162,7 @@ pApiKey  = PL.pApiKey
 -- import qualified "Network.Wreq" as Wreq
 --
 -- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pAuth' 'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
--- 'pulse' cfg 'Network.Pulse.Get.ping' 
+-- 'pulse' cfg 'Network.Pulse.Get.ping'
 -- @
 pAuth :: Lens' PulseConfig (Maybe W.Auth)
 pAuth    = PL.pAuth
@@ -174,5 +175,5 @@ pManager = PL.pManager
 -- | Use Wreq's getWith and postWith functions when running in IO
 instance MonadPulse IO where
     getMethod o s    = (^. W.responseBody) <$> W.getWith o s
-    postMethod o s p = (^. W.responseBody) <$> W.postWith o s p 
+    postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 
