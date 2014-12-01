@@ -30,6 +30,7 @@ library
                      Network.Pulse.Common.Ping
                      Network.Pulse.Get.Ping
                      Network.Pulse.Get.Version
+                     Network.Pulse.Get.Sync
                      Network.Pulse.Post.Ping
   -- other-extensions:    
   hs-source-dirs:    src

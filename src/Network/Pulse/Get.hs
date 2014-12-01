@@ -14,8 +14,10 @@
 
 module Network.Pulse.Get
     ( module Network.Pulse.Get.Ping
+    , module Network.Pulse.Get.Sync
     , module Network.Pulse.Get.Version
     ) where
 
 import           Network.Pulse.Get.Ping
+import           Network.Pulse.Get.Sync
 import           Network.Pulse.Get.Version
