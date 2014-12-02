@@ -70,6 +70,7 @@ instance Show PulseConfig where
                , "pServer = ", show _pServer
                , ", pApiKey = ", show _pApiKey
                , ", pAuth = ", show _pAuth
+               , ", pHttps = ", show _pHttps
                , ", pManager = ", case _pManager of
                       Left _  -> "Left _"
                       Right _ -> "Right _"

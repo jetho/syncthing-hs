@@ -44,6 +44,7 @@
 -- \-\- Multiple Pulse requests with connection sharing and customized configuration.
 -- multiple2 = 'withManager' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
+--                    'Control.Lens.&' 'pHttps'  'Control.Lens..~' True
 --                    'Control.Lens.&' 'pAuth'   'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 --     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
@@ -55,13 +56,17 @@ module Network.Pulse
     , pulse
     -- * Multiple requests and connection sharing
     , withManager
+    , withManagerNoVerify
     -- * Configuration
     , PulseConfig
     , pServer
     , pApiKey
     , pAuth
+    , pHttps
     , pManager
     , defaultPulseConfig
+    , defaultManagerSettings
+    , noSSLVerifyManagerSettings
     -- * Error Handling
     , PulseError(..)
     ) where
@@ -77,7 +82,7 @@ import           Data.ByteString.Lazy       (fromStrict)
 import           Data.Text                  (Text)
 import           Network.Connection         (TLSSettings (..))
 import qualified Network.HTTP.Client        as HTTP
-import           Network.HTTP.Client.TLS    (mkManagerSettings)
+import           Network.HTTP.Client.TLS    (mkManagerSettings, tlsManagerSettings)
 import qualified Network.Wreq               as W
 
 import qualified Network.Pulse.Lens         as PL
@@ -99,8 +104,23 @@ import           Network.Pulse.Types
 --     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
 withManager :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
-withManager act =
-    HTTP.withManager defaultManagerSettings $ \mgr ->
+withManager = withManager' defaultManagerSettings
+
+-- | Creates a manager with disabled SSL certificate verification. 
+--
+-- /Example:/
+--
+-- @
+-- 'withManagerNoVerify' $ \\cfg -> do
+--     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
+--     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
+-- @
+withManagerNoVerify :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManagerNoVerify = withManager' noSSLVerifyManagerSettings
+
+withManager' :: FromJSON a => HTTP.ManagerSettings -> (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManager' settings act =  
+    HTTP.withManager settings $ \mgr ->
         act $ defaultPulseConfig & pManager .~ Right mgr
 
 -- | Runs a single or multiple Pulse requests.
@@ -119,9 +139,9 @@ pulse config action =
 -- /Example:/
 --
 -- >>> defaultPulseConfig
--- PulseConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pManager = Left _ }
--- >>> defaultPulseConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
--- PulseConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", pAuth = Nothing, pManager = Left _ }
+-- PulseConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHttps = False, pManager = Left _ }
+-- >>> defaultPulseConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXX"
+-- PulseConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
 defaultPulseConfig :: PulseConfig
 defaultPulseConfig = PulseConfig {
       _pServer   = "127.0.0.1:8080"
@@ -131,8 +151,13 @@ defaultPulseConfig = PulseConfig {
     , _pManager  = Left defaultManagerSettings
     }
 
+-- | The default manager settings used by 'defaultPulseConfig'.
 defaultManagerSettings :: HTTP.ManagerSettings
-defaultManagerSettings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
+defaultManagerSettings = tlsManagerSettings
+
+-- | Alternative manager settings with disabled SSL certificate verification.
+noSSLVerifyManagerSettings :: HTTP.ManagerSettings
+noSSLVerifyManagerSettings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
 --
@@ -164,7 +189,8 @@ pApiKey  = PL.pApiKey
 -- @
 -- import qualified "Network.Wreq" as Wreq
 --
--- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pAuth' 'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
+-- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True 
+--                              'Control.Lens.&' 'pAuth'  'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 -- 'pulse' cfg 'Network.Pulse.Get.ping'
 -- @
 pAuth :: Lens' PulseConfig (Maybe W.Auth)

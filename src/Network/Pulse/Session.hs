@@ -12,6 +12,37 @@
 -- Portability : GHC
 --
 -- This module provides functions for manual session handling.
+--
+-- __/Example Usage:/__
+--
+-- @
+-- \{\-\# LANGUAGE OverloadedStrings \#\-\}
+--
+-- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'))
+-- import "Network.Pulse"
+-- import "Network.Pulse.Get" ('Network.Pulse.Get.ping', 'Network.Pulse.Get.version')
+--
+-- \-\- Customized configuration.
+-- settings1 = 'defaultPulseConfig' 'Control.Lens.&' 'Network.Pulse.pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
+--
+-- session1 = do
+--     session <- 'newPulseSession' settings1
+--     p       <- 'runSession' session 'Network.Pulse.Get.ping'
+--     v       <- 'runSession' session 'Network.Pulse.Get.version'
+--     closePulseSession session
+--     return (p, v)
+--
+-- \-\- Customized configuration with disabled SSL certificate verification.
+-- settings2 = 'defaultPulseConfig' 'Control.Lens.&' 'Network.Pulse.pHttps'   'Control.Lens..~' True
+--                                'Control.Lens.&' 'Network.Pulse.pManager' 'Control.Lens..~' Left 'Network.Pulse.noSSLVerifyManagerSettings'
+--
+-- session2 = do
+--     session <- 'newPulseSession' settings2
+--     p       <- 'runSession' session 'Network.Pulse.Get.ping'
+--     v       <- 'runSession' session 'Network.Pulse.Get.version'
+--     closePulseSession session
+--     return (p, v)
+-- @
 
 module Network.Pulse.Session
     ( PulseSession
