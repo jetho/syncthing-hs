@@ -75,8 +75,8 @@ import           Control.Monad.Trans.Reader (runReaderT)
 import           Data.Aeson                 (FromJSON)
 import           Data.ByteString.Lazy       (fromStrict)
 import           Data.Text                  (Text)
+import           Network.Connection         (TLSSettings (..))
 import qualified Network.HTTP.Client        as HTTP
-import           Network.Connection         (TLSSettings(..))
 import           Network.HTTP.Client.TLS    (mkManagerSettings)
 import qualified Network.Wreq               as W
 
@@ -101,7 +101,7 @@ import           Network.Pulse.Types
 withManager :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
 withManager act =
     HTTP.withManager defaultManagerSettings $ \mgr ->
-        act $ defaultPulseConfig & pManager .~ (Right mgr)
+        act $ defaultPulseConfig & pManager .~ Right mgr
 
 -- | Runs a single or multiple Pulse requests.
 pulse :: FromJSON a => PulseConfig -> PulseM IO a -> IO (Either PulseError a)
@@ -110,9 +110,8 @@ pulse config action =
     where
         handler e@(HTTP.StatusCodeException _ headers _) =
             maybe (throwIO e) (return . Left) $ maybePulseError headers
-        handler unhandledErr                        = throwIO unhandledErr
-        maybePulseError                             =
-            lookup "X-Response-Body-Start" >=> decodeError . fromStrict
+        handler unhandledErr = throwIO unhandledErr
+        maybePulseError      = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
 
 -- | The default Pulse configuration. Customize it to your needs by using
 -- the PulseConfig lenses.
