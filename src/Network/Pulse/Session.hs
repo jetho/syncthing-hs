@@ -20,6 +20,7 @@
 --
 -- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'))
 -- import "Network.Pulse"
+-- import "Network.Pulse.Session"
 -- import "Network.Pulse.Get" ('Network.Pulse.Get.ping', 'Network.Pulse.Get.version')
 --
 -- \-\- Customized configuration.
@@ -29,7 +30,7 @@
 --     session <- 'newPulseSession' settings1
 --     p       <- 'runSession' session 'Network.Pulse.Get.ping'
 --     v       <- 'runSession' session 'Network.Pulse.Get.version'
---     closePulseSession session
+--     'closePulseSession' session
 --     return (p, v)
 --
 -- \-\- Customized configuration with disabled SSL certificate verification.
@@ -40,7 +41,7 @@
 --     session <- 'newPulseSession' settings2
 --     p       <- 'runSession' session 'Network.Pulse.Get.ping'
 --     v       <- 'runSession' session 'Network.Pulse.Get.version'
---     closePulseSession session
+--     'closePulseSession' session
 --     return (p, v)
 -- @
 
@@ -49,8 +50,10 @@ module Network.Pulse.Session
     , newPulseSession
     , closePulseSession
     , runSession
+    , withSession
     ) where
 
+import           Control.Exception   (bracket)
 import           Control.Lens        ((&), (.~), (^.))
 import           Data.Aeson          (FromJSON)
 import           Network.HTTP.Client (closeManager, newManager)
@@ -82,3 +85,23 @@ closePulseSession session = either doNothing closeManager mgr
 runSession :: FromJSON a => PulseSession -> PulseM IO a -> IO (Either PulseError a)
 runSession = pulse . getConfig
 
+-- | Create a new session using the provided configuration, run the
+-- action and close the session.
+--
+-- /Examples:/
+--
+-- @
+-- 'withSession' defaultPulseConfig $ \\session ->
+--     'runSession' session $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
+-- @
+-- @
+-- import qualified "Network.Wreq" as Wreq
+--
+-- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps'  'Control.Lens..~' True 
+--                              'Control.Lens.&' 'pAuth'   'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
+--                              'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
+-- 'withSession' cfg $ \\session ->
+--     'runSession' session $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
+-- @
+withSession :: FromJSON a => PulseConfig -> (PulseSession -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withSession config act = bracket (newPulseSession config) closePulseSession act 

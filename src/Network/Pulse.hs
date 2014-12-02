@@ -65,6 +65,7 @@ module Network.Pulse
     , pHttps
     , pManager
     , defaultPulseConfig
+    -- * Manager Settings
     , defaultManagerSettings
     , noSSLVerifyManagerSettings
     -- * Error Handling
