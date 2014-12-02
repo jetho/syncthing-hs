@@ -37,7 +37,8 @@ query request = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params request) W.defaults
     let server  = unpack $ config ^. pServer
-    let url     = concat ["http://", server, path request]
+    let proto   = if (config ^. pHttps) then "https://" else "http://"
+    let url     = concat [proto, server, path request]
     respBody   <- liftInner $
         case method request of
             Get          -> getMethod opts url

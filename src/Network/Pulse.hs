@@ -75,9 +75,9 @@ import           Control.Monad.Trans.Reader (runReaderT)
 import           Data.Aeson                 (FromJSON)
 import           Data.ByteString.Lazy       (fromStrict)
 import           Data.Text                  (Text)
-import           Network.HTTP.Client        (HttpException (..), Manager,
-                                             ManagerSettings)
-import           Network.HTTP.Client.TLS    (tlsManagerSettings)
+import qualified Network.HTTP.Client        as HTTP
+import           Network.Connection         (TLSSettings(..))
+import           Network.HTTP.Client.TLS    (mkManagerSettings)
 import qualified Network.Wreq               as W
 
 import qualified Network.Pulse.Lens         as PL
@@ -100,15 +100,15 @@ import           Network.Pulse.Types
 -- @
 withManager :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
 withManager act =
-    W.withManager $ \opts ->
-        act $ defaultPulseConfig & pManager .~ (opts ^. W.manager)
+    HTTP.withManager defaultManagerSettings $ \mgr ->
+        act $ defaultPulseConfig & pManager .~ (Right mgr)
 
 -- | Runs a single or multiple Pulse requests.
 pulse :: FromJSON a => PulseConfig -> PulseM IO a -> IO (Either PulseError a)
 pulse config action =
     runReaderT (runEitherT $ runPulse action) config `catch` handler
     where
-        handler e@(StatusCodeException _ headers _) =
+        handler e@(HTTP.StatusCodeException _ headers _) =
             maybe (throwIO e) (return . Left) $ maybePulseError headers
         handler unhandledErr                        = throwIO unhandledErr
         maybePulseError                             =
@@ -128,8 +128,12 @@ defaultPulseConfig = PulseConfig {
       _pServer   = "127.0.0.1:8080"
     , _pApiKey   = Nothing
     , _pAuth     = Nothing
-    , _pManager  = Left tlsManagerSettings
+    , _pHttps    = False
+    , _pManager  = Left defaultManagerSettings
     }
+
+defaultManagerSettings :: HTTP.ManagerSettings
+defaultManagerSettings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
 --
@@ -167,9 +171,20 @@ pApiKey  = PL.pApiKey
 pAuth :: Lens' PulseConfig (Maybe W.Auth)
 pAuth    = PL.pAuth
 
+-- | A lens for configuring HTTPS usage.
+--
+-- /Example:/
+--
+-- @
+-- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
+-- 'pulse' cfg 'Network.Pulse.Get.ping'
+-- @
+pHttps :: Lens' PulseConfig Bool
+pHttps = PL.pHttps
+
 -- | A lens for specifying your own ManagerSettings/Manager. For more
 -- information, please refer to the "Network.HTTP.Client" package.
-pManager :: Lens' PulseConfig (Either ManagerSettings Manager)
+pManager :: Lens' PulseConfig (Either HTTP.ManagerSettings HTTP.Manager)
 pManager = PL.pManager
 
 -- | Use Wreq's getWith and postWith functions when running in IO

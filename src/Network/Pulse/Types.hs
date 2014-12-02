@@ -60,6 +60,7 @@ data PulseConfig = PulseConfig {
       _pServer  :: T.Text
     , _pApiKey  :: Maybe T.Text
     , _pAuth    :: Maybe W.Auth
+    , _pHttps   :: Bool
     , _pManager :: Either ManagerSettings Manager
     }
 

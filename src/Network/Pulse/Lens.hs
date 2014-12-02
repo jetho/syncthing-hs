@@ -5,6 +5,7 @@ module Network.Pulse.Lens
     ( pServer
     , pApiKey
     , pAuth
+    , pHttps
     , pManager
     ) where
 
