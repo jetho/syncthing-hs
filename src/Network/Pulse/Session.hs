@@ -97,11 +97,12 @@ runSession = pulse . getConfig
 -- @
 -- import qualified "Network.Wreq" as Wreq
 --
--- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps'  'Control.Lens..~' True 
+-- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps'  'Control.Lens..~' True
 --                              'Control.Lens.&' 'pAuth'   'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 --                              'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
 -- 'withSession' cfg $ \\session ->
 --     'runSession' session $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
 withSession :: FromJSON a => PulseConfig -> (PulseSession -> IO (Either PulseError a)) -> IO (Either PulseError a)
-withSession config act = bracket (newPulseSession config) closePulseSession act 
+withSession config = bracket (newPulseSession config) closePulseSession
+
