@@ -78,7 +78,6 @@ import           Control.Lens               (Lens', (&), (.~), (^.))
 import           Control.Monad              ((>=>))
 import           Control.Monad.Trans.Either (runEitherT)
 import           Control.Monad.Trans.Reader (runReaderT)
-import           Data.Aeson                 (FromJSON)
 import           Data.ByteString.Lazy       (fromStrict)
 import           Data.Text                  (Text)
 import           Network.Connection         (TLSSettings (..))
@@ -104,10 +103,10 @@ import           Network.Pulse.Types
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
-withManager :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManager :: (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
 withManager = withManager' defaultManagerSettings
 
--- | Creates a manager with disabled SSL certificate verification. 
+-- | Creates a manager with disabled SSL certificate verification.
 --
 -- /Example:/
 --
@@ -116,16 +115,16 @@ withManager = withManager' defaultManagerSettings
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
-withManagerNoVerify :: FromJSON a => (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManagerNoVerify :: (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
-withManager' :: FromJSON a => HTTP.ManagerSettings -> (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
-withManager' settings act =  
+withManager' :: HTTP.ManagerSettings -> (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManager' settings act =
     HTTP.withManager settings $ \mgr ->
         act $ defaultPulseConfig & pManager .~ Right mgr
 
 -- | Runs a single or multiple Pulse requests.
-pulse :: FromJSON a => PulseConfig -> PulseM IO a -> IO (Either PulseError a)
+pulse :: PulseConfig -> PulseM IO a -> IO (Either PulseError a)
 pulse config action =
     runReaderT (runEitherT $ runPulse action) config `catch` handler
     where
@@ -190,7 +189,7 @@ pApiKey  = PL.pApiKey
 -- @
 -- import qualified "Network.Wreq" as Wreq
 --
--- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True 
+-- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --                              'Control.Lens.&' 'pAuth'  'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 -- 'pulse' cfg 'Network.Pulse.Get.ping'
 -- @

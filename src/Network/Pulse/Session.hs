@@ -55,7 +55,6 @@ module Network.Pulse.Session
 
 import           Control.Exception   (bracket)
 import           Control.Lens        ((&), (.~), (^.))
-import           Data.Aeson          (FromJSON)
 import           Network.HTTP.Client (closeManager, newManager)
 
 import           Network.Pulse
@@ -82,7 +81,7 @@ closePulseSession session = either doNothing closeManager mgr
         mgr         = getConfig session ^. pManager
 
 -- | Runs a Pulse request using connection sharing within a session.
-runSession :: FromJSON a => PulseSession -> PulseM IO a -> IO (Either PulseError a)
+runSession :: PulseSession -> PulseM IO a -> IO (Either PulseError a)
 runSession = pulse . getConfig
 
 -- | Create a new session using the provided configuration, run the
@@ -103,6 +102,6 @@ runSession = pulse . getConfig
 -- 'withSession' cfg $ \\session ->
 --     'runSession' session $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
 -- @
-withSession :: FromJSON a => PulseConfig -> (PulseSession -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withSession :: PulseConfig -> (PulseSession -> IO (Either PulseError a)) -> IO (Either PulseError a)
 withSession config = bracket (newPulseSession config) closePulseSession
 
