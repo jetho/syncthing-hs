@@ -10,7 +10,9 @@ import           Control.Monad       (MonadPlus (mzero))
 import           Data.Aeson
 import           Data.Text
 
-data Ping = Ping { getPing :: Text } deriving (Show)
+data Ping = Ping { 
+      getPing :: Text 
+    } deriving (Show)
 
 instance FromJSON Ping where
     parseJSON (Object v) = Ping <$> (v .: "ping")
