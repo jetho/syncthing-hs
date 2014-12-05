@@ -2,27 +2,27 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Pulse.Get.Sync
+module Network.Syncthing.Get.Sync
     ( sync
     ) where
 
-import           Control.Applicative ((<$>))
-import           Control.Monad       (MonadPlus (mzero))
+import           Control.Applicative     ((<$>))
+import           Control.Monad           (MonadPlus (mzero))
 import           Data.Aeson
-import           Network.Pulse.Query
-import           Network.Pulse.Types
+import           Network.Syncthing.Query
+import           Network.Syncthing.Types
 
 
 data Sync = Sync {
       getConfigInSync :: Bool
     } deriving (Show)
 
-sync :: MonadPulse m => PulseM m Bool
+sync :: MonadSyncthing m => SyncthingM m Bool
 sync = getConfigInSync <$> sync'
     where
-        sync' :: MonadPulse m => PulseM m Sync
+        sync' :: MonadSyncthing m => SyncthingM m Sync
         sync' = query $
-            PulseRequest {
+            SyncthingRequest {
                   path   = "/rest/config/sync"
                 , method = Get
                 , params = []

@@ -2,19 +2,19 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Pulse.Post.Ping
+module Network.Syncthing.Post.Ping
     ( Ping(..)
     , ping
     ) where
 
 import           Data.Aeson
-import           Network.Pulse.Common.Ping
-import           Network.Pulse.Query
-import           Network.Pulse.Types
+import           Network.Syncthing.Common.Ping
+import           Network.Syncthing.Query
+import           Network.Syncthing.Types
 
-ping :: MonadPulse m => PulseM m Ping
+ping :: MonadSyncthing m => SyncthingM m Ping
 ping = query $
-    PulseRequest {
+    SyncthingRequest {
           path   = "/rest/ping"
         , method = Post payload
         , params = []

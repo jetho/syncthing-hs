@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Pulse.Query
+module Network.Syncthing.Query
     ( query
     ) where
 
@@ -13,11 +13,11 @@ import           Data.Text                  (unpack)
 import           Data.Text.Encoding         (encodeUtf8)
 import qualified Network.Wreq               as W
 
-import           Network.Pulse.Lens
-import           Network.Pulse.Types
+import           Network.Syncthing.Lens
+import           Network.Syncthing.Types
 
 
-prepareOptions :: PulseConfig -> [Param] -> W.Options -> W.Options
+prepareOptions :: SyncthingConfig -> [Param] -> W.Options -> W.Options
 prepareOptions cfg params' =
       setManager (cfg ^. pManager)
     . setApiKey  (cfg ^. pApiKey)
@@ -32,7 +32,7 @@ prepareOptions cfg params' =
         setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
         setApiKey Nothing       = id
 
-query :: (MonadPulse m, FromJSON a) => PulseRequest -> PulseM m a
+query :: (MonadSyncthing m, FromJSON a) => SyncthingRequest -> SyncthingM m a
 query request = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params request) W.defaults

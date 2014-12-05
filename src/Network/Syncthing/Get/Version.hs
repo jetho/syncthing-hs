@@ -2,17 +2,17 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Pulse.Get.Version
+module Network.Syncthing.Get.Version
     ( Version(..)
     , version
     ) where
 
-import           Control.Applicative ((<$>), (<*>))
-import           Control.Monad       (MonadPlus (mzero))
+import           Control.Applicative     ((<$>), (<*>))
+import           Control.Monad           (MonadPlus (mzero))
 import           Data.Aeson
 import           Data.Text
-import           Network.Pulse.Query
-import           Network.Pulse.Types
+import           Network.Syncthing.Query
+import           Network.Syncthing.Types
 
 
 data Version = Version {
@@ -22,9 +22,9 @@ data Version = Version {
     , getVersion     :: Text
     } deriving (Show)
 
-version :: MonadPulse m => PulseM m Version
+version :: MonadSyncthing m => SyncthingM m Version
 version = query $
-    PulseRequest {
+    SyncthingRequest {
           path   = "/rest/version"
         , method = Get
         , params = []

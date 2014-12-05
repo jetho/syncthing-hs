@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Pulse.Common.Ping
+module Network.Syncthing.Common.Ping
     ( Ping(..)
     ) where
 
@@ -10,8 +10,8 @@ import           Control.Monad       (MonadPlus (mzero))
 import           Data.Aeson
 import           Data.Text
 
-data Ping = Ping { 
-      getPing :: Text 
+data Ping = Ping {
+      getPing :: Text
     } deriving (Show)
 
 instance FromJSON Ping where

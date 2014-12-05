@@ -2,7 +2,7 @@
 {-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
--- Module      : Network.Pulse.Post
+-- Module      : Network.Syncthing.Post
 -- Copyright   : (c) 2014 Jens Thomas
 --
 -- License     : BSD-style
@@ -12,8 +12,8 @@
 --
 -- The POST requests.
 
-module Network.Pulse.Post
-    ( module Network.Pulse.Post.Ping
+module Network.Syncthing.Post
+    ( module Network.Syncthing.Post.Ping
     ) where
 
-import           Network.Pulse.Post.Ping
+import           Network.Syncthing.Post.Ping

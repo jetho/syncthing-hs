@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- |
--- Module      : Network.Pulse
+-- Module      : Network.Syncthing
 -- Copyright   : (c) 2014 Jens Thomas
 --
 -- License     : BSD-style
@@ -12,7 +12,7 @@
 -- Stability   : experimental
 -- Portability : GHC
 --
--- Haskell bindings for the Pulse (Syncthing) REST API.
+-- Haskell bindings for the Syncthing REST API.
 --
 -- The library is based on the "Network.Wreq" package and uses some of wreq\'s
 -- functionalities for client configuration. For example, to use authentication,
@@ -26,50 +26,50 @@
 -- import qualified "Network.Wreq" as Wreq
 -- import "Control.Monad" ('Control.Monad.liftM2')
 -- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'))
--- import "Network.Pulse"
--- import "Network.Pulse.Get" ('Network.Pulse.Get.ping', 'Network.Pulse.Get.version')
+-- import "Network.Syncthing"
+-- import "Network.Syncthing.Get" ('Network.Syncthing.Get.ping', 'Network.Syncthing.Get.version')
 --
--- \-\- A single Pulse request.
--- single = 'pulse' 'defaultPulseConfig' 'Network.Pulse.Get.ping'
+-- \-\- A single Syncthing request.
+-- single = 'syncthing' 'defaultConfig' 'Network.Syncthing.Get.ping'
 --
 -- \-\- Using the default configuration for multiple requests is very inefficient because
 -- \-\- a new connection manager gets created for each request. It's recommended to use
 -- \-\- the 'withManager' function which allows connection sharing among multiple requests.
 -- multiple1 = 'withManager' $ \\cfg ->
---     'pulse' cfg $ do
---         p <- 'Network.Pulse.Get.ping'
---         v <- 'Network.Pulse.Get.version'
+--     'syncthing' cfg $ do
+--         p <- 'Network.Syncthing.Get.ping'
+--         v <- 'Network.Syncthing.Get.version'
 --         return (p, v)
 --
--- \-\- Multiple Pulse requests with connection sharing and customized configuration.
+-- \-\- Multiple Syncthing requests with connection sharing and customized configuration.
 -- multiple2 = 'withManager' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --                    'Control.Lens.&' 'pHttps'  'Control.Lens..~' True
 --                    'Control.Lens.&' 'pAuth'   'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
---     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
 
-module Network.Pulse
+module Network.Syncthing
     (
-    -- * The Pulse Monad
-      PulseM
-    , pulse
+    -- * The Syncthing Monad
+      SyncthingM
+    , syncthing
     -- * Multiple requests and connection sharing
     , withManager
     , withManagerNoVerify
     -- * Configuration
-    , PulseConfig
+    , SyncthingConfig
     , pServer
     , pApiKey
     , pAuth
     , pHttps
     , pManager
-    , defaultPulseConfig
+    , defaultConfig
     -- * Manager Settings
     , defaultManagerSettings
     , noSSLVerifyManagerSettings
     -- * Error Handling
-    , PulseError(..)
+    , SyncthingError(..)
     ) where
 
 import           Control.Applicative        ((<$>))
@@ -82,28 +82,29 @@ import           Data.ByteString.Lazy       (fromStrict)
 import           Data.Text                  (Text)
 import           Network.Connection         (TLSSettings (..))
 import qualified Network.HTTP.Client        as HTTP
-import           Network.HTTP.Client.TLS    (mkManagerSettings, tlsManagerSettings)
+import           Network.HTTP.Client.TLS    (mkManagerSettings,
+                                             tlsManagerSettings)
 import qualified Network.Wreq               as W
 
-import qualified Network.Pulse.Lens         as PL
-import           Network.Pulse.Types
+import qualified Network.Syncthing.Lens     as PL
+import           Network.Syncthing.Types
 
 
 -- | Creates a default configuration with a new manager for connection
--- sharing. The manager is released after running the Pulse actions(s).
+-- sharing. The manager is released after running the Syncthing actions(s).
 --
 -- /Examples:/
 --
 -- @
 -- 'withManager' $ \\cfg ->
---     'pulse' cfg $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
+--     'syncthing' cfg $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
 -- @
 -- 'withManager' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
---     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManager :: (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManager :: (SyncthingConfig -> IO (Either SyncthingError a)) -> IO (Either SyncthingError a)
 withManager = withManager' defaultManagerSettings
 
 -- | Creates a manager with disabled SSL certificate verification.
@@ -113,37 +114,37 @@ withManager = withManager' defaultManagerSettings
 -- @
 -- 'withManagerNoVerify' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
---     'pulse' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Pulse.Get.ping' 'Network.Pulse.Get.version'
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManagerNoVerify :: (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManagerNoVerify :: (SyncthingConfig -> IO (Either SyncthingError a)) -> IO (Either SyncthingError a)
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
-withManager' :: HTTP.ManagerSettings -> (PulseConfig -> IO (Either PulseError a)) -> IO (Either PulseError a)
+withManager' :: HTTP.ManagerSettings -> (SyncthingConfig -> IO (Either SyncthingError a)) -> IO (Either SyncthingError a)
 withManager' settings act =
     HTTP.withManager settings $ \mgr ->
-        act $ defaultPulseConfig & pManager .~ Right mgr
+        act $ defaultConfig & pManager .~ Right mgr
 
--- | Runs a single or multiple Pulse requests.
-pulse :: PulseConfig -> PulseM IO a -> IO (Either PulseError a)
-pulse config action =
-    runReaderT (runEitherT $ runPulse action) config `catch` handler
+-- | Runs a single or multiple Syncthing requests.
+syncthing :: SyncthingConfig -> SyncthingM IO a -> IO (Either SyncthingError a)
+syncthing config action =
+    runReaderT (runEitherT $ runSyncthing action) config `catch` handler
     where
         handler e@(HTTP.StatusCodeException _ headers _) =
-            maybe (throwIO e) (return . Left) $ maybePulseError headers
+            maybe (throwIO e) (return . Left) $ maybeSyncthingError headers
         handler unhandledErr = throwIO unhandledErr
-        maybePulseError      = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
+        maybeSyncthingError      = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
 
--- | The default Pulse configuration. Customize it to your needs by using
--- the PulseConfig lenses.
+-- | The default Syncthing configuration. Customize it to your needs by using
+-- the SyncthingConfig lenses.
 --
 -- /Example:/
 --
--- >>> defaultPulseConfig
--- PulseConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHttps = False, pManager = Left _ }
--- >>> defaultPulseConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXX"
--- PulseConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
-defaultPulseConfig :: PulseConfig
-defaultPulseConfig = PulseConfig {
+-- >>> defaultConfig
+-- SyncthingConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHttps = False, pManager = Left _ }
+-- >>> defaultConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXX"
+-- SyncthingConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
+defaultConfig :: SyncthingConfig
+defaultConfig = SyncthingConfig {
       _pServer   = "127.0.0.1:8080"
     , _pApiKey   = Nothing
     , _pAuth     = Nothing
@@ -151,7 +152,7 @@ defaultPulseConfig = PulseConfig {
     , _pManager  = Left defaultManagerSettings
     }
 
--- | The default manager settings used by 'defaultPulseConfig'.
+-- | The default manager settings used by 'defaultConfig'.
 defaultManagerSettings :: HTTP.ManagerSettings
 defaultManagerSettings = tlsManagerSettings
 
@@ -164,21 +165,21 @@ noSSLVerifyManagerSettings = mkManagerSettings (TLSSettingsSimple True False Fal
 -- /Example:/
 --
 -- @
--- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
--- 'pulse' cfg 'Network.Pulse.Get.ping'
+-- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
+-- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pServer :: Lens' PulseConfig Text
+pServer :: Lens' SyncthingConfig Text
 pServer  = PL.pServer
 
--- | A lens for specifying the Pulse API Key.
+-- | A lens for specifying the Syncthing API Key.
 --
 -- /Example:/
 --
 -- @
--- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
--- 'pulse' cfg 'Network.Pulse.Get.ping'
+-- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
+-- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pApiKey :: Lens' PulseConfig (Maybe Text)
+pApiKey :: Lens' SyncthingConfig (Maybe Text)
 pApiKey  = PL.pApiKey
 
 -- | A lens for the authentication functionality provided by the 'Network.Wreq'
@@ -189,11 +190,11 @@ pApiKey  = PL.pApiKey
 -- @
 -- import qualified "Network.Wreq" as Wreq
 --
--- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
---                              'Control.Lens.&' 'pAuth'  'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
--- 'pulse' cfg 'Network.Pulse.Get.ping'
+-- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
+--                         'Control.Lens.&' 'pAuth'  'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
+-- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pAuth :: Lens' PulseConfig (Maybe W.Auth)
+pAuth :: Lens' SyncthingConfig (Maybe W.Auth)
 pAuth    = PL.pAuth
 
 -- | A lens for configuring HTTPS usage.
@@ -201,19 +202,19 @@ pAuth    = PL.pAuth
 -- /Example:/
 --
 -- @
--- let cfg = 'defaultPulseConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
--- 'pulse' cfg 'Network.Pulse.Get.ping'
+-- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
+-- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pHttps :: Lens' PulseConfig Bool
+pHttps :: Lens' SyncthingConfig Bool
 pHttps = PL.pHttps
 
 -- | A lens for specifying your own ManagerSettings/Manager. For more
 -- information, please refer to the "Network.HTTP.Client" package.
-pManager :: Lens' PulseConfig (Either HTTP.ManagerSettings HTTP.Manager)
+pManager :: Lens' SyncthingConfig (Either HTTP.ManagerSettings HTTP.Manager)
 pManager = PL.pManager
 
 -- | Use Wreq's getWith and postWith functions when running in IO
-instance MonadPulse IO where
+instance MonadSyncthing IO where
     getMethod o s    = (^. W.responseBody) <$> W.getWith o s
     postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 

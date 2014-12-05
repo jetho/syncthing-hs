@@ -4,14 +4,14 @@
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE RecordWildCards            #-}
 
-module Network.Pulse.Types
-    ( PulseM(..)
-    , MonadPulse(..)
-    , PulseConfig(..)
+module Network.Syncthing.Types
+    ( SyncthingM(..)
+    , MonadSyncthing(..)
+    , SyncthingConfig(..)
     , Param
     , HttpMethod(..)
-    , PulseRequest(..)
-    , PulseError(..)
+    , SyncthingRequest(..)
+    , SyncthingError(..)
     , decodeError
     , liftEither
     , liftReader
@@ -33,11 +33,11 @@ import           Network.HTTP.Client        (Manager, ManagerSettings)
 import qualified Network.Wreq               as W
 
 
--- | The PulseM Monad represents one or multiple Pulse requests.
-newtype PulseM m a = PulseM { runPulse :: EitherT PulseError (ReaderT PulseConfig m) a }
+-- | The SyncthingM Monad represents one or multiple Syncthing requests.
+newtype SyncthingM m a = SyncthingM { runSyncthing :: EitherT SyncthingError (ReaderT SyncthingConfig m) a }
                    deriving (Functor , Applicative , Monad)
 
-class Monad m => MonadPulse m where
+class Monad m => MonadSyncthing m where
     getMethod  :: W.Options -> String -> m ByteString
     postMethod :: W.Options -> String -> Value -> m ByteString
 
@@ -48,15 +48,15 @@ data HttpMethod =
     | Post Value
     deriving (Eq, Show)
 
-data PulseRequest = PulseRequest {
+data SyncthingRequest = SyncthingRequest {
       path   :: String
     , method :: HttpMethod
     , params :: [Param]
     } deriving (Eq, Show)
 
--- | The Pulse configuration for specifying the Pulse server,
+-- | The Syncthing configuration for specifying the Syncthing server,
 -- authentication, the API Key etc.
-data PulseConfig = PulseConfig {
+data SyncthingConfig = SyncthingConfig {
       _pServer  :: T.Text
     , _pApiKey  :: Maybe T.Text
     , _pAuth    :: Maybe W.Auth
@@ -64,9 +64,9 @@ data PulseConfig = PulseConfig {
     , _pManager :: Either ManagerSettings Manager
     }
 
-instance Show PulseConfig where
-    show (PulseConfig {..}) =
-        concat ["PulseConfig { "
+instance Show SyncthingConfig where
+    show (SyncthingConfig {..}) =
+        concat ["SyncthingConfig { "
                , "pServer = ", show _pServer
                , ", pApiKey = ", show _pApiKey
                , ", pAuth = ", show _pAuth
@@ -77,34 +77,34 @@ instance Show PulseConfig where
                , " }"
                ]
 
-data PulseError =
+data SyncthingError =
       ParseError String
     | NotAuthorized
     | CSRFError
     | NotFound
     deriving (Typeable, Eq, Show)
 
-instance Exception PulseError
+instance Exception SyncthingError
 
-decodeError :: ByteString -> Maybe PulseError
+decodeError :: ByteString -> Maybe SyncthingError
 decodeError = flip lookup
     [ ("CSRF Error\n",          CSRFError)
     , ("Not Authorized\n",      NotAuthorized)
     , ("404 page not found\n",  NotFound)
     ]
 
-liftEither :: Monad m => EitherT PulseError (ReaderT PulseConfig m) a -> PulseM m a
-liftEither = PulseM
+liftEither :: Monad m => EitherT SyncthingError (ReaderT SyncthingConfig m) a -> SyncthingM m a
+liftEither = SyncthingM
 
-liftReader :: Monad m => (ReaderT PulseConfig m) a -> PulseM m a
+liftReader :: Monad m => (ReaderT SyncthingConfig m) a -> SyncthingM m a
 liftReader = liftEither . lift
 
-liftInner :: Monad m => m a -> PulseM m a
+liftInner :: Monad m => m a -> SyncthingM m a
 liftInner = liftEither . lift . lift
 
-liftLeft :: Monad m => PulseError -> PulseM m a
+liftLeft :: Monad m => SyncthingError -> SyncthingM m a
 liftLeft = liftEither . left
 
-liftRight :: Monad m => a -> PulseM m a
+liftRight :: Monad m => a -> SyncthingM m a
 liftRight = liftEither . right
 
