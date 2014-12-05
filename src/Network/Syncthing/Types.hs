@@ -6,7 +6,7 @@
 
 module Network.Syncthing.Types
     ( SyncthingM(..)
-    , MonadSyncthing(..)
+    , MonadST(..)
     , SyncthingConfig(..)
     , Param
     , HttpMethod(..)
@@ -37,7 +37,7 @@ import qualified Network.Wreq               as W
 newtype SyncthingM m a = SyncthingM { runSyncthing :: EitherT SyncthingError (ReaderT SyncthingConfig m) a }
                    deriving (Functor , Applicative , Monad)
 
-class Monad m => MonadSyncthing m where
+class Monad m => MonadST m where
     getMethod  :: W.Options -> String -> m ByteString
     postMethod :: W.Options -> String -> Value -> m ByteString
 

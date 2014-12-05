@@ -12,7 +12,7 @@ import           Network.Syncthing.Common.Ping
 import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
-ping :: MonadSyncthing m => SyncthingM m Ping
+ping :: MonadST m => SyncthingM m Ping
 ping = query $
     SyncthingRequest {
           path   = "/rest/ping"

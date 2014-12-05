@@ -17,10 +17,10 @@ data Sync = Sync {
       getConfigInSync :: Bool
     } deriving (Show)
 
-sync :: MonadSyncthing m => SyncthingM m Bool
+sync :: MonadST m => SyncthingM m Bool
 sync = getConfigInSync <$> sync'
     where
-        sync' :: MonadSyncthing m => SyncthingM m Sync
+        sync' :: MonadST m => SyncthingM m Sync
         sync' = query $
             SyncthingRequest {
                   path   = "/rest/config/sync"

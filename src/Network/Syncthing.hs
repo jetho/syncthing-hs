@@ -214,7 +214,7 @@ pManager :: Lens' SyncthingConfig (Either HTTP.ManagerSettings HTTP.Manager)
 pManager = PL.pManager
 
 -- | Use Wreq's getWith and postWith functions when running in IO
-instance MonadSyncthing IO where
+instance MonadST IO where
     getMethod o s    = (^. W.responseBody) <$> W.getWith o s
     postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 

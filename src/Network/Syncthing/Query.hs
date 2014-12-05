@@ -32,7 +32,7 @@ prepareOptions cfg params' =
         setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
         setApiKey Nothing       = id
 
-query :: (MonadSyncthing m, FromJSON a) => SyncthingRequest -> SyncthingM m a
+query :: (MonadST m, FromJSON a) => SyncthingRequest -> SyncthingM m a
 query request = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params request) W.defaults
