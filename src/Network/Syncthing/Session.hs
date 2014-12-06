@@ -69,16 +69,16 @@ newSyncthingSession :: SyncthingConfig -> IO SyncthingSession
 newSyncthingSession config = do
     mgr <- createManager $ config ^. pManager
     return . SyncthingSession $ config & pManager .~ Right mgr
-    where
-        createManager (Left settings)   = newManager settings
-        createManager (Right mgr)       = return mgr
+  where
+    createManager (Left settings)   = newManager settings
+    createManager (Right mgr)       = return mgr
 
 -- | Closes a Syncthing session.
 closeSyncthingSession :: SyncthingSession -> IO ()
 closeSyncthingSession session = either doNothing closeManager mgr
-    where
-        doNothing   = const $ return ()
-        mgr         = getConfig session ^. pManager
+  where
+    doNothing   = const $ return ()
+    mgr         = getConfig session ^. pManager
 
 -- | Runs a Syncthing request using connection sharing within a session.
 runSession :: SyncthingSession -> SyncthingM IO a -> IO (Either SyncthingError a)

@@ -24,13 +24,13 @@ prepareOptions cfg params' =
     . setAuth    (cfg ^. pAuth)
     . setParams
     . setJsonHeader
-    where
-        setManager mgr          = (& W.manager .~ mgr)
-        setAuth authInfo        = (& W.auth .~ authInfo)
-        setJsonHeader           = (& W.header "Accept" .~ ["application/json"])
-        setParams               = (& W.params .~ params')
-        setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
-        setApiKey Nothing       = id
+  where
+    setManager mgr          = (& W.manager .~ mgr)
+    setAuth authInfo        = (& W.auth .~ authInfo)
+    setJsonHeader           = (& W.header "Accept" .~ ["application/json"])
+    setParams               = (& W.params .~ params')
+    setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
+    setApiKey Nothing       = id
 
 query :: (MonadST m, FromJSON a) => SyncthingRequest -> SyncthingM m a
 query request = do

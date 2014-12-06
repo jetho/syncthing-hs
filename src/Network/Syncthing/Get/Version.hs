@@ -15,7 +15,7 @@ import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-data Version = Version {
+data Version = Version { 
       getArch        :: Text
     , getLongVersion :: Text
     , getOs          :: Text
@@ -24,11 +24,11 @@ data Version = Version {
 
 version :: MonadST m => SyncthingM m Version
 version = query $
-    SyncthingRequest {
-          path   = "/rest/version"
-        , method = Get
-        , params = []
-    }
+              SyncthingRequest { 
+                path   = "/rest/version"
+              , method = Get
+              , params = []
+              }
 
 instance FromJSON Version where
     parseJSON (Object v) =

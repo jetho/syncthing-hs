@@ -54,9 +54,11 @@ module Network.Syncthing
     -- * The Syncthing Monad
       SyncthingM
     , syncthing
+    
     -- * Multiple requests and connection sharing
     , withManager
     , withManagerNoVerify
+
     -- * Configuration
     , SyncthingConfig
     , pServer
@@ -65,9 +67,11 @@ module Network.Syncthing
     , pHttps
     , pManager
     , defaultConfig
+
     -- * Manager Settings
     , defaultManagerSettings
     , noSSLVerifyManagerSettings
+
     -- * Error Handling
     , SyncthingError(..)
     ) where
@@ -133,11 +137,11 @@ withManager' settings act =
 syncthing :: SyncthingConfig -> SyncthingM IO a -> IO (Either SyncthingError a)
 syncthing config action =
     runReaderT (runEitherT $ runSyncthing action) config `catch` handler
-    where
-        handler e@(HTTP.StatusCodeException _ headers _) =
-            maybe (throwIO e) (return . Left) $ maybeSyncthingError headers
-        handler unhandledErr = throwIO unhandledErr
-        maybeSyncthingError      = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
+  where
+    handler e@(HTTP.StatusCodeException _ headers _) =
+        maybe (throwIO e) (return . Left) $ maybeSyncthingError headers
+    handler unhandledErr = throwIO unhandledErr
+    maybeSyncthingError      = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
 
 -- | The default Syncthing configuration. Customize it to your needs by using
 -- the SyncthingConfig lenses.
@@ -149,7 +153,7 @@ syncthing config action =
 -- >>> defaultConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXX"
 -- SyncthingConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
 defaultConfig :: SyncthingConfig
-defaultConfig = SyncthingConfig {
+defaultConfig = SyncthingConfig { 
       _pServer   = "127.0.0.1:8080"
     , _pApiKey   = Nothing
     , _pAuth     = Nothing

@@ -13,20 +13,19 @@ import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-data Sync = Sync {
+data Sync = Sync { 
       getConfigInSync :: Bool
     } deriving (Show)
 
 sync :: MonadST m => SyncthingM m Bool
 sync = getConfigInSync <$> sync'
-    where
-        sync' :: MonadST m => SyncthingM m Sync
-        sync' = query $
-            SyncthingRequest {
+  where
+    sync' = query $
+                SyncthingRequest { 
                   path   = "/rest/config/sync"
                 , method = Get
                 , params = []
-            }
+                }
 
 instance FromJSON Sync where
     parseJSON (Object v) = Sync <$> (v .: "configInSync")

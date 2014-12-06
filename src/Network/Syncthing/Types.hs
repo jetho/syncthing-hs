@@ -34,8 +34,9 @@ import qualified Network.Wreq               as W
 
 
 -- | The SyncthingM Monad represents one or multiple Syncthing requests.
-newtype SyncthingM m a = SyncthingM { runSyncthing :: EitherT SyncthingError (ReaderT SyncthingConfig m) a }
-                   deriving (Functor , Applicative , Monad)
+newtype SyncthingM m a = SyncthingM { 
+      runSyncthing :: EitherT SyncthingError (ReaderT SyncthingConfig m) a 
+    } deriving (Functor , Applicative , Monad)
 
 class Monad m => MonadST m where
     getMethod  :: W.Options -> String -> m ByteString
@@ -48,7 +49,7 @@ data HttpMethod =
     | Post Value
     deriving (Eq, Show)
 
-data SyncthingRequest = SyncthingRequest {
+data SyncthingRequest = SyncthingRequest { 
       path   :: String
     , method :: HttpMethod
     , params :: [Param]
@@ -56,7 +57,7 @@ data SyncthingRequest = SyncthingRequest {
 
 -- | The Syncthing configuration for specifying the Syncthing server,
 -- authentication, the API Key etc.
-data SyncthingConfig = SyncthingConfig {
+data SyncthingConfig = SyncthingConfig { 
       _pServer  :: T.Text
     , _pApiKey  :: Maybe T.Text
     , _pAuth    :: Maybe W.Auth

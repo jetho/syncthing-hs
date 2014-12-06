@@ -10,7 +10,7 @@ import           Control.Monad       (MonadPlus (mzero))
 import           Data.Aeson
 import           Data.Text
 
-data Ping = Ping {
+data Ping = Ping { 
       getPing :: Text
     } deriving (Show)
 

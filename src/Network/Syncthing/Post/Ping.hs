@@ -3,21 +3,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Network.Syncthing.Post.Ping
-    ( Ping(..)
-    , ping
+    ( ping
     ) where
 
-import           Data.Aeson
+import           Control.Applicative           ((<$>))
+import           Data.Aeson                    (toJSON)
+import           Data.Text                     (Text)
 import           Network.Syncthing.Common.Ping
 import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
-ping :: MonadST m => SyncthingM m Ping
-ping = query $
-    SyncthingRequest {
-          path   = "/rest/ping"
-        , method = Post payload
-        , params = []
-    }
-    where payload = toJSON ()
+
+ping :: MonadST m => SyncthingM m Text
+ping = getPing <$> ping'
+  where
+    ping' = query $
+                SyncthingRequest { 
+                  path   = "/rest/ping"
+                , method = Post payload
+                , params = []
+                }
+    payload = toJSON ()
 
