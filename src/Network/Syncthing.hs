@@ -90,6 +90,11 @@ import qualified Network.Syncthing.Lens     as PL
 import           Network.Syncthing.Types
 
 
+-- | Use Wreq's getWith and postWith functions when running in IO
+instance MonadST IO where
+    getMethod  o s   = (^. W.responseBody) <$> W.getWith  o s
+    postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
+
 -- | Creates a default configuration with a new manager for connection
 -- sharing. The manager is released after running the Syncthing actions(s).
 --
@@ -212,9 +217,4 @@ pHttps = PL.pHttps
 -- information, please refer to the "Network.HTTP.Client" package.
 pManager :: Lens' SyncthingConfig (Either HTTP.ManagerSettings HTTP.Manager)
 pManager = PL.pManager
-
--- | Use Wreq's getWith and postWith functions when running in IO
-instance MonadST IO where
-    getMethod o s    = (^. W.responseBody) <$> W.getWith o s
-    postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 
