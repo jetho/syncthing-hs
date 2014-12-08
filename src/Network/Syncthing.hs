@@ -113,7 +113,8 @@ instance MonadST IO where
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManager :: (SyncthingConfig -> IO (Either SyncthingError a)) -> IO (Either SyncthingError a)
+withManager :: (SyncthingConfig -> IO (Either SyncthingError a)) 
+            -> IO (Either SyncthingError a)
 withManager = withManager' defaultManagerSettings
 
 -- | Creates a manager with disabled SSL certificate verification.
@@ -125,10 +126,13 @@ withManager = withManager' defaultManagerSettings
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManagerNoVerify :: (SyncthingConfig -> IO (Either SyncthingError a)) -> IO (Either SyncthingError a)
+withManagerNoVerify :: (SyncthingConfig -> IO (Either SyncthingError a)) 
+                    -> IO (Either SyncthingError a)
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
-withManager' :: HTTP.ManagerSettings -> (SyncthingConfig -> IO (Either SyncthingError a)) -> IO (Either SyncthingError a)
+withManager' :: HTTP.ManagerSettings 
+             -> (SyncthingConfig -> IO (Either SyncthingError a)) 
+             -> IO (Either SyncthingError a)
 withManager' settings act =
     HTTP.withManager settings $ \mgr ->
         act $ defaultConfig & pManager .~ Right mgr
@@ -141,7 +145,8 @@ syncthing config action =
     handler e@(HTTP.StatusCodeException _ headers _) =
         maybe (throwIO e) (return . Left) $ maybeSyncthingError headers
     handler unhandledErr = throwIO unhandledErr
-    maybeSyncthingError  = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
+    maybeSyncthingError  = lookup "X-Response-Body-Start" >=> 
+                           decodeError . fromStrict
 
 -- | The default Syncthing configuration. Customize it to your needs by using
 -- the SyncthingConfig lenses.
@@ -167,7 +172,8 @@ defaultManagerSettings = tlsManagerSettings
 
 -- | Alternative manager settings with disabled SSL certificate verification.
 noSSLVerifyManagerSettings :: HTTP.ManagerSettings
-noSSLVerifyManagerSettings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
+noSSLVerifyManagerSettings = 
+    mkManagerSettings (TLSSettingsSimple True False False) Nothing
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
 --
