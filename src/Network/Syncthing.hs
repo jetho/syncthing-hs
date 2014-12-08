@@ -138,7 +138,9 @@ withManager' settings act =
         act $ defaultConfig & pManager .~ Right mgr
 
 -- | Runs a single or multiple Syncthing requests.
-syncthing :: SyncthingConfig -> SyncthingM IO a -> IO (Either SyncthingError a)
+syncthing :: SyncthingConfig 
+          -> SyncthingM IO a 
+          -> IO (Either SyncthingError a)
 syncthing config action =
     runReaderT (runEitherT $ runSyncthing action) config `catch` handler
   where
