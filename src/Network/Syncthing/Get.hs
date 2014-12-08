@@ -13,13 +13,13 @@
 -- The GET requests.
 
 module Network.Syncthing.Get
-    ( module Ping
-    , module Sync
-    , module Upgrade
-    , module Version
+    ( module Network.Syncthing.Get.Ping
+    , module Network.Syncthing.Get.Sync
+    , module Network.Syncthing.Get.Upgrade
+    , module Network.Syncthing.Get.Version
     ) where
 
-import           Network.Syncthing.Get.Ping    as Ping
-import           Network.Syncthing.Get.Sync    as Sync
-import           Network.Syncthing.Get.Upgrade as Upgrade
-import           Network.Syncthing.Get.Version as Version
+import           Network.Syncthing.Get.Ping
+import           Network.Syncthing.Get.Sync
+import           Network.Syncthing.Get.Upgrade
+import           Network.Syncthing.Get.Version

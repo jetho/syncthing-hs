@@ -13,7 +13,7 @@
 -- The POST requests.
 
 module Network.Syncthing.Post
-    ( module Ping
+    ( module Network.Syncthing.Post.Ping
     ) where
 
-import           Network.Syncthing.Post.Ping as Ping
+import           Network.Syncthing.Post.Ping
