@@ -144,8 +144,7 @@ syncthing config action =
     handler e@(HTTP.StatusCodeException _ headers _) =
         maybe (throwIO e) (return . Left) $ maybeSyncError headers
     handler unhandledErr = throwIO unhandledErr
-    maybeSyncError  = lookup "X-Response-Body-Start" >=> 
-                           decodeError . fromStrict
+    maybeSyncError = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
 
 -- | The default Syncthing configuration. Customize it to your needs by using
 -- the SyncConfig lenses.
