@@ -8,13 +8,13 @@ module Network.Syncthing.Get.Version
 
 import           Control.Applicative     ((<$>), (<*>))
 import           Control.Monad           (MonadPlus (mzero))
-import           Data.Aeson
-import           Data.Text
+import           Data.Aeson              (FromJSON, Value (..), parseJSON, (.:))
+import           Data.Text               (Text)
 import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-data Version = Version { 
+data Version = Version {
       getArch        :: Text
     , getLongVersion :: Text
     , getOs          :: Text
@@ -23,7 +23,7 @@ data Version = Version {
 
 version :: MonadST m => SyncthingM m Version
 version = query $
-              SyncthingRequest { 
+              SyncthingRequest {
                 path   = "/rest/version"
               , method = Get
               , params = []

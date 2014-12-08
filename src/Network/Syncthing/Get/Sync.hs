@@ -7,12 +7,12 @@ module Network.Syncthing.Get.Sync
 
 import           Control.Applicative     ((<$>))
 import           Control.Monad           (MonadPlus (mzero))
-import           Data.Aeson
+import           Data.Aeson              (FromJSON, Value (..), parseJSON, (.:))
 import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-data Sync = Sync { 
+data Sync = Sync {
       getConfigInSync :: Bool
     } deriving (Show)
 
@@ -20,7 +20,7 @@ sync :: MonadST m => SyncthingM m Bool
 sync = getConfigInSync <$> sync'
   where
     sync' = query $
-                SyncthingRequest { 
+                SyncthingRequest {
                   path   = "/rest/config/sync"
                 , method = Get
                 , params = []

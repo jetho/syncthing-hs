@@ -25,6 +25,8 @@ library
                      Network.Syncthing.Query
                      Network.Syncthing.Lens
                      Network.Syncthing.Common.Ping
+                     Network.Syncthing.Common.Types
+                     Network.Syncthing.Get.Completion
                      Network.Syncthing.Get.Ping
                      Network.Syncthing.Get.Sync
                      Network.Syncthing.Get.Upgrade

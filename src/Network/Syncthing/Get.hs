@@ -13,13 +13,24 @@
 -- The GET requests.
 
 module Network.Syncthing.Get
-    ( module Network.Syncthing.Get.Ping
+    (
+    -- * Common Types
+      Types.DeviceId
+    , Types.Folder
+
+    -- * Request functions
+    , module Network.Syncthing.Get.Completion
+    , module Network.Syncthing.Get.Ping
     , module Network.Syncthing.Get.Sync
     , module Network.Syncthing.Get.Upgrade
     , module Network.Syncthing.Get.Version
     ) where
 
+import qualified Network.Syncthing.Common.Types   as Types
+
+import           Network.Syncthing.Get.Completion
 import           Network.Syncthing.Get.Ping
 import           Network.Syncthing.Get.Sync
 import           Network.Syncthing.Get.Upgrade
 import           Network.Syncthing.Get.Version
+

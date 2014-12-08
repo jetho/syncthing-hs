@@ -53,7 +53,7 @@ module Network.Syncthing
     -- * The Syncthing Monad
       SyncthingM
     , syncthing
-    
+
     -- * Multiple requests and connection sharing
     , withManager
     , withManagerNoVerify
@@ -72,6 +72,7 @@ module Network.Syncthing
     , noSSLVerifyManagerSettings
 
     -- * Error Handling
+    , DeviceIdError(..)
     , SyncthingError(..)
     ) where
 
@@ -152,7 +153,7 @@ syncthing config action =
 -- >>> defaultConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXX"
 -- SyncthingConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
 defaultConfig :: SyncthingConfig
-defaultConfig = SyncthingConfig { 
+defaultConfig = SyncthingConfig {
       _pServer   = "127.0.0.1:8080"
     , _pApiKey   = Nothing
     , _pAuth     = Nothing

@@ -7,10 +7,10 @@ module Network.Syncthing.Common.Ping
 
 import           Control.Applicative ((<$>))
 import           Control.Monad       (MonadPlus (mzero))
-import           Data.Aeson
-import           Data.Text
+import           Data.Aeson          (FromJSON, Value (..), parseJSON, (.:))
+import           Data.Text           (Text)
 
-data Ping = Ping { 
+data Ping = Ping {
       getPing :: Text
     } deriving (Show)
 
