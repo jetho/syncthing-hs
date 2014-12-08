@@ -19,7 +19,7 @@ data Completion = Completion {
       getCompletion :: Int
     } deriving (Show)
 
-completion :: MonadST m => DeviceId -> Folder -> SyncthingM m Int
+completion :: MonadSync m => DeviceId -> Folder -> SyncM m Int
 completion device folder = getCompletion <$> completion'
   where
     completion' = query $

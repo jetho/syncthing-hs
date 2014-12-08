@@ -13,7 +13,7 @@ import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-ping :: MonadST m => SyncthingM m Text
+ping :: MonadSync m => SyncM m Text
 ping = getPing <$> ping'
   where
     ping' = query $

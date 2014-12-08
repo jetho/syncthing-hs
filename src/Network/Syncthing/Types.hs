@@ -5,14 +5,15 @@
 {-# LANGUAGE RecordWildCards            #-}
 
 module Network.Syncthing.Types
-    ( SyncthingM(..)
-    , MonadST(..)
-    , SyncthingConfig(..)
+    ( SyncResult 
+    , SyncM(..)
+    , MonadSync(..)
+    , SyncConfig(..)
     , Param
     , HttpMethod(..)
     , SyncthingRequest(..)
-    , DeviceIdError(..)
-    , SyncthingError(..)
+    , DeviceError(..)
+    , SyncError(..)
     , decodeError
     , liftEither
     , liftReader
@@ -34,12 +35,15 @@ import           Network.HTTP.Client        (Manager, ManagerSettings)
 import qualified Network.Wreq               as W
 
 
--- | The SyncthingM Monad represents one or multiple Syncthing requests.
-newtype SyncthingM m a = SyncthingM {
-      runSyncthing :: EitherT SyncthingError (ReaderT SyncthingConfig m) a
+-- | The result type of Syncthing requests.
+type SyncResult a = Either SyncError a
+
+-- | The SyncM Monad represents one or multiple Syncthing requests.
+newtype SyncM m a = SyncM {
+      runSyncthing :: EitherT SyncError (ReaderT SyncConfig m) a
     } deriving (Functor , Applicative , Monad)
 
-class Monad m => MonadST m where
+class Monad m => MonadSync m where
     getMethod  :: W.Options -> String -> m ByteString
     postMethod :: W.Options -> String -> Value -> m ByteString
 
@@ -58,7 +62,7 @@ data SyncthingRequest = SyncthingRequest {
 
 -- | The Syncthing configuration for specifying the Syncthing server,
 -- authentication, the API Key etc.
-data SyncthingConfig = SyncthingConfig {
+data SyncConfig = SyncConfig {
       _pServer  :: T.Text
     , _pApiKey  :: Maybe T.Text
     , _pAuth    :: Maybe W.Auth
@@ -66,9 +70,9 @@ data SyncthingConfig = SyncthingConfig {
     , _pManager :: Either ManagerSettings Manager
     }
 
-instance Show SyncthingConfig where
-    show (SyncthingConfig {..}) =
-        concat ["SyncthingConfig { "
+instance Show SyncConfig where
+    show (SyncConfig {..}) =
+        concat ["SyncConfig { "
                , "pServer = ", show _pServer
                , ", pApiKey = ", show _pApiKey
                , ", pAuth = ", show _pAuth
@@ -79,22 +83,22 @@ instance Show SyncthingConfig where
                , " }"
                ]
 
-data DeviceIdError =
+data DeviceError =
       IncorrectLength
     | IncorrectCheckDigit
     deriving (Eq, Show)
 
-data SyncthingError =
+data SyncError =
       ParseError String
     | NotAuthorized
     | CSRFError
     | NotFound
-    | InvalidDeviceId DeviceIdError
+    | InvalidDeviceId DeviceError
     deriving (Typeable, Eq, Show)
 
-instance Exception SyncthingError
+instance Exception SyncError
 
-decodeError :: ByteString -> Maybe SyncthingError
+decodeError :: ByteString -> Maybe SyncError
 decodeError = flip lookup
     [ ("CSRF Error\n",                          CSRFError)
     , ("Not Authorized\n",                      NotAuthorized)
@@ -103,18 +107,18 @@ decodeError = flip lookup
     , ("check digit incorrect\n",               InvalidDeviceId IncorrectCheckDigit)
     ]
 
-liftEither :: Monad m => EitherT SyncthingError (ReaderT SyncthingConfig m) a -> SyncthingM m a
-liftEither = SyncthingM
+liftEither :: Monad m => EitherT SyncError (ReaderT SyncConfig m) a -> SyncM m a
+liftEither = SyncM
 
-liftReader :: Monad m => (ReaderT SyncthingConfig m) a -> SyncthingM m a
+liftReader :: Monad m => (ReaderT SyncConfig m) a -> SyncM m a
 liftReader = liftEither . lift
 
-liftInner :: Monad m => m a -> SyncthingM m a
+liftInner :: Monad m => m a -> SyncM m a
 liftInner = liftEither . lift . lift
 
-liftLeft :: Monad m => SyncthingError -> SyncthingM m a
+liftLeft :: Monad m => SyncError -> SyncM m a
 liftLeft = liftEither . left
 
-liftRight :: Monad m => a -> SyncthingM m a
+liftRight :: Monad m => a -> SyncM m a
 liftRight = liftEither . right
 

@@ -10,6 +10,6 @@ module Network.Syncthing.Lens
     ) where
 
 import           Control.Lens            (makeLenses)
-import           Network.Syncthing.Types (SyncthingConfig)
+import           Network.Syncthing.Types (SyncConfig)
 
-$(makeLenses ''SyncthingConfig)
+$(makeLenses ''SyncConfig)

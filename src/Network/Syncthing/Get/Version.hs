@@ -21,7 +21,7 @@ data Version = Version {
     , getVersion     :: Text
     } deriving (Show)
 
-version :: MonadST m => SyncthingM m Version
+version :: MonadSync m => SyncM m Version
 version = query $
               SyncthingRequest {
                 path   = "/rest/version"

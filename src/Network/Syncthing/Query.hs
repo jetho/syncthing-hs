@@ -16,7 +16,7 @@ import           Network.Syncthing.Lens
 import           Network.Syncthing.Types
 
 
-prepareOptions :: SyncthingConfig -> [Param] -> W.Options -> W.Options
+prepareOptions :: SyncConfig -> [Param] -> W.Options -> W.Options
 prepareOptions cfg params' =
       setManager (cfg ^. pManager)
     . setApiKey  (cfg ^. pApiKey)
@@ -31,7 +31,7 @@ prepareOptions cfg params' =
     setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
     setApiKey Nothing       = id
 
-query :: (MonadST m, FromJSON a) => SyncthingRequest -> SyncthingM m a
+query :: (MonadSync m, FromJSON a) => SyncthingRequest -> SyncM m a
 query request = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params request) W.defaults

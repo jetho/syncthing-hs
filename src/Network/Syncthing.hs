@@ -50,8 +50,11 @@
 
 module Network.Syncthing
     (
+    -- * Types
+      SyncResult
+
     -- * The Syncthing Monad
-      SyncthingM
+    , SyncM
     , syncthing
 
     -- * Multiple requests and connection sharing
@@ -59,7 +62,7 @@ module Network.Syncthing
     , withManagerNoVerify
 
     -- * Configuration
-    , SyncthingConfig
+    , SyncConfig
     , pServer
     , pApiKey
     , pAuth
@@ -72,8 +75,8 @@ module Network.Syncthing
     , noSSLVerifyManagerSettings
 
     -- * Error Handling
-    , DeviceIdError(..)
-    , SyncthingError(..)
+    , DeviceError(..)
+    , SyncError(..)
     ) where
 
 import           Control.Applicative        ((<$>))
@@ -95,7 +98,7 @@ import           Network.Syncthing.Types
 
 
 -- | Use Wreq's getWith and postWith functions when running in IO
-instance MonadST IO where
+instance MonadSync IO where
     getMethod  o s   = (^. W.responseBody) <$> W.getWith  o s
     postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 
@@ -113,8 +116,7 @@ instance MonadST IO where
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManager :: (SyncthingConfig -> IO (Either SyncthingError a)) 
-            -> IO (Either SyncthingError a)
+withManager :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManager = withManager' defaultManagerSettings
 
 -- | Creates a manager with disabled SSL certificate verification.
@@ -126,41 +128,36 @@ withManager = withManager' defaultManagerSettings
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManagerNoVerify :: (SyncthingConfig -> IO (Either SyncthingError a)) 
-                    -> IO (Either SyncthingError a)
+withManagerNoVerify :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a) 
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
-withManager' :: HTTP.ManagerSettings 
-             -> (SyncthingConfig -> IO (Either SyncthingError a)) 
-             -> IO (Either SyncthingError a)
+withManager' :: HTTP.ManagerSettings -> (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManager' settings act =
     HTTP.withManager settings $ \mgr ->
         act $ defaultConfig & pManager .~ Right mgr
 
 -- | Runs a single or multiple Syncthing requests.
-syncthing :: SyncthingConfig 
-          -> SyncthingM IO a 
-          -> IO (Either SyncthingError a)
+syncthing :: SyncConfig -> SyncM IO a -> IO (SyncResult a)
 syncthing config action =
     runReaderT (runEitherT $ runSyncthing action) config `catch` handler
   where
     handler e@(HTTP.StatusCodeException _ headers _) =
-        maybe (throwIO e) (return . Left) $ maybeSyncthingError headers
+        maybe (throwIO e) (return . Left) $ maybeSyncError headers
     handler unhandledErr = throwIO unhandledErr
-    maybeSyncthingError  = lookup "X-Response-Body-Start" >=> 
+    maybeSyncError  = lookup "X-Response-Body-Start" >=> 
                            decodeError . fromStrict
 
 -- | The default Syncthing configuration. Customize it to your needs by using
--- the SyncthingConfig lenses.
+-- the SyncConfig lenses.
 --
 -- /Example:/
 --
 -- >>> defaultConfig
--- SyncthingConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHttps = False, pManager = Left _ }
+-- SyncConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHttps = False, pManager = Left _ }
 -- >>> defaultConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXX"
--- SyncthingConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
-defaultConfig :: SyncthingConfig
-defaultConfig = SyncthingConfig {
+-- SyncConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
+defaultConfig :: SyncConfig
+defaultConfig = SyncConfig {
       _pServer   = "127.0.0.1:8080"
     , _pApiKey   = Nothing
     , _pAuth     = Nothing
@@ -185,7 +182,7 @@ noSSLVerifyManagerSettings =
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
 -- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pServer :: Lens' SyncthingConfig Text
+pServer :: Lens' SyncConfig Text
 pServer  = PL.pServer
 
 -- | A lens for specifying the Syncthing API Key.
@@ -196,7 +193,7 @@ pServer  = PL.pServer
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
 -- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pApiKey :: Lens' SyncthingConfig (Maybe Text)
+pApiKey :: Lens' SyncConfig (Maybe Text)
 pApiKey  = PL.pApiKey
 
 -- | A lens for the authentication functionality provided by the 'Network.Wreq'
@@ -211,7 +208,7 @@ pApiKey  = PL.pApiKey
 --                         'Control.Lens.&' 'pAuth'  'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 -- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pAuth :: Lens' SyncthingConfig (Maybe W.Auth)
+pAuth :: Lens' SyncConfig (Maybe W.Auth)
 pAuth    = PL.pAuth
 
 -- | A lens for configuring HTTPS usage.
@@ -222,11 +219,11 @@ pAuth    = PL.pAuth
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 -- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pHttps :: Lens' SyncthingConfig Bool
+pHttps :: Lens' SyncConfig Bool
 pHttps = PL.pHttps
 
 -- | A lens for specifying your own ManagerSettings/Manager. For more
 -- information, please refer to the "Network.HTTP.Client" package.
-pManager :: Lens' SyncthingConfig (Either HTTP.ManagerSettings HTTP.Manager)
+pManager :: Lens' SyncConfig (Either HTTP.ManagerSettings HTTP.Manager)
 pManager = PL.pManager
 

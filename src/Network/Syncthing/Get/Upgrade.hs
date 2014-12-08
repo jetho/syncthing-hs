@@ -20,7 +20,7 @@ data Upgrade = Upgrade {
     , getRunning :: Text
     } deriving (Show)
 
-upgrade :: MonadST m => SyncthingM m Upgrade
+upgrade :: MonadSync m => SyncM m Upgrade
 upgrade = query $
               SyncthingRequest {
                 path   = "/rest/upgrade"

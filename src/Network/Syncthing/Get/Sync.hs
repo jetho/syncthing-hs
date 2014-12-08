@@ -16,7 +16,7 @@ data Sync = Sync {
       getConfigInSync :: Bool
     } deriving (Show)
 
-sync :: MonadST m => SyncthingM m Bool
+sync :: MonadSync m => SyncM m Bool
 sync = getConfigInSync <$> sync'
   where
     sync' = query $
