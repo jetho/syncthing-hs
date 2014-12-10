@@ -14,6 +14,8 @@
 
 module Network.Syncthing.Post
     ( module Network.Syncthing.Post.Ping
+    , module Network.Syncthing.Post.Error
     ) where
 
 import           Network.Syncthing.Post.Ping
+import           Network.Syncthing.Post.Error

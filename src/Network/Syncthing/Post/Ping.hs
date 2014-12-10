@@ -11,6 +11,7 @@ import           Data.Text                     (Text)
 import           Network.Syncthing.Common.Ping
 import           Network.Syncthing.Query
 import           Network.Syncthing.Types
+import           Data.ByteString.Lazy       hiding (concat)
 
 
 ping :: MonadSync m => SyncM m Text

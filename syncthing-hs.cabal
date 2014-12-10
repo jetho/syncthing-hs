@@ -29,8 +29,10 @@ library
                      Network.Syncthing.Get.Completion
                      Network.Syncthing.Get.Ping
                      Network.Syncthing.Get.Sync
+                     Network.Syncthing.Get.System
                      Network.Syncthing.Get.Upgrade
                      Network.Syncthing.Get.Version
+                     Network.Syncthing.Post.Error
                      Network.Syncthing.Post.Ping
   -- other-extensions:    
   hs-source-dirs:    src

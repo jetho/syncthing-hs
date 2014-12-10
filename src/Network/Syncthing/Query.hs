@@ -3,11 +3,14 @@
 
 module Network.Syncthing.Query
     ( query
+    , send
     ) where
 
 import           Control.Lens               ((&), (.~), (^.))
+import           Control.Monad              ((>=>))
 import           Control.Monad.Trans.Reader (ask)
 import           Data.Aeson                 (FromJSON, eitherDecode)
+import           Data.ByteString.Lazy       (ByteString)
 import           Data.Text                  (unpack)
 import           Data.Text.Encoding         (encodeUtf8)
 import qualified Network.Wreq               as W
@@ -15,6 +18,24 @@ import qualified Network.Wreq               as W
 import           Network.Syncthing.Lens
 import           Network.Syncthing.Types
 
+
+query :: (MonadSync m, FromJSON a) => SyncthingRequest -> SyncM m a
+query = request >=> either (liftLeft . ParseError) liftRight . eitherDecode
+
+send :: MonadSync m => SyncthingRequest -> SyncM m ()
+send = request >=> const (liftRight ())
+
+request :: MonadSync m => SyncthingRequest -> SyncM m ByteString
+request req = do
+    config     <- liftReader ask
+    let opts    = prepareOptions config (params req) W.defaults
+    let server  = unpack $ config ^. pServer
+    let proto   = if (config ^. pHttps) then "https://" else "http://"
+    let url     = concat [proto, server, path req]
+    liftInner $
+        case method req of
+            Get          -> getMethod opts url
+            Post payload -> postMethod opts url payload
 
 prepareOptions :: SyncConfig -> [Param] -> W.Options -> W.Options
 prepareOptions cfg params' =
@@ -30,19 +51,4 @@ prepareOptions cfg params' =
     setParams               = (& W.params .~ params')
     setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
     setApiKey Nothing       = id
-
-query :: (MonadSync m, FromJSON a) => SyncthingRequest -> SyncM m a
-query request = do
-    config     <- liftReader ask
-    let opts    = prepareOptions config (params request) W.defaults
-    let server  = unpack $ config ^. pServer
-    let proto   = if (config ^. pHttps) then "https://" else "http://"
-    let url     = concat [proto, server, path request]
-    respBody   <- liftInner $
-        case method request of
-            Get          -> getMethod opts url
-            Post payload -> postMethod opts url payload
-    either (liftLeft . ParseError)
-           liftRight
-           (eitherDecode respBody)
 
