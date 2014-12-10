@@ -82,7 +82,7 @@ module Network.Syncthing
 import           Control.Applicative        ((<$>))
 import           Control.Exception          (catch, throwIO)
 import           Control.Lens               (Lens', (&), (.~), (^.))
-import           Control.Monad              ((>=>))
+import           Control.Monad              ((<=<))
 import           Control.Monad.Trans.Either (runEitherT)
 import           Control.Monad.Trans.Reader (runReaderT)
 import           Data.ByteString.Lazy       (fromStrict)
@@ -144,7 +144,7 @@ syncthing config action =
     handler e@(HTTP.StatusCodeException _ headers _) =
         maybe (throwIO e) (return . Left) $ maybeSyncError headers
     handler unhandledErr = throwIO unhandledErr
-    maybeSyncError = lookup "X-Response-Body-Start" >=> decodeError . fromStrict
+    maybeSyncError = decodeError . fromStrict <=< lookup "X-Response-Body-Start" 
 
 -- | The default Syncthing configuration. Customize it to your needs by using
 -- the SyncConfig lenses.
