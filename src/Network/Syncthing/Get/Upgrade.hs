@@ -22,7 +22,7 @@ data Upgrade = Upgrade {
 
 upgrade :: MonadSync m => SyncM m Upgrade
 upgrade = query $
-              SyncthingRequest {
+              SyncRequest {
                 path   = "/rest/upgrade"
               , method = Get
               , params = []

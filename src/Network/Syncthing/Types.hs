@@ -11,7 +11,7 @@ module Network.Syncthing.Types
     , SyncConfig(..)
     , Param
     , HttpMethod(..)
-    , SyncthingRequest(..)
+    , SyncRequest(..)
     , DeviceError(..)
     , SyncError(..)
     , decodeError
@@ -54,7 +54,7 @@ data HttpMethod =
     | Post Value
     deriving (Eq, Show)
 
-data SyncthingRequest = SyncthingRequest {
+data SyncRequest = SyncRequest {
       path   :: String
     , method :: HttpMethod
     , params :: [Param]

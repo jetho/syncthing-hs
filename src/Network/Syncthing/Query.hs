@@ -19,13 +19,13 @@ import           Network.Syncthing.Lens
 import           Network.Syncthing.Types
 
 
-query :: (MonadSync m, FromJSON a) => SyncthingRequest -> SyncM m a
+query :: (MonadSync m, FromJSON a) => SyncRequest -> SyncM m a
 query = either (liftLeft . ParseError) liftRight . eitherDecode <=< request
 
-send :: MonadSync m => SyncthingRequest -> SyncM m ()
+send :: MonadSync m => SyncRequest -> SyncM m ()
 send = const (liftRight ()) <=< request
 
-request :: MonadSync m => SyncthingRequest -> SyncM m ByteString
+request :: MonadSync m => SyncRequest -> SyncM m ByteString
 request req = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params req) W.defaults

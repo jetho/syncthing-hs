@@ -20,7 +20,7 @@ sync :: MonadSync m => SyncM m Bool
 sync = getConfigInSync <$> sync'
   where
     sync' = query $
-                SyncthingRequest {
+                SyncRequest {
                   path   = "/rest/config/sync"
                 , method = Get
                 , params = []

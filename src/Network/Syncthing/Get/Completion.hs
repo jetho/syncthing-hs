@@ -23,7 +23,7 @@ completion :: MonadSync m => DeviceId -> Folder -> SyncM m Int
 completion device folder = getCompletion <$> completion'
   where
     completion' = query $
-                    SyncthingRequest {
+                    SyncRequest {
                       path   = "/rest/completion"
                     , method = Get
                     , params = [ ("device", device)

@@ -17,7 +17,7 @@ ping :: MonadSync m => SyncM m Text
 ping = getPing <$> ping'
   where
     ping' = query $
-                SyncthingRequest {
+                SyncRequest {
                   path   = "/rest/ping"
                 , method = Post payload
                 , params = []

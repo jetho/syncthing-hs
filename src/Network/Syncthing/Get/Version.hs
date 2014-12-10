@@ -23,7 +23,7 @@ data Version = Version {
 
 version :: MonadSync m => SyncM m Version
 version = query $
-              SyncthingRequest {
+              SyncRequest {
                 path   = "/rest/version"
               , method = Get
               , params = []

@@ -13,7 +13,7 @@ import           Network.Syncthing.Types
 
 sendError :: MonadSync m => Text -> SyncM m ()
 sendError msg = send $
-                    SyncthingRequest {
+                    SyncRequest {
                       path   = "/rest/error"
                     , method = Post payload
                     , params = []

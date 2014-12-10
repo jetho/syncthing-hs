@@ -25,7 +25,7 @@ data System = System {
 
 system :: MonadSync m => SyncM m System
 system = query $
-             SyncthingRequest {
+             SyncRequest {
                path   = "/rest/system"
              , method = Get
              , params = []
