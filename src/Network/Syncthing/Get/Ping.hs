@@ -15,10 +15,5 @@ import           Network.Syncthing.Types
 ping :: MonadSync m => SyncM m Text
 ping = getPing <$> ping'
   where
-    ping' = query $
-                SyncRequest {
-                  path   = "/rest/ping"
-                , method = Get
-                , params = []
-                }
+    ping' = query $ getRequest { path = "/rest/ping" }
 

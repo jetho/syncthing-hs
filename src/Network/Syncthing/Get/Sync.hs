@@ -19,12 +19,7 @@ data Sync = Sync {
 sync :: MonadSync m => SyncM m Bool
 sync = getConfigInSync <$> sync'
   where
-    sync' = query $
-                SyncRequest {
-                  path   = "/rest/config/sync"
-                , method = Get
-                , params = []
-                }
+    sync' = query $ getRequest { path = "/rest/config/sync" }
 
 instance FromJSON Sync where
     parseJSON (Object v) = Sync <$> (v .: "configInSync")

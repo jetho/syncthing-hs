@@ -15,7 +15,10 @@
 module Network.Syncthing.Post
     ( module Network.Syncthing.Post.Ping
     , module Network.Syncthing.Post.Error
+    , module Network.Syncthing.Post.System
     ) where
 
 import           Network.Syncthing.Post.Ping
 import           Network.Syncthing.Post.Error
+import           Network.Syncthing.Post.System
+

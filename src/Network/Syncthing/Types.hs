@@ -20,6 +20,10 @@ module Network.Syncthing.Types
     , liftInner
     , liftLeft
     , liftRight
+    , get
+    , post
+    , getRequest
+    , postRequest
     ) where
 
 import           Control.Applicative        (Applicative)
@@ -27,7 +31,7 @@ import           Control.Exception          (Exception)
 import           Control.Monad.Trans.Class  (lift)
 import           Control.Monad.Trans.Either (EitherT, left, right)
 import           Control.Monad.Trans.Reader (ReaderT)
-import           Data.Aeson                 (Value)
+import           Data.Aeson                 (Value, toJSON, ToJSON)
 import           Data.ByteString.Lazy       hiding (concat)
 import qualified Data.Text                  as T
 import           Data.Typeable              (Typeable)
@@ -121,4 +125,24 @@ liftLeft = liftEither . left
 
 liftRight :: Monad m => a -> SyncM m a
 liftRight = liftEither . right
+
+get :: HttpMethod
+get = Get
+
+post :: (ToJSON a) => a -> HttpMethod
+post = Post . toJSON 
+
+getRequest :: SyncRequest
+getRequest = SyncRequest {
+      path   = "/rest/ping"
+    , method = get
+    , params = []
+    }
+
+postRequest :: SyncRequest
+postRequest = SyncRequest {
+      path   = "/rest/ping"
+    , method = post ()
+    , params = []
+    }
 

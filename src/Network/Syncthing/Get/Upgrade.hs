@@ -21,12 +21,7 @@ data Upgrade = Upgrade {
     } deriving (Show)
 
 upgrade :: MonadSync m => SyncM m Upgrade
-upgrade = query $
-              SyncRequest {
-                path   = "/rest/upgrade"
-              , method = Get
-              , params = []
-              }
+upgrade = query $ getRequest { path   = "/rest/upgrade" }
 
 instance FromJSON Upgrade where
     parseJSON (Object v) =

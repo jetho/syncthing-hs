@@ -22,12 +22,7 @@ data Version = Version {
     } deriving (Show)
 
 version :: MonadSync m => SyncM m Version
-version = query $
-              SyncRequest {
-                path   = "/rest/version"
-              , method = Get
-              , params = []
-              }
+version = query $ getRequest { path = "/rest/version" }
 
 instance FromJSON Version where
     parseJSON (Object v) =

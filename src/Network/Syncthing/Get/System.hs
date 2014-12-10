@@ -24,12 +24,7 @@ data System = System {
     } deriving (Show)
 
 system :: MonadSync m => SyncM m System
-system = query $
-             SyncRequest {
-               path   = "/rest/system"
-             , method = Get
-             , params = []
-             }
+system = query $ getRequest { path = "/rest/system" }
 
 instance FromJSON System where
     parseJSON (Object v) =
