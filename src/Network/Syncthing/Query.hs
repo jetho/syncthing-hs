@@ -7,7 +7,7 @@ module Network.Syncthing.Query
     ) where
 
 import           Control.Lens               ((&), (.~), (^.))
-import           Control.Monad              ((>=>))
+import           Control.Monad              ((<=<))
 import           Control.Monad.Trans.Reader (ask)
 import           Data.Aeson                 (FromJSON, eitherDecode)
 import           Data.ByteString.Lazy       (ByteString)
@@ -20,10 +20,10 @@ import           Network.Syncthing.Types
 
 
 query :: (MonadSync m, FromJSON a) => SyncthingRequest -> SyncM m a
-query = request >=> either (liftLeft . ParseError) liftRight . eitherDecode
+query = either (liftLeft . ParseError) liftRight . eitherDecode <=< request
 
 send :: MonadSync m => SyncthingRequest -> SyncM m ()
-send = request >=> const (liftRight ())
+send = const (liftRight ()) <=< request
 
 request :: MonadSync m => SyncthingRequest -> SyncM m ByteString
 request req = do
