@@ -24,9 +24,11 @@ library
   other-modules:     Network.Syncthing.Types
                      Network.Syncthing.Query
                      Network.Syncthing.Lens
+                     Network.Syncthing.Utils
                      Network.Syncthing.Common.Ping
                      Network.Syncthing.Common.Types
                      Network.Syncthing.Get.Completion
+                     Network.Syncthing.Get.Errors
                      Network.Syncthing.Get.Ping
                      Network.Syncthing.Get.Sync
                      Network.Syncthing.Get.System
@@ -45,7 +47,9 @@ library
                      , http-client >=0.3.1.1
                      , http-client-tls >=0.2
                      , lens >=4.4 && <4.5
+                     , old-locale >= 1.0.0.7
                      , text >=1.2.0.0
+                     , time >= 1.5
                      , transformers >=0.3.0.0
                      , wreq >=0.2
   -- hs-source-dirs:      

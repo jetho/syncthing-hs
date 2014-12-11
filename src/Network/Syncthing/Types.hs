@@ -14,7 +14,6 @@ module Network.Syncthing.Types
     , SyncRequest(..)
     , DeviceError(..)
     , SyncError(..)
-    , decodeError
     , liftEither
     , liftReader
     , liftInner
@@ -32,7 +31,7 @@ import           Control.Monad.Trans.Class  (lift)
 import           Control.Monad.Trans.Either (EitherT, left, right)
 import           Control.Monad.Trans.Reader (ReaderT)
 import           Data.Aeson                 (Value, toJSON, ToJSON)
-import           Data.ByteString.Lazy       hiding (concat)
+import           Data.ByteString.Lazy       (ByteString)
 import qualified Data.Text                  as T
 import           Data.Typeable              (Typeable)
 import           Network.HTTP.Client        (Manager, ManagerSettings)
@@ -101,15 +100,6 @@ data SyncError =
     deriving (Typeable, Eq, Show)
 
 instance Exception SyncError
-
-decodeError :: ByteString -> Maybe SyncError
-decodeError = flip lookup
-    [ ("CSRF Error\n",                          CSRFError)
-    , ("Not Authorized\n",                      NotAuthorized)
-    , ("404 page not found\n",                  NotFound)
-    , ("device ID invalid: incorrect length\n", InvalidDeviceId IncorrectLength)
-    , ("check digit incorrect\n",               InvalidDeviceId IncorrectCheckDigit)
-    ]
 
 liftEither :: Monad m => EitherT SyncError (ReaderT SyncConfig m) a -> SyncM m a
 liftEither = SyncM
