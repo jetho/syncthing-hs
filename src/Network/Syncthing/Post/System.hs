@@ -5,6 +5,7 @@ module Network.Syncthing.Post.System
     ( restart
     , shutdown
     , reset
+    , upgrade
     ) where
 
 import           Network.Syncthing.Query
@@ -19,3 +20,7 @@ shutdown = send $ postRequest { path = "/rest/shutdown" }
 
 reset :: MonadSync m => SyncM m ()
 reset = send $ postRequest { path = "/rest/reset" }
+
+upgrade :: MonadSync m => SyncM m ()
+upgrade = send $ postRequest { path = "/rest/upgrade" }
+
