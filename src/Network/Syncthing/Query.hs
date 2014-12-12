@@ -29,7 +29,6 @@ queryMaybe = request >=> \case
     "" -> liftRight Nothing
     bs -> liftRight $ decode bs
 
-
 send :: MonadSync m => SyncRequest -> SyncM m ()
 send = const (liftRight ()) <=< request
 
