@@ -119,7 +119,7 @@ liftRight = liftEither . right
 get :: HttpMethod
 get = Get
 
-post :: (ToJSON a) => a -> HttpMethod
+post :: ToJSON a => a -> HttpMethod
 post = Post . toJSON 
 
 getRequest :: SyncRequest

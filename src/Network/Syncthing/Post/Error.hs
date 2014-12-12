@@ -18,3 +18,4 @@ sendError msg = send $ postRequest { path   = "/rest/error"
 
 clearErrors :: MonadSync m => SyncM m ()
 clearErrors = send $ postRequest { path = "/rest/error/clear" } 
+

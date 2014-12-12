@@ -13,3 +13,4 @@ import           Control.Lens            (makeLenses)
 import           Network.Syncthing.Types (SyncConfig)
 
 $(makeLenses ''SyncConfig)
+

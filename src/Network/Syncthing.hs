@@ -89,8 +89,7 @@ import           Data.ByteString.Lazy       (fromStrict)
 import           Data.Text                  (Text)
 import           Network.Connection         (TLSSettings (..))
 import qualified Network.HTTP.Client        as HTTP
-import           Network.HTTP.Client.TLS    (mkManagerSettings,
-                                             tlsManagerSettings)
+import           Network.HTTP.Client.TLS    (mkManagerSettings, tlsManagerSettings)
 import qualified Network.Wreq               as W
 
 import qualified Network.Syncthing.Lens     as PL

@@ -24,3 +24,4 @@ sync = getConfigInSync <$> sync'
 instance FromJSON Sync where
     parseJSON (Object v) = Sync <$> (v .: "configInSync")
     parseJSON _          = mzero
+
