@@ -14,9 +14,7 @@ import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-data Completion = Completion {
-      getCompletion :: Int
-    } deriving (Show)
+newtype Completion = Completion { getCompletion :: Int } deriving (Show)
 
 completion :: MonadSync m => DeviceId -> Folder -> SyncM m Int
 completion device folder = getCompletion <$> completion'

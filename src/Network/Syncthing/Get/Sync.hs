@@ -12,12 +12,10 @@ import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-data Sync = Sync {
-      getConfigInSync :: Bool
-    } deriving (Show)
-
+newtype Sync = Sync { getSync :: Bool } deriving (Show)
+             
 sync :: MonadSync m => SyncM m Bool
-sync = getConfigInSync <$> sync'
+sync = getSync <$> sync'
   where
     sync' = query $ getRequest { path = "/rest/config/sync" }
 

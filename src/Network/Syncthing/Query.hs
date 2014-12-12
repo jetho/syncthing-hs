@@ -1,15 +1,17 @@
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Network.Syncthing.Query
     ( query
+    , queryMaybe
     , send
     ) where
 
 import           Control.Lens               ((&), (.~), (^.))
-import           Control.Monad              ((<=<))
+import           Control.Monad              ((<=<), (>=>))
 import           Control.Monad.Trans.Reader (ask)
-import           Data.Aeson                 (FromJSON, eitherDecode)
+import           Data.Aeson                 (FromJSON, eitherDecode, decode)
 import           Data.ByteString.Lazy       (ByteString)
 import           Data.Text                  (unpack)
 import           Data.Text.Encoding         (encodeUtf8)
@@ -21,6 +23,12 @@ import           Network.Syncthing.Types
 
 query :: (MonadSync m, FromJSON a) => SyncRequest -> SyncM m a
 query = either (liftLeft . ParseError) liftRight . eitherDecode <=< request
+
+queryMaybe :: (MonadSync m, FromJSON a) => SyncRequest -> SyncM m (Maybe a)
+queryMaybe = request >=> \case
+    "" -> liftRight Nothing
+    bs -> liftRight $ decode bs
+
 
 send :: MonadSync m => SyncRequest -> SyncM m ()
 send = const (liftRight ()) <=< request
