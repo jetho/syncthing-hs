@@ -28,6 +28,7 @@ library
                      Network.Syncthing.Common.Ping
                      Network.Syncthing.Common.Types
                      Network.Syncthing.Get.Completion
+                     Network.Syncthing.Get.Connections
                      Network.Syncthing.Get.Errors
                      Network.Syncthing.Get.Ping
                      Network.Syncthing.Get.Sync
@@ -43,6 +44,7 @@ library
                      , base >=4.5 && <5
                      , bytestring >=0.9
                      , connection >= 0.2.3
+                     , containers >= 0.5.5.1
                      , either >=4.3.1
                      , http-client >=0.3.1.1
                      , http-client-tls >=0.2
