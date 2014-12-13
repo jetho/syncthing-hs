@@ -29,6 +29,7 @@ library
                      Network.Syncthing.Common.Types
                      Network.Syncthing.Get.Completion
                      Network.Syncthing.Get.Connections
+                     Network.Syncthing.Get.Discovery
                      Network.Syncthing.Get.Errors
                      Network.Syncthing.Get.Ping
                      Network.Syncthing.Get.Sync
