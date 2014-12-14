@@ -65,7 +65,7 @@ import           Control.Lens            ((&), (.~), (^.))
 import           Network.HTTP.Client     (closeManager, newManager)
 
 import           Network.Syncthing
-import           Network.Syncthing.Types
+import           Network.Syncthing.Types ()
 
 -- | Holds the session configuration and the connection manager.
 newtype SyncSession = SyncSession { getConfig :: SyncConfig }

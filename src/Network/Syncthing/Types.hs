@@ -97,6 +97,7 @@ data SyncError =
     | CSRFError
     | NotFound
     | InvalidDeviceId DeviceError
+    | NoSuchFolder
     deriving (Typeable, Eq, Show)
 
 instance Exception SyncError
