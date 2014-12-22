@@ -27,6 +27,7 @@ module Network.Syncthing.Get
     , module Network.Syncthing.Get.Discovery
     , module Network.Syncthing.Get.Errors
     , module Network.Syncthing.Get.Ignores
+    , module Network.Syncthing.Get.Model
     , module Network.Syncthing.Get.Ping
     , module Network.Syncthing.Get.Sync
     , module Network.Syncthing.Get.System
@@ -41,6 +42,7 @@ import           Network.Syncthing.Get.Connections
 import           Network.Syncthing.Get.Discovery
 import           Network.Syncthing.Get.Errors
 import           Network.Syncthing.Get.Ignores
+import           Network.Syncthing.Get.Model
 import           Network.Syncthing.Get.Ping
 import           Network.Syncthing.Get.Sync
 import           Network.Syncthing.Get.System

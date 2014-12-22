@@ -32,6 +32,7 @@ library
                      Network.Syncthing.Get.Discovery
                      Network.Syncthing.Get.Errors
                      Network.Syncthing.Get.Ignores
+                     Network.Syncthing.Get.Model
                      Network.Syncthing.Get.Ping
                      Network.Syncthing.Get.Sync
                      Network.Syncthing.Get.System
