@@ -10,7 +10,7 @@ module Network.Syncthing.Utils
 import           Data.ByteString.Lazy       (ByteString)
 import           Data.ByteString.Lazy.Char8 (unpack)
 import           Data.List                  (find)
-import           Data.Maybe                 (fromJust)
+import           Data.Maybe                 (fromMaybe)
 import qualified Data.Text                  as T (Text, unpack)
 import           Data.Time.Clock            (UTCTime)
 import           Data.Time.Format           (parseTime)
@@ -28,7 +28,7 @@ decodeError :: ByteString -> Maybe SyncError
 decodeError =
       fmap snd
     . flip find errorPatterns
-    . (\msg -> \patTup -> msg =~ fst patTup)
+    . (\msg patTup -> msg =~ fst patTup)
     . unpack
   where
     errorPatterns :: [(String, SyncError)]
@@ -44,11 +44,11 @@ decodeError =
 
 decodeDeviceError :: T.Text -> DeviceError
 decodeDeviceError msg =
-    maybe (OtherDeviceError msg) id $
-          lookup (T.unpack msg) 
-                 [ (deviceIdLength, IncorrectLength)
-                 , (deviceIdCheckDigit, IncorrectCheckDigit)
-                 ]
+    fromMaybe (OtherDeviceError msg) $
+        lookup (T.unpack msg) 
+               [ (deviceIdLength, IncorrectLength)
+               , (deviceIdCheckDigit, IncorrectCheckDigit)
+               ]
 
 toUTC :: String -> Maybe UTCTime
 toUTC = parseTime defaultTimeLocale "%FT%X%Q%z"
