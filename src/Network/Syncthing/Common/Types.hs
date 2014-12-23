@@ -5,6 +5,7 @@ module Network.Syncthing.Common.Types
     ( DeviceId
     , Folder
     , SubPath
+    , Addr
     , defaultFolder
     ) where
 
@@ -16,6 +17,8 @@ type DeviceId = Text
 type Folder   = Text
 
 type SubPath  = Text
+
+type Addr     = Text
 
 defaultFolder :: Folder
 defaultFolder = "default"

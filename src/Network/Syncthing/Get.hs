@@ -24,6 +24,7 @@ module Network.Syncthing.Get
     -- * Request functions
     , module Network.Syncthing.Get.Completion
     , module Network.Syncthing.Get.Connections
+    , module Network.Syncthing.Get.DeviceId
     , module Network.Syncthing.Get.Discovery
     , module Network.Syncthing.Get.Errors
     , module Network.Syncthing.Get.Ignores
@@ -39,6 +40,7 @@ import qualified Network.Syncthing.Common.Types   as Types
 
 import           Network.Syncthing.Get.Completion
 import           Network.Syncthing.Get.Connections
+import           Network.Syncthing.Get.DeviceId
 import           Network.Syncthing.Get.Discovery
 import           Network.Syncthing.Get.Errors
 import           Network.Syncthing.Get.Ignores

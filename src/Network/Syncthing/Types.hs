@@ -89,6 +89,7 @@ instance Show SyncConfig where
 data DeviceError =
       IncorrectLength
     | IncorrectCheckDigit
+    | OtherDeviceError T.Text
     deriving (Eq, Show)
 
 data SyncError =
