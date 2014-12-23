@@ -3,6 +3,7 @@
 
 module Network.Syncthing.Get.Model
     ( Model(..)
+    , ModelState(..)
     , model
     ) where
 
