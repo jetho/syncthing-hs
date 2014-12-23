@@ -25,6 +25,7 @@ library
                      Network.Syncthing.Query
                      Network.Syncthing.Lens
                      Network.Syncthing.Utils
+                     Network.Syncthing.Common.Ignores
                      Network.Syncthing.Common.Ping
                      Network.Syncthing.Common.Types
                      Network.Syncthing.Get.Completion
@@ -39,6 +40,7 @@ library
                      Network.Syncthing.Get.Upgrade
                      Network.Syncthing.Get.Version
                      Network.Syncthing.Post.Error
+                     Network.Syncthing.Post.Ignores
                      Network.Syncthing.Post.Ping
                      Network.Syncthing.Post.Scan
                      Network.Syncthing.Post.System

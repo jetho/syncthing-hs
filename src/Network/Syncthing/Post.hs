@@ -25,6 +25,7 @@ module Network.Syncthing.Post
     -- * Request functions
     , module Network.Syncthing.Post.Ping
     , module Network.Syncthing.Post.Error
+    , module Network.Syncthing.Post.Ignores
     , module Network.Syncthing.Post.Scan
     , module Network.Syncthing.Post.System
     ) where
@@ -33,6 +34,7 @@ import qualified Network.Syncthing.Common.Types   as Types
 
 import           Network.Syncthing.Post.Ping
 import           Network.Syncthing.Post.Error
+import           Network.Syncthing.Post.Ignores
 import           Network.Syncthing.Post.Scan
 import           Network.Syncthing.Post.System
 
