@@ -12,7 +12,7 @@ import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-ignores :: MonadSync m => Folder -> SyncM m Ignore
+ignores :: MonadSync m => FolderName -> SyncM m Ignore
 ignores folder = query $ getRequest { path = "/rest/ignores"
                                     , params = [("folder", folder)]
                                     }

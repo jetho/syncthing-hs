@@ -3,7 +3,7 @@
 
 module Network.Syncthing.Common.Types
     ( DeviceId
-    , Folder
+    , FolderName
     , SubPath
     , Addr
     , defaultFolder
@@ -12,14 +12,14 @@ module Network.Syncthing.Common.Types
 import           Data.Text (Text)
 
 
-type DeviceId = Text
+type DeviceId   = Text
 
-type Folder   = Text
+type FolderName = Text
 
-type SubPath  = Text
+type SubPath    = Text
 
-type Addr     = Text
+type Addr       = Text
 
-defaultFolder :: Folder
+defaultFolder :: FolderName
 defaultFolder = "default"
 

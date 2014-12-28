@@ -16,7 +16,7 @@ module Network.Syncthing.Get
     (
     -- * Common Types
       Types.DeviceId
-    , Types.Folder
+    , Types.FolderName
  
     -- * Defaults
     , Types.defaultFolder

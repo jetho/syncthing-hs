@@ -16,7 +16,7 @@ module Network.Syncthing.Post
     ( 
     -- * Common Types
       Types.DeviceId
-    , Types.Folder
+    , Types.FolderName
     , Types.SubPath
     , Types.Addr
  

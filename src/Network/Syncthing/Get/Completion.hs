@@ -9,14 +9,14 @@ import           Control.Applicative            ((<$>))
 import           Control.Monad                  (MonadPlus (mzero))
 import           Data.Aeson                     (FromJSON, Value (..), parseJSON, (.:))
 import           Data.Text                      ()
-import           Network.Syncthing.Common.Types (DeviceId, Folder)
+import           Network.Syncthing.Common.Types (DeviceId, FolderName)
 import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
 newtype Completion = Completion { getCompletion :: Int } deriving (Show)
 
-completion :: MonadSync m => DeviceId -> Folder -> SyncM m Int
+completion :: MonadSync m => DeviceId -> FolderName -> SyncM m Int
 completion device folder = getCompletion <$> completion'
   where
     completion' = query $ getRequest { path   = "/rest/completion"

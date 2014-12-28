@@ -14,7 +14,7 @@ import           Network.Syncthing.Query
 import           Network.Syncthing.Types
 
 
-scanFolder:: MonadSync m => Folder -> Maybe SubPath -> SyncM m ()
+scanFolder:: MonadSync m => FolderName -> Maybe SubPath -> SyncM m ()
 scanFolder folder subPath =
     send $ postRequest { path   = "/rest/scan"
                        , params = ("folder", folder) : maybeToList maybeSubPath

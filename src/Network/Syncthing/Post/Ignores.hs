@@ -18,7 +18,7 @@ import           Network.Syncthing.Types
 
 type Ignores = [Text]
 
-sendIgnores :: MonadSync m => Folder -> Ignores -> SyncM m (Maybe Ignores)
+sendIgnores :: MonadSync m => FolderName -> Ignores -> SyncM m (Maybe Ignores)
 sendIgnores folder ignores =
     getIgnores <$> query postRequest { path   = "/rest/ignores"
                                      , method = post ignoresMap

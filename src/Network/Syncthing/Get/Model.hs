@@ -43,7 +43,7 @@ data Model = Model {
     , getModelVersion  :: Int
     } deriving (Show)
 
-model :: MonadSync m => Folder -> SyncM m Model
+model :: MonadSync m => FolderName -> SyncM m Model
 model folder = query $ getRequest { path   = "/rest/model"
                                   , params = [("folder", folder)]
                                   }
