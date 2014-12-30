@@ -1,24 +1,24 @@
 
+{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
 
-module Network.Syncthing.Query
+module Network.Syncthing.Internal.Query
     ( query
     , queryMaybe
     , send
     ) where
 
-import           Control.Lens               ((&), (.~), (^.))
-import           Control.Monad              ((<=<), (>=>))
-import           Control.Monad.Trans.Reader (ask)
-import           Data.Aeson                 (FromJSON, eitherDecode, decode)
-import           Data.ByteString.Lazy       (ByteString)
-import           Data.Text                  (unpack)
-import           Data.Text.Encoding         (encodeUtf8)
-import qualified Network.Wreq               as W
+import           Control.Lens                     ((&), (.~), (^.))
+import           Control.Monad                    ((<=<), (>=>))
+import           Control.Monad.Trans.Reader       (ask)
+import           Data.Aeson                       (FromJSON, decode, eitherDecode)
+import           Data.ByteString.Lazy             (ByteString)
+import           Data.Text                        (unpack)
+import           Data.Text.Encoding               (encodeUtf8)
+import qualified Network.Wreq                     as W
 
-import           Network.Syncthing.Lens
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal.Lens
+import           Network.Syncthing.Internal.Types
 
 
 query :: (MonadSync m, FromJSON a) => SyncRequest -> SyncM m a

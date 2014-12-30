@@ -46,7 +46,7 @@
 -- @
 
 module Network.Syncthing.Session
-    ( 
+    (
     -- * Types
       SyncResult
     , SyncSession
@@ -56,16 +56,16 @@ module Network.Syncthing.Session
     , closeSyncSession
     , withSyncSession
 
-    -- * Run requests 
+    -- * Run requests
     , runSyncSession
     ) where
 
-import           Control.Exception       (bracket)
-import           Control.Lens            ((&), (.~), (^.))
-import           Network.HTTP.Client     (closeManager, newManager)
+import           Control.Exception                (bracket)
+import           Control.Lens                     ((&), (.~), (^.))
+import           Network.HTTP.Client              (closeManager, newManager)
 
 import           Network.Syncthing
-import           Network.Syncthing.Types ()
+import           Network.Syncthing.Internal.Types ()
 
 -- | Holds the session configuration and the connection manager.
 newtype SyncSession = SyncSession { getConfig :: SyncConfig }

@@ -8,8 +8,8 @@ module Network.Syncthing.Get.Ignores
 
 import           Network.Syncthing.Common.Ignores
 import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
 
 
 ignores :: MonadSync m => FolderName -> SyncM m Ignore

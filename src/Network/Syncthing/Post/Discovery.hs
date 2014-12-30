@@ -6,13 +6,13 @@ module Network.Syncthing.Post.Discovery
     ) where
 
 import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
 
 
-hint:: MonadSync m => DeviceId -> Addr -> SyncM m ()
-hint device addr =
+hint:: MonadSync m => DeviceId -> Server -> SyncM m ()
+hint device server=
     send $ postRequest { path   = "/rest/discovery/hint"
-                       , params = [("device", device), ("addr", addr)]
+                       , params = [("device", device), ("addr", server)]
                        }
 

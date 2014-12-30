@@ -1,6 +1,6 @@
 
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Network.Syncthing.Post.System
     ( SystemMsg(..)
@@ -10,12 +10,12 @@ module Network.Syncthing.Post.System
     , upgrade
     ) where
 
-import           Control.Applicative     ((<$>))
-import           Control.Monad           (MonadPlus (mzero), (>=>), join)
-import           Data.Aeson              (FromJSON, Value (..), parseJSON, (.:))
-import           Data.Text               (Text)
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
+import           Control.Applicative              ((<$>))
+import           Control.Monad                    (MonadPlus (mzero), join, (>=>))
+import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
+import           Data.Text                        (Text)
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
 
 
 data SystemMsg

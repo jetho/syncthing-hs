@@ -7,16 +7,16 @@ module Network.Syncthing.Get.Model
     , model
     ) where
 
-import           Control.Applicative            ((<$>), (<*>))
-import           Control.Monad                  (MonadPlus (mzero))
-import           Data.Aeson                     (FromJSON, Value (..), parseJSON, (.:))
-import           Data.Text                      (Text)
-import           Data.Time.Clock                (UTCTime)
+import           Control.Applicative              ((<$>), (<*>))
+import           Control.Monad                    (MonadPlus (mzero))
+import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
+import           Data.Text                        (Text)
+import           Data.Time.Clock                  (UTCTime)
 
 import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
-import           Network.Syncthing.Utils        (toUTC)
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Utils          (toUTC)
 
 
 data ModelState

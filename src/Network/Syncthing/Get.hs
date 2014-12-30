@@ -14,15 +14,8 @@
 
 module Network.Syncthing.Get
     (
-    -- * Common Types
-      Types.DeviceId
-    , Types.FolderName
- 
-    -- * Defaults
-    , Types.defaultFolder
-
     -- * Request functions
-    , module Network.Syncthing.Get.Completion
+      module Network.Syncthing.Get.Completion
     , module Network.Syncthing.Get.Connections
     , module Network.Syncthing.Get.DeviceId
     , module Network.Syncthing.Get.Discovery
@@ -35,8 +28,6 @@ module Network.Syncthing.Get
     , module Network.Syncthing.Get.Upgrade
     , module Network.Syncthing.Get.Version
     ) where
-
-import qualified Network.Syncthing.Common.Types   as Types
 
 import           Network.Syncthing.Get.Completion
 import           Network.Syncthing.Get.Connections

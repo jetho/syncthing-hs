@@ -51,7 +51,8 @@
 module Network.Syncthing
     (
     -- * Types
-      SyncResult
+      Server
+    , SyncResult
 
     -- * The Syncthing Monad
     , SyncM
@@ -79,22 +80,22 @@ module Network.Syncthing
     , SyncError(..)
     ) where
 
-import           Control.Applicative        ((<$>))
-import           Control.Exception          (catch, throwIO)
-import           Control.Lens               (Lens', (&), (.~), (^.))
-import           Control.Monad              ((<=<))
-import           Control.Monad.Trans.Either (runEitherT)
-import           Control.Monad.Trans.Reader (runReaderT)
-import           Data.ByteString.Lazy       (fromStrict)
-import           Data.Text                  (Text)
-import           Network.Connection         (TLSSettings (..))
-import qualified Network.HTTP.Client        as HTTP
-import           Network.HTTP.Client.TLS    (mkManagerSettings, tlsManagerSettings)
-import qualified Network.Wreq               as W
+import           Control.Applicative              ((<$>))
+import           Control.Exception                (catch, throwIO)
+import           Control.Lens                     (Lens', (&), (.~), (^.))
+import           Control.Monad                    ((<=<))
+import           Control.Monad.Trans.Either       (runEitherT)
+import           Control.Monad.Trans.Reader       (runReaderT)
+import           Data.ByteString.Lazy             (fromStrict)
+import           Data.Text                        (Text)
+import           Network.Connection               (TLSSettings (..))
+import qualified Network.HTTP.Client              as HTTP
+import           Network.HTTP.Client.TLS          (mkManagerSettings, tlsManagerSettings)
+import qualified Network.Wreq                     as W
 
-import qualified Network.Syncthing.Lens     as PL
-import           Network.Syncthing.Types
-import           Network.Syncthing.Utils    (decodeError)
+import qualified Network.Syncthing.Internal.Lens  as PL
+import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Utils          (decodeError)
 
 
 -- | Use Wreq's getWith and postWith functions when running in IO
@@ -128,7 +129,7 @@ withManager = withManager' defaultManagerSettings
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManagerNoVerify :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a) 
+withManagerNoVerify :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
 withManager' :: HTTP.ManagerSettings -> (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
@@ -144,7 +145,7 @@ syncthing config action =
     handler e@(HTTP.StatusCodeException _ headers _) =
         maybe (throwIO e) (return . Left) $ maybeSyncError headers
     handler unhandledErr = throwIO unhandledErr
-    maybeSyncError = decodeError . fromStrict <=< lookup "X-Response-Body-Start" 
+    maybeSyncError = decodeError . fromStrict <=< lookup "X-Response-Body-Start"
 
 -- | The default Syncthing configuration. Customize it to your needs by using
 -- the SyncConfig lenses.
@@ -170,7 +171,7 @@ defaultManagerSettings = tlsManagerSettings
 
 -- | Alternative manager settings with disabled SSL certificate verification.
 noSSLVerifyManagerSettings :: HTTP.ManagerSettings
-noSSLVerifyManagerSettings = 
+noSSLVerifyManagerSettings =
     mkManagerSettings (TLSSettingsSimple True False False) Nothing
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
@@ -181,7 +182,7 @@ noSSLVerifyManagerSettings =
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
 -- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
-pServer :: Lens' SyncConfig Text
+pServer :: Lens' SyncConfig Server
 pServer  = PL.pServer
 
 -- | A lens for specifying the Syncthing API Key.

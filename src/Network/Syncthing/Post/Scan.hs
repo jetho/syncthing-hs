@@ -6,12 +6,12 @@ module Network.Syncthing.Post.Scan
     ( scanFolder
     ) where
 
-import           Control.Applicative            ((<$>))
-import           Data.Maybe                     (maybeToList)
-import           Data.Text                      ()
+import           Control.Applicative              ((<$>))
+import           Data.Maybe                       (maybeToList)
+import           Data.Text                        ()
 import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
 
 
 scanFolder:: MonadSync m => FolderName -> Maybe SubPath -> SyncM m ()

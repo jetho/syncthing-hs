@@ -5,11 +5,11 @@ module Network.Syncthing.Post.Ping
     ( ping
     ) where
 
-import           Control.Applicative           ((<$>))
-import           Data.Text                     (Text)
+import           Control.Applicative              ((<$>))
+import           Data.Text                        (Text)
 import           Network.Syncthing.Common.Ping
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
 
 
 ping :: MonadSync m => SyncM m Text

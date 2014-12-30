@@ -6,16 +6,16 @@ module Network.Syncthing.Get.DeviceId
     ( deviceId
     ) where
 
-import           Control.Applicative            ((<$>))
-import           Control.Monad                  (MonadPlus (mzero), (>=>))
-import           Data.Aeson                     (FromJSON, Value (..), parseJSON, (.:))
-import           Data.HashMap.Lazy              (member)
-import           Data.Text                      ()
+import           Control.Applicative              ((<$>))
+import           Control.Monad                    (MonadPlus (mzero), (>=>))
+import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
+import           Data.HashMap.Lazy                (member)
+import           Data.Text                        ()
 
 import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
-import           Network.Syncthing.Utils        (decodeDeviceError)
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Utils          (decodeDeviceError)
 
 
 deviceId :: MonadSync m => DeviceId -> SyncM m DeviceId

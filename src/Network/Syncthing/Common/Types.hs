@@ -2,10 +2,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Network.Syncthing.Common.Types
-    ( DeviceId
+    (
+    -- * Common Types
+      DeviceId
     , FolderName
     , SubPath
+    , Host
+    , Port
     , Addr
+
+    -- * Defaults
     , defaultFolder
     ) where
 
@@ -18,7 +24,11 @@ type FolderName = Text
 
 type SubPath    = Text
 
-type Addr       = Text
+type Host       = Text
+
+type Port       = Int
+
+type Addr       = (Host, Maybe Port)
 
 defaultFolder :: FolderName
 defaultFolder = "default"

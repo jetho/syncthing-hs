@@ -21,13 +21,14 @@ library
                      Network.Syncthing.Session
                      Network.Syncthing.Get
                      Network.Syncthing.Post
-  other-modules:     Network.Syncthing.Types
-                     Network.Syncthing.Query
-                     Network.Syncthing.Lens
+                     Network.Syncthing.Types
+  other-modules:     Network.Syncthing.Internal.Types
+                     Network.Syncthing.Internal.Query
+                     Network.Syncthing.Internal.Lens
                      Network.Syncthing.Utils
+                     Network.Syncthing.Common.Types
                      Network.Syncthing.Common.Ignores
                      Network.Syncthing.Common.Ping
-                     Network.Syncthing.Common.Types
                      Network.Syncthing.Get.Completion
                      Network.Syncthing.Get.Connections
                      Network.Syncthing.Get.Discovery

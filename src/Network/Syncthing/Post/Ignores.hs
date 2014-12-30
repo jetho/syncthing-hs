@@ -12,8 +12,8 @@ import           Data.Text                        (Text)
 
 import           Network.Syncthing.Common.Ignores
 import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
 
 
 type Ignores = [Text]

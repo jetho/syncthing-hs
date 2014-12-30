@@ -1,7 +1,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Network.Syncthing.Lens
+module Network.Syncthing.Internal.Lens
     ( pServer
     , pApiKey
     , pAuth
@@ -10,7 +10,7 @@ module Network.Syncthing.Lens
     ) where
 
 import           Control.Lens            (makeLenses)
-import           Network.Syncthing.Types (SyncConfig)
+import           Network.Syncthing.Internal.Types (SyncConfig)
 
 $(makeLenses ''SyncConfig)
 

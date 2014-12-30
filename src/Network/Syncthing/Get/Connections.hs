@@ -6,25 +6,25 @@ module Network.Syncthing.Get.Connections
     , connections
     ) where
 
-import           Control.Applicative            ((<$>), (<*>))
-import           Control.Monad                  (MonadPlus (mzero))
-import           Data.Aeson                     (FromJSON, Value (..),
-                                                 parseJSON, (.:))
-import qualified Data.Map                       as M
-import           Data.Text                      (Text)
-import           Data.Time.Clock                (UTCTime)
+import           Control.Applicative              ((<$>), (<*>))
+import           Control.Monad                    (MonadPlus (mzero))
+import           Data.Aeson                       (FromJSON, Value (..),
+                                                   parseJSON, (.:))
+import qualified Data.Map                         as M
+import           Data.Text                        (Text)
+import           Data.Time.Clock                  (UTCTime)
 
 import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
-import           Network.Syncthing.Utils        (toUTC)
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Utils          (parseAddr, toUTC)
 
 
 data Connection = Connection {
       getAt            :: Maybe UTCTime
     , getInBytesTotal  :: Integer
     , getOutBytesTotal :: Integer
-    , getAddress       :: Text
+    , getAddress       :: Addr
     , getClientVersion :: Text
     } deriving (Show)
 
@@ -36,7 +36,7 @@ instance FromJSON Connection where
         Connection <$> (toUTC <$> (v .:  "At"))
                    <*> (v .:  "InBytesTotal")
                    <*> (v .:  "OutBytesTotal")
-                   <*> (v .:  "Address")
+                   <*> (parseAddr <$> (v .:  "Address"))
                    <*> (v .:  "ClientVersion")
     parseJSON _          = mzero
 

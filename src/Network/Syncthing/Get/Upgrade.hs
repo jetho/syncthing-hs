@@ -6,12 +6,12 @@ module Network.Syncthing.Get.Upgrade
     , upgrade
     ) where
 
-import           Control.Applicative     ((<$>), (<*>))
-import           Control.Monad           (MonadPlus (mzero))
-import           Data.Aeson              (FromJSON, Value (..), parseJSON, (.:))
-import           Data.Text               (Text)
-import           Network.Syncthing.Query
-import           Network.Syncthing.Types
+import           Control.Applicative              ((<$>), (<*>))
+import           Control.Monad                    (MonadPlus (mzero))
+import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
+import           Data.Text                        (Text)
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
 
 
 data Upgrade = Upgrade {
