@@ -19,8 +19,8 @@ import           Data.Time.Format                 (parseTime)
 import           System.Locale                    (defaultTimeLocale)
 import           Text.Regex.Posix                 ((=~))
 
-import           Network.Syncthing.Common.Types
 import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Types.Common
 
 
 deviceIdLength, deviceIdCheckDigit :: String

@@ -1,22 +1,17 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Get.Connections
+module Network.Syncthing.Types.Connection
     ( Connection(..)
-    , connections
     ) where
 
 import           Control.Applicative              ((<$>), (<*>))
 import           Control.Monad                    (MonadPlus (mzero))
-import           Data.Aeson                       (FromJSON, Value (..),
-                                                   parseJSON, (.:))
-import qualified Data.Map                         as M
+import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
 import           Data.Text                        (Text)
 import           Data.Time.Clock                  (UTCTime)
 
-import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Internal.Query
-import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Types.Common   (Addr)
 import           Network.Syncthing.Utils          (parseAddr, toUTC)
 
 
@@ -27,9 +22,6 @@ data Connection = Connection {
     , getAddress       :: Addr
     , getClientVersion :: Text
     } deriving (Show)
-
-connections :: MonadSync m => SyncM m (M.Map DeviceId Connection)
-connections = query $ getRequest { path = "/rest/connections" }
 
 instance FromJSON Connection where
     parseJSON (Object v) =

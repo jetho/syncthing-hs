@@ -26,30 +26,21 @@ library
                      Network.Syncthing.Internal.Query
                      Network.Syncthing.Internal.Lens
                      Network.Syncthing.Utils
-                     Network.Syncthing.Common.Types
-                     Network.Syncthing.Common.Ignores
-                     Network.Syncthing.Common.Need
-                     Network.Syncthing.Common.Ping
-                     Network.Syncthing.Get.Completion
-                     Network.Syncthing.Get.Connections
-                     Network.Syncthing.Get.Discovery
-                     Network.Syncthing.Get.DeviceId
-                     Network.Syncthing.Get.Errors
-                     Network.Syncthing.Get.Ignores
-                     Network.Syncthing.Get.Model
-                     Network.Syncthing.Get.Need
-                     Network.Syncthing.Get.Ping
-                     Network.Syncthing.Get.Sync
-                     Network.Syncthing.Get.System
-                     Network.Syncthing.Get.Upgrade
-                     Network.Syncthing.Get.Version
-                     Network.Syncthing.Post.Bump
-                     Network.Syncthing.Post.Discovery
-                     Network.Syncthing.Post.Error
-                     Network.Syncthing.Post.Ignores
-                     Network.Syncthing.Post.Ping
-                     Network.Syncthing.Post.Scan
-                     Network.Syncthing.Post.System
+                     Network.Syncthing.Types.CacheEntry
+                     Network.Syncthing.Types.Common
+                     Network.Syncthing.Types.Completion
+                     Network.Syncthing.Types.Connection
+                     Network.Syncthing.Types.DeviceId
+                     Network.Syncthing.Types.Error
+                     Network.Syncthing.Types.Ignore
+                     Network.Syncthing.Types.Model
+                     Network.Syncthing.Types.Need
+                     Network.Syncthing.Types.Ping
+                     Network.Syncthing.Types.Sync
+                     Network.Syncthing.Types.System
+                     Network.Syncthing.Types.SystemMsg
+                     Network.Syncthing.Types.Upgrade
+                     Network.Syncthing.Types.Version
   -- other-extensions:    
   hs-source-dirs:    src
   build-depends:       aeson >=0.8.0.1

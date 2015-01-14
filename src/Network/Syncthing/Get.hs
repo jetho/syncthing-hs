@@ -1,4 +1,5 @@
 
+{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
@@ -14,33 +15,119 @@
 
 module Network.Syncthing.Get
     (
-    -- * Request functions
-      module Network.Syncthing.Get.Completion
-    , module Network.Syncthing.Get.Connections
-    , module Network.Syncthing.Get.DeviceId
-    , module Network.Syncthing.Get.Discovery
-    , module Network.Syncthing.Get.Errors
-    , module Network.Syncthing.Get.Ignores
-    , module Network.Syncthing.Get.Model
-    , module Network.Syncthing.Get.Need
-    , module Network.Syncthing.Get.Ping
-    , module Network.Syncthing.Get.Sync
-    , module Network.Syncthing.Get.System
-    , module Network.Syncthing.Get.Upgrade
-    , module Network.Syncthing.Get.Version
+      ping
+    , completion
+    , connections
+    , deviceId
+    , discovery
+    , errors
+    , ignores
+    , model
+    , need
+    , sync
+    , system
+    , upgrade
+    , version
     ) where
 
-import           Network.Syncthing.Get.Completion
-import           Network.Syncthing.Get.Connections
-import           Network.Syncthing.Get.DeviceId
-import           Network.Syncthing.Get.Discovery
-import           Network.Syncthing.Get.Errors
-import           Network.Syncthing.Get.Ignores
-import           Network.Syncthing.Get.Model
-import           Network.Syncthing.Get.Need
-import           Network.Syncthing.Get.Ping
-import           Network.Syncthing.Get.Sync
-import           Network.Syncthing.Get.System
-import           Network.Syncthing.Get.Upgrade
-import           Network.Syncthing.Get.Version
+import           Control.Applicative                ((<$>))
+import           Control.Monad                      ((>=>))
+import qualified Data.Map                           as M
+import           Data.Text                          (Text)
+
+import           Network.Syncthing.Internal.Query
+import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Types.CacheEntry
+import           Network.Syncthing.Types.Common
+import           Network.Syncthing.Types.Completion
+import           Network.Syncthing.Types.Connection
+import           Network.Syncthing.Types.DeviceId   ()
+import           Network.Syncthing.Types.Error
+import           Network.Syncthing.Types.Ignore
+import           Network.Syncthing.Types.Model
+import           Network.Syncthing.Types.Need
+import           Network.Syncthing.Types.Ping
+import           Network.Syncthing.Types.Sync
+import           Network.Syncthing.Types.System
+import           Network.Syncthing.Types.Upgrade
+import           Network.Syncthing.Types.Version
+
+
+-- | Ping the Syncthing server. Returns the string \"Pong\".
+ping :: MonadSync m => SyncM m Text
+ping = getPing <$> ping'
+  where
+    ping' = query $ getRequest { path = "/rest/ping" }
+
+-- | Returns the completion percentage (0 to 100) for a given device and
+-- folder. 
+completion :: MonadSync m => DeviceId -> FolderName -> SyncM m Int
+completion device folder = getCompletion <$> completion'
+  where
+    completion' = query $ getRequest { path   = "/rest/completion"
+                                     , params = [ ("device", device)
+                                                , ("folder", folder) ]
+                                     }
+
+-- | Returns the list of current connections and some metadata associated
+-- with the connection/peer.
+connections :: MonadSync m => SyncM m (M.Map DeviceId Connection)
+connections = query $ getRequest { path = "/rest/connections" }
+
+-- | Verifies and formats a device ID. Returns either a valid device ID in
+-- modern format, or an error.
+deviceId :: MonadSync m => DeviceId -> SyncM m DeviceId
+deviceId = deviceId' >=> either (liftLeft . InvalidDeviceId) liftRight
+  where
+    deviceId' :: MonadSync m => DeviceId -> SyncM m (Either DeviceError DeviceId)
+    deviceId' device = query $ getRequest { path   = "/rest/deviceid"
+                                          , params = [("id", device)]
+                                          }
+
+-- | Returns the contents of the local discovery cache.
+discovery :: MonadSync m => SyncM m (M.Map DeviceId [CacheEntry])
+discovery = query $ getRequest { path = "/rest/discovery" }
+
+-- | Returns the list of recent errors.
+errors :: MonadSync m => SyncM m [Error]
+errors = getErrors <$> errors'
+  where
+    errors' = query $ getRequest { path = "/rest/errors" }
+
+-- | Returns the ignores list.
+ignores :: MonadSync m => FolderName -> SyncM m Ignore
+ignores folder = query $ getRequest { path   = "/rest/ignores"
+                                    , params = [ ("folder", folder) ]
+                                    }
+
+-- | Returns information about the current status of a folder.
+model :: MonadSync m => FolderName -> SyncM m Model
+model folder = query $ getRequest { path   = "/rest/model"
+                                  , params = [("folder", folder)]
+                                  }
+
+-- | Returns lists of files which are needed by this device in order for it
+-- to become in sync. 
+need :: MonadSync m => FolderName -> SyncM m Need
+need folder = query $ getRequest { path   = "/rest/need"
+                                 , params = [ ("folder", folder) ]
+                                 }
+
+-- | Returns whether the config is in sync.
+sync :: MonadSync m => SyncM m Bool
+sync = getSync <$> sync'
+  where
+    sync' = query $ getRequest { path = "/rest/config/sync" }
+
+-- | Returns information about current system status and resource usage.
+system :: MonadSync m => SyncM m System
+system = query $ getRequest { path = "/rest/system" }
+
+-- | Checks for a possible upgrade.
+upgrade :: MonadSync m => SyncM m Upgrade
+upgrade = query $ getRequest { path   = "/rest/upgrade" }
+
+-- | Returns the current syncthing version information.
+version :: MonadSync m => SyncM m Version
+version = query $ getRequest { path = "/rest/version" }
 

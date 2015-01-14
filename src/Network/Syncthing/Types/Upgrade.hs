@@ -1,17 +1,14 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Get.Upgrade
+module Network.Syncthing.Types.Upgrade
     ( Upgrade(..)
-    , upgrade
     ) where
 
 import           Control.Applicative              ((<$>), (<*>))
 import           Control.Monad                    (MonadPlus (mzero))
 import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
 import           Data.Text                        (Text)
-import           Network.Syncthing.Internal.Query
-import           Network.Syncthing.Internal.Types
 
 
 data Upgrade = Upgrade {
@@ -19,9 +16,6 @@ data Upgrade = Upgrade {
     , getNewer   :: Bool
     , getRunning :: Text
     } deriving (Show)
-
-upgrade :: MonadSync m => SyncM m Upgrade
-upgrade = query $ getRequest { path   = "/rest/upgrade" }
 
 instance FromJSON Upgrade where
     parseJSON (Object v) =

@@ -1,10 +1,9 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Get.Model
+module Network.Syncthing.Types.Model
     ( Model(..)
     , ModelState(..)
-    , model
     ) where
 
 import           Control.Applicative              ((<$>), (<*>))
@@ -13,9 +12,6 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 import           Data.Time.Clock                  (UTCTime)
 
-import           Network.Syncthing.Common.Types
-import           Network.Syncthing.Internal.Query
-import           Network.Syncthing.Internal.Types
 import           Network.Syncthing.Utils          (toUTC)
 
 
@@ -42,11 +38,6 @@ data Model = Model {
     , getInvalid       :: Maybe Text
     , getModelVersion  :: Int
     } deriving (Show)
-
-model :: MonadSync m => FolderName -> SyncM m Model
-model folder = query $ getRequest { path   = "/rest/model"
-                                  , params = [("folder", folder)]
-                                  }
 
 instance FromJSON Model where
     parseJSON (Object v) =

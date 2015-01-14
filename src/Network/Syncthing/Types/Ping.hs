@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Common.Ping
+module Network.Syncthing.Types.Ping
     ( Ping(..)
     ) where
 

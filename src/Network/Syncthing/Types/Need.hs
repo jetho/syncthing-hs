@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Common.Need
+module Network.Syncthing.Types.Need
     ( Need(..)
     , Progress(..)
     ) where
@@ -19,13 +19,13 @@ data Need = Need {
     } deriving (Show)
 
 data Progress = Progress { 
-      getName         :: Text
-    , getFlags        :: Int
-    , getModified     :: Integer
-    , getVersion      :: Int
-    , getLocalVersion :: Int
-    , getNumBlocks    :: Int
-    , getSize         :: Integer
+      getName            :: Text
+    , getFlags           :: Int
+    , getModified        :: Integer
+    , getProgressVersion :: Int
+    , getLocalVersion    :: Int
+    , getNumBlocks       :: Int
+    , getSize            :: Integer
     } deriving (Show)
 
 instance FromJSON Progress where

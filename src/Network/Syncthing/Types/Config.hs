@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Common.Config
+module Network.Syncthing.Types.Config
     ( Config(..)
     , FolderConfig(..)
     , DeviceConfig(..)

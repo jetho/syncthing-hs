@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Common.Ignores
+module Network.Syncthing.Types.Ignore
     ( Ignore(..)
     ) where
 

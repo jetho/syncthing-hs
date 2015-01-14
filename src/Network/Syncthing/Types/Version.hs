@@ -1,17 +1,14 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Get.Version
+module Network.Syncthing.Types.Version
     ( Version(..)
-    , version
     ) where
 
 import           Control.Applicative              ((<$>), (<*>))
 import           Control.Monad                    (MonadPlus (mzero))
 import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
 import           Data.Text                        (Text)
-import           Network.Syncthing.Internal.Query
-import           Network.Syncthing.Internal.Types
 
 
 data Version = Version {
@@ -20,9 +17,6 @@ data Version = Version {
     , getOs          :: Text
     , getVersion     :: Text
     } deriving (Show)
-
-version :: MonadSync m => SyncM m Version
-version = query $ getRequest { path = "/rest/version" }
 
 instance FromJSON Version where
     parseJSON (Object v) =

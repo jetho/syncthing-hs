@@ -13,9 +13,42 @@
 -- Common type definitions.
 
 module Network.Syncthing.Types
-    (
-      module Network.Syncthing.Common.Types
+    ( 
+    -- * Type Synonyms
+      DeviceId
+    , FolderName
+    , Path
+    , Host
+    , Port
+    , Addr
+
+    -- * Defaults
+    , defaultFolder
+
+    -- * Data Types
+    , CacheEntry(..)
+    , Connection(..)
+    , Error(..)
+    , Ignore(..)
+    , Model(..)
+    , ModelState(..)
+    , Need(..)
+    , Progress(..)
+    , System(..)
+    , SystemMsg(..)
+    , Upgrade(..)
+    , Version(..)
     ) where
 
-import           Network.Syncthing.Common.Types
+import           Network.Syncthing.Types.CacheEntry
+import           Network.Syncthing.Types.Common
+import           Network.Syncthing.Types.Connection
+import           Network.Syncthing.Types.Error
+import           Network.Syncthing.Types.Ignore
+import           Network.Syncthing.Types.Model
+import           Network.Syncthing.Types.Need
+import           Network.Syncthing.Types.System
+import           Network.Syncthing.Types.SystemMsg
+import           Network.Syncthing.Types.Upgrade
+import           Network.Syncthing.Types.Version
 
