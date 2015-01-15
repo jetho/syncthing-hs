@@ -11,6 +11,7 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 
 
+-- | The current syncthing version information.
 data Version = Version {
       getArch        :: Text
     , getLongVersion :: Text

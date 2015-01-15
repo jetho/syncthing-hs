@@ -3,15 +3,12 @@
 
 module Network.Syncthing.Types.Common
     (
-    -- * Type Synonyms
       DeviceId
     , FolderName
     , Path
     , Host
     , Port
     , Addr
-
-    -- * Defaults
     , defaultFolder
     ) where
 
@@ -30,6 +27,7 @@ type Port       = Int
 
 type Addr       = (Host, Maybe Port)
 
+-- | The default folder name.
 defaultFolder :: FolderName
 defaultFolder = "default"
 

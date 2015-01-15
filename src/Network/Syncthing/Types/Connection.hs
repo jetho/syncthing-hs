@@ -15,6 +15,7 @@ import           Network.Syncthing.Types.Common   (Addr)
 import           Network.Syncthing.Utils          (parseAddr, toUTC)
 
 
+-- | Connection information and some associated metadata.
 data Connection = Connection {
       getAt            :: Maybe UTCTime
     , getInBytesTotal  :: Integer

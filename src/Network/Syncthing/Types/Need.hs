@@ -12,12 +12,15 @@ import           Data.Aeson          (FromJSON, Value (..), parseJSON, (.:))
 import           Data.Text           (Text)
 
 
+-- | Contains lists of files which are needed by a device for becoming in
+-- sync.
 data Need = Need {
       getProgress :: [Progress]
     , getQueued   :: [Text]
     , getRest     :: [Text]
     } deriving (Show)
 
+-- | A file that is currently downloading. 
 data Progress = Progress { 
       getName            :: Text
     , getFlags           :: Int

@@ -11,6 +11,7 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 
 
+-- | Information about the system status and resource usage.
 data System = System {
       getAlloc         :: Integer
     , getCpuPercent    :: Double

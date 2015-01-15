@@ -15,6 +15,7 @@ import           Data.Time.Clock                  (UTCTime)
 import           Network.Syncthing.Utils          (toUTC)
 
 
+-- | An error message and its timestamp.
 data Error = Error {
       getTime :: Maybe UTCTime
     , getMsg  :: Text

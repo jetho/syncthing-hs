@@ -11,6 +11,7 @@ import           Data.Aeson          (FromJSON, Value (..), parseJSON, (.:?))
 import           Data.Text           (Text)
 
 
+-- | Contains the ignores list and a list of all compiled ignore patterns.
 data Ignore = Ignore {
       getIgnores  :: Maybe [Text]
     , getPatterns :: Maybe [Text]

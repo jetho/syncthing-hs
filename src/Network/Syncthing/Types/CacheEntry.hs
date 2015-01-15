@@ -15,6 +15,7 @@ import           Network.Syncthing.Types.Common   (Addr)
 import           Network.Syncthing.Utils          (parseAddr, toUTC)
 
 
+-- | Represents an entry in the discovery cache.
 data CacheEntry = CacheEntry {
       getAddr :: Addr
     , getSeen :: Maybe UTCTime

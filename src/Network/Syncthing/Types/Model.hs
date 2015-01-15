@@ -15,6 +15,7 @@ import           Data.Time.Clock                  (UTCTime)
 import           Network.Syncthing.Utils          (toUTC)
 
 
+-- | The current state of activity of a folder.
 data ModelState
     = Idle
     | Scanning
@@ -22,6 +23,7 @@ data ModelState
     | Syncing
     deriving (Eq, Show)
 
+-- | Information about the current status of a folder.
 data Model = Model {
       getGlobalBytes   :: Integer
     , getGlobalDeleted :: Integer

@@ -12,6 +12,7 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 
 
+-- | System messages.
 data SystemMsg
     = Restarting
     | ShuttingDown

@@ -11,6 +11,7 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 
 
+-- | Information about the current software version and upgrade possibilities.
 data Upgrade = Upgrade {
       getLatest  :: Text
     , getNewer   :: Bool

@@ -47,7 +47,7 @@ import           Network.Syncthing.Types.SystemMsg
 querySystemMsg :: MonadSync m => SyncRequest -> SyncM m (Maybe SystemMsg)
 querySystemMsg = queryMaybe >=> return . join
 
--- | Ping the Syncthing server. Returns the string \"Pong\".
+-- | Ping the Syncthing server. Returns the string \"pong\".
 ping :: MonadSync m => SyncM m Text
 ping = getPing <$> ping'
   where

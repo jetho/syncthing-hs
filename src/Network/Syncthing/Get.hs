@@ -53,7 +53,7 @@ import           Network.Syncthing.Types.Upgrade
 import           Network.Syncthing.Types.Version
 
 
--- | Ping the Syncthing server. Returns the string \"Pong\".
+-- | Ping the Syncthing server. Returns the string \"pong\".
 ping :: MonadSync m => SyncM m Text
 ping = getPing <$> ping'
   where
