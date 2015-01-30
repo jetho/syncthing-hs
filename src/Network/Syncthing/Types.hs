@@ -21,10 +21,7 @@ module Network.Syncthing.Types
     , Host
     , Port
     , Addr
-
-    -- * Defaults
-    , defaultFolder
-
+    
     -- * Data Types
     , CacheEntry(..)
     , Connection(..)

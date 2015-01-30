@@ -16,7 +16,11 @@
 
 module Network.Syncthing.Post
     ( 
-      ping
+    -- * Defaults
+      defaultFolder
+
+    -- * Request functions
+    , ping
     , bump
     , hint
     , sendError

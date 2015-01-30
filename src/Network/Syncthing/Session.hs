@@ -56,7 +56,7 @@ module Network.Syncthing.Session
     , closeSyncSession
     , withSyncSession
 
-    -- * Run requests
+    -- * Running requests
     , runSyncSession
     ) where
 

@@ -15,7 +15,11 @@
 
 module Network.Syncthing.Get
     (
-      ping
+    -- * Defaults
+      defaultFolder
+
+    -- * Request functions
+    , ping
     , completion
     , connections
     , deviceId
