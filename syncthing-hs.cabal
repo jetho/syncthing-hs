@@ -29,6 +29,7 @@ library
                      Network.Syncthing.Types.CacheEntry
                      Network.Syncthing.Types.Common
                      Network.Syncthing.Types.Completion
+                     Network.Syncthing.Types.Config
                      Network.Syncthing.Types.Connection
                      Network.Syncthing.Types.DeviceId
                      Network.Syncthing.Types.Error

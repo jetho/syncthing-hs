@@ -24,6 +24,13 @@ module Network.Syncthing.Types
     
     -- * Data Types
     , CacheEntry(..)
+    , Config(..)
+    , AddressType(..)
+    , FolderConfig(..)
+    , DeviceConfig(..)
+    , VersioningConfig(..)
+    , GuiConfig(..)
+    , OptionsConfig(..)
     , Connection(..)
     , Error(..)
     , Ignore(..)
@@ -38,6 +45,7 @@ module Network.Syncthing.Types
     ) where
 
 import           Network.Syncthing.Types.CacheEntry
+import           Network.Syncthing.Types.Config
 import           Network.Syncthing.Types.Common
 import           Network.Syncthing.Types.Connection
 import           Network.Syncthing.Types.Error

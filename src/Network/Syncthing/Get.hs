@@ -20,6 +20,8 @@ module Network.Syncthing.Get
 
     -- * Request functions
     , ping
+    , apiKey
+    , config
     , completion
     , connections
     , deviceId
@@ -43,6 +45,7 @@ import           Network.Syncthing.Internal.Query
 import           Network.Syncthing.Internal.Types
 import           Network.Syncthing.Types.CacheEntry
 import           Network.Syncthing.Types.Common
+import           Network.Syncthing.Types.Config
 import           Network.Syncthing.Types.Completion
 import           Network.Syncthing.Types.Connection
 import           Network.Syncthing.Types.DeviceId   ()
@@ -62,6 +65,14 @@ ping :: MonadSync m => SyncM m Text
 ping = getPing <$> ping'
   where
     ping' = query $ getRequest { path = "/rest/ping" }
+
+-- | Returns the current configuration.
+config :: MonadSync m => SyncM m Config
+config = query $ getRequest { path = "/rest/config" }
+
+-- | Get the API Key if available.
+apiKey :: MonadSync m => SyncM m (Maybe Text)
+apiKey = getApiKey . getGuiConfig <$> config
 
 -- | Returns the completion percentage (0 to 100) for a given device and
 -- folder. 
