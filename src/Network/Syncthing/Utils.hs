@@ -6,14 +6,16 @@ module Network.Syncthing.Utils
     , decodeDeviceError
     , toUTC
     , parseAddr
+    , encodeAddr
     ) where
 
+import           Control.Applicative              ((<$>))
 import           Control.Arrow                    (second, (***))
 import           Data.ByteString.Lazy             (ByteString)
 import           Data.ByteString.Lazy.Char8       (unpack)
 import           Data.List                        (find)
 import           Data.Maybe                       (fromMaybe)
-import qualified Data.Text                        as T (Text, pack, unpack)
+import qualified Data.Text                        as T
 import           Data.Time.Clock                  (UTCTime)
 import           Data.Time.Format                 (parseTime)
 import           System.Locale                    (defaultTimeLocale)
@@ -68,4 +70,10 @@ parseAddr s =
 
 split :: (Char -> Bool) -> String -> (String, String)
 split p = (second $ drop 1) . break p
+
+encodeAddr :: Addr -> Server
+encodeAddr (host, maybePort) = host `T.append` portSuffix
+  where 
+    portSuffix = fromMaybe "" portPart
+    portPart   = T.pack . (:) ':' . show <$> maybePort
 

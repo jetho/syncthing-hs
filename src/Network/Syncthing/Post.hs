@@ -41,11 +41,9 @@ import           Data.Text                        (Text)
 
 import           Network.Syncthing.Internal.Query
 import           Network.Syncthing.Internal.Types
-import           Network.Syncthing.Types.Common
-import           Network.Syncthing.Types.Ignore
-import           Network.Syncthing.Types.Need
-import           Network.Syncthing.Types.Ping
-import           Network.Syncthing.Types.SystemMsg
+import           Network.Syncthing.Types
+import           Network.Syncthing.Types.Common   (defaultFolder)
+import           Network.Syncthing.Types.Ping     (getPing)
 
 
 querySystemMsg :: MonadSync m => SyncRequest -> SyncM m (Maybe SystemMsg)

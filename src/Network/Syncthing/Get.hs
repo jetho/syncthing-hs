@@ -43,21 +43,13 @@ import           Data.Text                          (Text)
 
 import           Network.Syncthing.Internal.Query
 import           Network.Syncthing.Internal.Types
-import           Network.Syncthing.Types.CacheEntry
-import           Network.Syncthing.Types.Common
-import           Network.Syncthing.Types.Config
-import           Network.Syncthing.Types.Completion
-import           Network.Syncthing.Types.Connection
+import           Network.Syncthing.Types
+import           Network.Syncthing.Types.Common     (defaultFolder)
+import           Network.Syncthing.Types.Completion (getCompletion)
+import           Network.Syncthing.Types.Ping       (getPing)
+import           Network.Syncthing.Types.Sync       (getSync)
+import           Network.Syncthing.Types.Error      (getErrors)
 import           Network.Syncthing.Types.DeviceId   ()
-import           Network.Syncthing.Types.Error
-import           Network.Syncthing.Types.Ignore
-import           Network.Syncthing.Types.Model
-import           Network.Syncthing.Types.Need
-import           Network.Syncthing.Types.Ping
-import           Network.Syncthing.Types.Sync
-import           Network.Syncthing.Types.System
-import           Network.Syncthing.Types.Upgrade
-import           Network.Syncthing.Types.Version
 
 
 -- | Ping the Syncthing server. Returns the string \"pong\".
