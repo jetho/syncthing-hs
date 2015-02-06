@@ -46,6 +46,15 @@ instance FromJSON Config where
                <*> (v .: "Options")
     parseJSON _          = mzero
 
+instance ToJSON Config where
+    toJSON Config {..} =
+        object [ "Version"  .= getConfigVersion
+               , "Folders"  .= getFolderConfigs
+               , "Devices"  .= getDeviceConfigs
+               , "GUI"      .= getGuiConfig
+               , "Options"  .= getOptionsConfig
+               ]
+
 
 -------------------------------------------------------------------------------
 -- ADDRESS TYPE -----
@@ -60,6 +69,10 @@ data AddressType =
 decodeAddressType :: Text -> AddressType
 decodeAddressType "dynamic" = Dynamic
 decodeAddressType addr      = Address $ parseAddr addr
+
+encodeAddressType :: AddressType -> Text
+encodeAddressType Dynamic        = "dynamic"
+encodeAddressType (Address addr) = encodeAddr addr
 
 
 -------------------------------------------------------------------------------
@@ -98,6 +111,22 @@ instance FromJSON FolderConfig where
                      <*> (v .: "Invalid")
     parseJSON _          = mzero
 
+instance ToJSON FolderConfig where
+    toJSON FolderConfig {..} = 
+        object [ "ID"              .= getId             
+               , "Path"            .= getPath           
+               , "Devices"         .= map FolderDeviceConfig getFolderDevices
+               , "ReadOnly"        .= getReadOnly       
+               , "RescanIntervalS" .= getRescanIntervalS
+               , "IgnorePerms"     .= getIgnorePerms    
+               , "Versioning"      .= getVersioning     
+               , "LenientMtimes"   .= getLenientMtimes  
+               , "Copiers"         .= getCopiers        
+               , "Pullers"         .= getPullers        
+               , "Finishers"       .= getFinishers      
+               , "Invalid"         .= getFolderInvalid  
+               ]
+
 
 -------------------------------------------------------------------------------
 -- VERSIONING CONFIG -----
@@ -114,6 +143,12 @@ instance FromJSON VersioningConfig where
         VersioningConfig <$> (v .: "Type")
                          <*> (v .: "Params")
     parseJSON _          = mzero
+
+instance ToJSON VersioningConfig where
+    toJSON VersioningConfig {..} =
+        object [ "Type"   .= getType
+               , "Params" .= getParams
+               ]
 
 
 -------------------------------------------------------------------------------
@@ -140,6 +175,16 @@ instance FromJSON DeviceConfig where
                      <*> (v .: "Introducer")
     parseJSON _          = mzero
 
+instance ToJSON DeviceConfig where
+    toJSON DeviceConfig {..} =
+        object [ "DeviceID"     .= getDeviceId
+               , "Name"         .= getDeviceName
+               , "Addresses"    .= map encodeAddressType getAddresses 
+               , "Compression"  .= getCompression 
+               , "CertName"     .= getCertName 
+               , "Introducer"   .= getIntroducer 
+               ]
+
 
 -------------------------------------------------------------------------------
 -- FOLDER-DEVICE CONFIG -----
@@ -152,6 +197,10 @@ data FolderDeviceConfig = FolderDeviceConfig {
 instance FromJSON FolderDeviceConfig where
     parseJSON (Object v) = FolderDeviceConfig <$> (v .: "DeviceID")
     parseJSON _          = mzero
+
+instance ToJSON FolderDeviceConfig where
+    toJSON (FolderDeviceConfig deviceId) = 
+        object [ "DeviceID" .= deviceId ]
 
 
 -------------------------------------------------------------------------------
@@ -248,4 +297,29 @@ instance FromJSON OptionsConfig where
                       <*> (v .: "ProgressUpdateIntervalS")
                       <*> (v .: "SymlinksEnabled")
     parseJSON _          = mzero
+
+instance ToJSON OptionsConfig where
+    toJSON OptionsConfig {..} =
+        object [ "ListenAddress"           .= map encodeAddr getListenAddress          
+               , "GlobalAnnServers"        .= getGlobalAnnServers          
+               , "GlobalAnnEnabled"        .= getGlobalAnnEnabled          
+               , "LocalAnnEnabled"         .= getLocalAnnEnabled          
+               , "LocalAnnPort"            .= getLocalAnnPort           
+               , "LocalAnnMCAddr"          .= getLocalAnnMCAddr          
+               , "MaxSendKbps"             .= getMaxSendKbps            
+               , "MaxRecvKbps"             .= getMaxRecvKbps            
+               , "ReconnectIntervalS"      .= getReconnectIntervalS          
+               , "StartBrowser"            .= getStartBrowser           
+               , "UPnPEnabled"             .= getUPnPEnabled            
+               , "UPnPLease"               .= getUPnPLease              
+               , "UPnPRenewal"             .= getUPnPRenewal            
+               , "URAccepted"              .= getURAccepted             
+               , "URUniqueID"              .= getURUniqueID             
+               , "RestartOnWakeup"         .= getRestartOnWakeup          
+               , "AutoUpgradeIntervalH"    .= getAutoUpgradeIntervalH          
+               , "KeepTemporariesH"        .= getKeepTemporariesH          
+               , "CacheIgnoredFiles"       .= getCacheIgnoredFiles          
+               , "ProgressUpdateIntervalS" .= getProgressUpdateIntervalS          
+               , "SymlinksEnabled"         .= getSymlinksEnabled          
+               ]
 

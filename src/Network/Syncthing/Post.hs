@@ -23,6 +23,7 @@ module Network.Syncthing.Post
     , ping
     , bump
     , hint
+    , sendConfig
     , sendError
     , clearErrors
     , sendIgnores
@@ -68,6 +69,14 @@ hint device server=
     send $ postRequest { path   = "/rest/discovery/hint"
                        , params = [("device", device), ("addr", server)]
                        }
+ 
+-- | Update the server configuration. The configuration will be saved to
+-- disk and the configInSync flag set to false. 'Network.Syncthing.Post.restart' Syncthing to
+-- activate.
+sendConfig :: MonadSync m => Config -> SyncM m ()
+sendConfig cfg = send $ postRequest { path   = "/rest/config"
+                                     , method = post cfg
+                                     }
 
 -- | Register a new error message.
 sendError :: MonadSync m => Text -> SyncM m ()
