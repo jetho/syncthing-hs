@@ -97,7 +97,7 @@ runSyncSession = syncthing . getConfig
 -- /Examples:/
 --
 -- @
--- 'withSyncSession' defaultConfig $ \\session ->
+-- 'withSyncSession' 'defaultConfig' $ \\session ->
 --     'runSyncSession' session $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
 -- @

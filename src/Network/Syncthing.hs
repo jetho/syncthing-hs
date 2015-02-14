@@ -61,6 +61,7 @@ module Network.Syncthing
     -- * Multiple requests and connection sharing
     , withManager
     , withManagerNoVerify
+    , withManager'
 
     -- * Configuration
     , SyncConfig
@@ -105,6 +106,11 @@ instance MonadSync IO where
 
 -- | Creates a default configuration with a new manager for connection
 -- sharing. The manager is released after running the Syncthing actions(s).
+-- This is equivalent to:
+--
+-- @
+-- 'withManager'' 'defaultManagerSettings'
+-- @
 --
 -- /Examples:/
 --
@@ -120,7 +126,13 @@ instance MonadSync IO where
 withManager :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManager = withManager' defaultManagerSettings
 
--- | Creates a manager with disabled SSL certificate verification.
+-- | Creates a manager with disabled SSL certificate verification. 
+--
+-- This is equivalent to:
+--
+-- @
+-- 'withManager'' 'noSSLVerifyManagerSettings'
+-- @
 --
 -- /Example:/
 --
@@ -132,6 +144,15 @@ withManager = withManager' defaultManagerSettings
 withManagerNoVerify :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
+-- | Creates a manager by using the given manager settings.
+--
+-- /Example:/
+--
+-- @
+-- 'withManager'' 'noSSLVerifyManagerSettings' $ \\cfg -> do
+--     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+-- @
 withManager' :: HTTP.ManagerSettings -> (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManager' settings act =
     HTTP.withManager settings $ \mgr ->
