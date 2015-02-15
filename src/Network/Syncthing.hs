@@ -24,15 +24,15 @@
 --
 -- import qualified "Network.Wreq" as Wreq
 -- import "Control.Monad" ('Control.Monad.liftM2')
--- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'))
+-- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'), ('Control.Lens.?~'))
 -- import "Network.Syncthing"
 -- import "Network.Syncthing.Get" ('Network.Syncthing.Get.ping', 'Network.Syncthing.Get.version')
 --
 -- \-\- A single Syncthing request.
 -- single = 'syncthing' 'defaultConfig' 'Network.Syncthing.Get.ping'
 --
--- \-\- Using the default configuration for multiple requests is very inefficient because
--- \-\- a new connection manager gets created for each request. It's recommended to use
+-- \-\- Running multiple requests with the default configuration is somewhat inefficient 
+-- \-\- since a new connection manager is created for each request. It's recommended using
 -- \-\- the 'withManager' function which allows connection sharing among multiple requests.
 -- multiple1 = 'withManager' $ \\cfg ->
 --     'syncthing' cfg $ do
@@ -44,7 +44,7 @@
 -- multiple2 = 'withManager' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --                    'Control.Lens.&' 'pHttps'  'Control.Lens..~' True
---                    'Control.Lens.&' 'pAuth'   'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
+--                    'Control.Lens.&' 'pAuth'   'Control.Lens.?~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
 
@@ -127,7 +127,6 @@ withManager :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManager = withManager' defaultManagerSettings
 
 -- | Creates a manager with disabled SSL certificate verification. 
---
 -- This is equivalent to:
 --
 -- @
@@ -144,7 +143,7 @@ withManager = withManager' defaultManagerSettings
 withManagerNoVerify :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
--- | Creates a manager by using the given manager settings.
+-- | Creates a manager by using the provided manager settings.
 --
 -- /Example:/
 --
@@ -226,7 +225,7 @@ pApiKey  = PL.pApiKey
 -- import qualified "Network.Wreq" as Wreq
 --
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
---                         'Control.Lens.&' 'pAuth'  'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
+--                         'Control.Lens.&' 'pAuth'  'Control.Lens.?~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 -- 'syncthing' cfg 'Network.Syncthing.Get.ping'
 -- @
 pAuth :: Lens' SyncConfig (Maybe W.Auth)

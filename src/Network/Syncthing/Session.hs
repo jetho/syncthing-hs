@@ -104,7 +104,7 @@ runSyncSession = syncthing . getConfig
 -- import qualified "Network.Wreq" as Wreq
 --
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps'  'Control.Lens..~' True
---                         'Control.Lens.&' 'pAuth'   'Control.Lens..~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
+--                         'Control.Lens.&' 'pAuth'   'Control.Lens.?~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 --                         'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
 -- 'withSyncSession' cfg $ \\session ->
 --     'runSyncSession' session $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
