@@ -27,12 +27,17 @@ import Network.Syncthing
 import qualified Network.Syncthing.Get as Get
 import qualified Network.Syncthing.Post as Post
  ```
- 
+
 ### The default Syncthing configuration
 
  ```haskell
 λ: print defaultConfig
-SyncConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHttps = False, pManager = Left _ }
+SyncConfig { pServer = "127.0.0.1:8080"
+           , pApiKey = Nothing
+           , pAuth = Nothing
+           , pHttps = False
+           , pManager = Left _ 
+           }
  ```
  
 ### Customizing the default Syncthing configuration
@@ -43,7 +48,12 @@ SyncConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHt
                            & pHttps  .~ True
                            & pAuth   ?~ W.basicAuth "user" "pass"
 λ: print cfg
-SyncConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Just (BasicAuth "user" "pass"), pHttps = True, pManager = Left _ }
+SyncConfig { pServer = "192.168.0.10:8080"
+           , pApiKey = Just "XXXX"
+           , pAuth = Just (BasicAuth "user" "pass")
+           , pHttps = True
+           , pManager = Left _ 
+           }
  ```
 
 ### A single Syncthing request
