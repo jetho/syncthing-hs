@@ -74,7 +74,7 @@ withManager $ \cfg ->
         return (p, v)
  ```
  
-### Multiple requests with connection sharing and customized configuration
+### Multiple requests with customized configuration
 
  ```haskell
 import Control.Monad (liftM2)
