@@ -113,7 +113,7 @@ Right (Just Restarting)
 Manual session handling is convenient if you need longer-lived sessions instead of "one-shot" requests.
 You can create a session by applying "newSyncSession" to your syncthing configuration.
 Because of connection sharing you should reuse the session whenever possible.
-The session has to be closed if it isn't needed anymore.
+The session has to be closed when it isn't going to be used anymore.
 
  ```haskell 
 import Network.Syncthing.Session
