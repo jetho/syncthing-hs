@@ -43,7 +43,6 @@ library
                      Network.Syncthing.Types.Upgrade
                      Network.Syncthing.Types.Version
   -- other-extensions:    
-  hs-source-dirs:    src
   build-depends:       aeson >=0.8.0.1
                      , base >=4.5 && <5
                      , bytestring >=0.9
