@@ -11,8 +11,8 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 import           Data.Time.Clock                  (UTCTime)
 
+import           Network.Syncthing.Internal.Utils (parseAddr, toUTC)
 import           Network.Syncthing.Types.Common   (Addr)
-import           Network.Syncthing.Utils          (parseAddr, toUTC)
 
 
 -- | Connection information and some associated metadata.

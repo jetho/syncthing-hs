@@ -1,6 +1,6 @@
 
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Network.Syncthing.Types.Config
     ( Config(..)
@@ -12,15 +12,15 @@ module Network.Syncthing.Types.Config
     , AddressType(..)
     ) where
 
-import           Control.Applicative            ((<$>), (<*>))
-import           Control.Monad                  (MonadPlus (mzero))
-import           Data.Aeson                     
-import qualified Data.Map                       as M
-import           Data.Maybe                     (fromMaybe)
-import           Data.Text                      (Text, cons, uncons)
+import           Control.Applicative              ((<$>), (<*>))
+import           Control.Monad                    (MonadPlus (mzero))
+import           Data.Aeson
+import qualified Data.Map                         as M
+import           Data.Maybe                       (fromMaybe)
+import           Data.Text                        (Text, cons, uncons)
 
+import           Network.Syncthing.Internal.Utils
 import           Network.Syncthing.Types.Common
-import           Network.Syncthing.Utils
 
 
 
@@ -110,18 +110,18 @@ instance FromJSON FolderConfig where
     parseJSON _          = mzero
 
 instance ToJSON FolderConfig where
-    toJSON FolderConfig {..} = 
-        object [ "ID"              .= getId             
-               , "Path"            .= getPath           
+    toJSON FolderConfig {..} =
+        object [ "ID"              .= getId
+               , "Path"            .= getPath
                , "Devices"         .= map FolderDeviceConfig getFolderDevices
-               , "ReadOnly"        .= getReadOnly       
+               , "ReadOnly"        .= getReadOnly
                , "RescanIntervalS" .= getRescanIntervalS
-               , "IgnorePerms"     .= getIgnorePerms    
-               , "Versioning"      .= getVersioning     
-               , "LenientMtimes"   .= getLenientMtimes  
-               , "Copiers"         .= getCopiers        
-               , "Pullers"         .= getPullers        
-               , "Invalid"         .= getFolderInvalid  
+               , "IgnorePerms"     .= getIgnorePerms
+               , "Versioning"      .= getVersioning
+               , "LenientMtimes"   .= getLenientMtimes
+               , "Copiers"         .= getCopiers
+               , "Pullers"         .= getPullers
+               , "Invalid"         .= getFolderInvalid
                ]
 
 
@@ -176,10 +176,10 @@ instance ToJSON DeviceConfig where
     toJSON DeviceConfig {..} =
         object [ "DeviceID"     .= getDeviceId
                , "Name"         .= getDeviceName
-               , "Addresses"    .= map encodeAddressType getAddresses 
-               , "Compression"  .= getCompression 
-               , "CertName"     .= getCertName 
-               , "Introducer"   .= getIntroducer 
+               , "Addresses"    .= map encodeAddressType getAddresses
+               , "Compression"  .= getCompression
+               , "CertName"     .= getCertName
+               , "Introducer"   .= getIntroducer
                ]
 
 
@@ -196,7 +196,7 @@ instance FromJSON FolderDeviceConfig where
     parseJSON _          = mzero
 
 instance ToJSON FolderDeviceConfig where
-    toJSON (FolderDeviceConfig deviceId) = 
+    toJSON (FolderDeviceConfig deviceId) =
         object [ "DeviceID" .= deviceId ]
 
 
@@ -228,17 +228,17 @@ instance ToJSON GuiConfig where
     toJSON GuiConfig {..} =
         object [ "Enabled"  .= getEnabled
                , "APIKey"   .= encodeApiKey getApiKey
-               , "Address"  .= encodeAddr getGuiAddress 
-               , "User"     .= getUser 
-               , "Password" .= getPassword 
-               , "UseTLS"   .= getUseTLS 
+               , "Address"  .= encodeAddr getGuiAddress
+               , "User"     .= getUser
+               , "Password" .= getPassword
+               , "UseTLS"   .= getUseTLS
                ]
 
 decodeApiKey :: Text -> Maybe Text
 decodeApiKey = (uncurry cons `fmap`) . uncons
 
 encodeApiKey :: Maybe Text -> Text
-encodeApiKey = fromMaybe "" 
+encodeApiKey = fromMaybe ""
 
 
 -------------------------------------------------------------------------------
@@ -297,26 +297,26 @@ instance FromJSON OptionsConfig where
 
 instance ToJSON OptionsConfig where
     toJSON OptionsConfig {..} =
-        object [ "ListenAddress"           .= map encodeAddr getListenAddress          
-               , "GlobalAnnServers"        .= getGlobalAnnServers          
-               , "GlobalAnnEnabled"        .= getGlobalAnnEnabled          
-               , "LocalAnnEnabled"         .= getLocalAnnEnabled          
-               , "LocalAnnPort"            .= getLocalAnnPort           
-               , "LocalAnnMCAddr"          .= getLocalAnnMCAddr          
-               , "MaxSendKbps"             .= getMaxSendKbps            
-               , "MaxRecvKbps"             .= getMaxRecvKbps            
-               , "ReconnectIntervalS"      .= getReconnectIntervalS          
-               , "StartBrowser"            .= getStartBrowser           
-               , "UPnPEnabled"             .= getUPnPEnabled            
-               , "UPnPLease"               .= getUPnPLease              
-               , "UPnPRenewal"             .= getUPnPRenewal            
-               , "URAccepted"              .= getURAccepted             
-               , "URUniqueID"              .= getURUniqueID             
-               , "RestartOnWakeup"         .= getRestartOnWakeup          
-               , "AutoUpgradeIntervalH"    .= getAutoUpgradeIntervalH          
-               , "KeepTemporariesH"        .= getKeepTemporariesH          
-               , "CacheIgnoredFiles"       .= getCacheIgnoredFiles          
-               , "ProgressUpdateIntervalS" .= getProgressUpdateIntervalS          
-               , "SymlinksEnabled"         .= getSymlinksEnabled          
+        object [ "ListenAddress"           .= map encodeAddr getListenAddress
+               , "GlobalAnnServers"        .= getGlobalAnnServers
+               , "GlobalAnnEnabled"        .= getGlobalAnnEnabled
+               , "LocalAnnEnabled"         .= getLocalAnnEnabled
+               , "LocalAnnPort"            .= getLocalAnnPort
+               , "LocalAnnMCAddr"          .= getLocalAnnMCAddr
+               , "MaxSendKbps"             .= getMaxSendKbps
+               , "MaxRecvKbps"             .= getMaxRecvKbps
+               , "ReconnectIntervalS"      .= getReconnectIntervalS
+               , "StartBrowser"            .= getStartBrowser
+               , "UPnPEnabled"             .= getUPnPEnabled
+               , "UPnPLease"               .= getUPnPLease
+               , "UPnPRenewal"             .= getUPnPRenewal
+               , "URAccepted"              .= getURAccepted
+               , "URUniqueID"              .= getURUniqueID
+               , "RestartOnWakeup"         .= getRestartOnWakeup
+               , "AutoUpgradeIntervalH"    .= getAutoUpgradeIntervalH
+               , "KeepTemporariesH"        .= getKeepTemporariesH
+               , "CacheIgnoredFiles"       .= getCacheIgnoredFiles
+               , "ProgressUpdateIntervalS" .= getProgressUpdateIntervalS
+               , "SymlinksEnabled"         .= getSymlinksEnabled
                ]
 

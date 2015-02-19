@@ -96,7 +96,7 @@ import qualified Network.Wreq                     as W
 
 import qualified Network.Syncthing.Internal.Lens  as PL
 import           Network.Syncthing.Internal.Types
-import           Network.Syncthing.Utils          (decodeError)
+import           Network.Syncthing.Internal.Utils (decodeError)
 
 
 -- | Use Wreq's getWith and postWith functions when running in IO

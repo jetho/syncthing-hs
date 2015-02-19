@@ -12,7 +12,7 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 import           Data.Time.Clock                  (UTCTime)
 
-import           Network.Syncthing.Utils          (toUTC)
+import           Network.Syncthing.Internal.Utils (toUTC)
 
 
 -- | An error message and its timestamp.

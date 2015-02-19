@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Utils
+module Network.Syncthing.Internal.Utils
     ( decodeError
     , decodeDeviceError
     , toUTC

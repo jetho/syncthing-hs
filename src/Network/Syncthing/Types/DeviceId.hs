@@ -11,8 +11,8 @@ import           Data.HashMap.Lazy                (member)
 import           Data.Text                        ()
 
 import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Internal.Utils (decodeDeviceError)
 import           Network.Syncthing.Types.Common
-import           Network.Syncthing.Utils          (decodeDeviceError)
 
 
 instance FromJSON (Either DeviceError DeviceId) where
