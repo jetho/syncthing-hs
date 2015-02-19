@@ -17,7 +17,7 @@ data Version = Version {
     , getLongVersion :: Text
     , getOs          :: Text
     , getVersion     :: Text
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON Version where
     parseJSON (Object v) =

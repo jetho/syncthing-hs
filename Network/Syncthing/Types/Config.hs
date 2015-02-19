@@ -35,7 +35,7 @@ data Config = Config {
     , getDeviceConfigs :: [DeviceConfig]
     , getGuiConfig     :: GuiConfig
     , getOptionsConfig :: OptionsConfig
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON Config where
     parseJSON (Object v) =
@@ -91,9 +91,8 @@ data FolderConfig = FolderConfig {
     , getLenientMtimes   :: Bool
     , getCopiers         :: Int
     , getPullers         :: Int
-    , getFinishers       :: Int
     , getFolderInvalid   :: Text
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON FolderConfig where
     parseJSON (Object v) =
@@ -107,7 +106,6 @@ instance FromJSON FolderConfig where
                      <*> (v .: "LenientMtimes")
                      <*> (v .: "Copiers")
                      <*> (v .: "Pullers")
-                     <*> (v .: "Finishers")
                      <*> (v .: "Invalid")
     parseJSON _          = mzero
 
@@ -123,7 +121,6 @@ instance ToJSON FolderConfig where
                , "LenientMtimes"   .= getLenientMtimes  
                , "Copiers"         .= getCopiers        
                , "Pullers"         .= getPullers        
-               , "Finishers"       .= getFinishers      
                , "Invalid"         .= getFolderInvalid  
                ]
 
@@ -136,7 +133,7 @@ instance ToJSON FolderConfig where
 data VersioningConfig = VersioningConfig {
       getType   :: Text
     , getParams :: M.Map Text Text
-    } deriving Show
+    } deriving (Eq, Show)
 
 instance FromJSON VersioningConfig where
     parseJSON (Object v) =
@@ -163,7 +160,7 @@ data DeviceConfig = DeviceConfig {
     , getCompression :: Bool
     , getCertName    :: Text
     , getIntroducer  :: Bool
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON DeviceConfig where
     parseJSON (Object v) =
@@ -192,7 +189,7 @@ instance ToJSON DeviceConfig where
 
 data FolderDeviceConfig = FolderDeviceConfig {
       getFolderDeviceId :: DeviceId
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON FolderDeviceConfig where
     parseJSON (Object v) = FolderDeviceConfig <$> (v .: "DeviceID")
@@ -215,7 +212,7 @@ data GuiConfig = GuiConfig {
     , getUser       :: Text
     , getPassword   :: Text
     , getUseTLS     :: Bool
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON GuiConfig where
     parseJSON (Object v) =
@@ -271,7 +268,7 @@ data OptionsConfig = OptionsConfig {
     , getCacheIgnoredFiles       :: Bool
     , getProgressUpdateIntervalS :: Int
     , getSymlinksEnabled         :: Bool
-} deriving (Show)
+} deriving (Eq, Show)
 
 instance FromJSON OptionsConfig where
     parseJSON (Object v) =
