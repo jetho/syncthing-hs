@@ -52,9 +52,15 @@ module Network.Syncthing
     (
     -- * Types
       Server
-    , SyncResult
+    , DeviceId
+    , FolderName
+    , Path
+    , Host
+    , Port
+    , Addr
 
     -- * The Syncthing Monad
+    , SyncResult
     , SyncM
     , syncthing
 
@@ -70,7 +76,10 @@ module Network.Syncthing
     , pAuth
     , pHttps
     , pManager
+
+    -- * Defaults
     , defaultConfig
+    , defaultFolder
 
     -- * Manager Settings
     , defaultManagerSettings
@@ -79,6 +88,35 @@ module Network.Syncthing
     -- * Error Handling
     , DeviceError(..)
     , SyncError(..)
+
+    -- * Data Types
+    , CacheEntry(..)
+    , Config(..)
+    , AddressType(..)
+    , FolderConfig(..)
+    , DeviceConfig(..)
+    , VersioningConfig(..)
+    , GuiConfig(..)
+    , OptionsConfig(..)
+    , Connection(..)
+    , Error(..)
+    , Ignore(..)
+    , Model(..)
+    , ModelState(..)
+    , Need(..)
+    , Progress(..)
+    , Sync(..)
+    , System(..)
+    , SystemMsg(..)
+    , Upgrade(..)
+    , Version(..)
+    , Ping(..)
+    , Completion(..)
+
+    -- * Utility functions
+    , parseAddr 
+    , encodeAddr
+    , toUTC
     ) where
 
 import           Control.Applicative              ((<$>))
@@ -94,9 +132,27 @@ import qualified Network.HTTP.Client              as HTTP
 import           Network.HTTP.Client.TLS          (mkManagerSettings, tlsManagerSettings)
 import qualified Network.Wreq                     as W
 
+import           Network.Syncthing.Internal.Config
+import           Network.Syncthing.Internal.Error
 import qualified Network.Syncthing.Internal.Lens  as PL
-import           Network.Syncthing.Internal.Types
-import           Network.Syncthing.Internal.Utils (decodeError)
+import           Network.Syncthing.Internal.Monad
+import           Network.Syncthing.Internal.Utils
+
+import           Network.Syncthing.Types.CacheEntry
+import           Network.Syncthing.Types.Config
+import           Network.Syncthing.Types.Common
+import           Network.Syncthing.Types.Completion
+import           Network.Syncthing.Types.Connection
+import           Network.Syncthing.Types.Error
+import           Network.Syncthing.Types.Ignore
+import           Network.Syncthing.Types.Model
+import           Network.Syncthing.Types.Need
+import           Network.Syncthing.Types.Ping
+import           Network.Syncthing.Types.Sync
+import           Network.Syncthing.Types.System
+import           Network.Syncthing.Types.SystemMsg
+import           Network.Syncthing.Types.Upgrade
+import           Network.Syncthing.Types.Version
 
 
 -- | Use Wreq's getWith and postWith functions when running in IO

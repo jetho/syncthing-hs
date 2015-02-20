@@ -48,8 +48,7 @@
 module Network.Syncthing.Session
     (
     -- * Types
-      SyncResult
-    , SyncSession
+      SyncSession
 
     -- * Session Management
     , newSyncSession
@@ -65,7 +64,7 @@ import           Control.Lens                     ((&), (.~), (^.))
 import           Network.HTTP.Client              (closeManager, newManager)
 
 import           Network.Syncthing
-import           Network.Syncthing.Internal.Types ()
+
 
 -- | Holds the session configuration and the connection manager.
 newtype SyncSession = SyncSession { getConfig :: SyncConfig }

@@ -2,24 +2,46 @@
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Query
-    ( query
+module Network.Syncthing.Internal.Request
+    ( Param
+    , HttpMethod(..)
+    , SyncRequest(..)
+    , query
     , queryMaybe
     , send
+    , get
+    , post
+    , getRequest
+    , postRequest
     ) where
 
-import           Control.Lens                     ((&), (.~), (^.))
-import           Control.Monad                    ((<=<), (>=>))
-import           Control.Monad.Trans.Reader       (ask)
-import           Data.Aeson                       (FromJSON, decode, eitherDecode)
-import           Data.ByteString.Lazy             (ByteString)
-import           Data.Text                        (unpack)
-import           Data.Text.Encoding               (encodeUtf8)
-import qualified Network.Wreq                     as W
+import           Control.Lens                      ((&), (.~), (^.))
+import           Control.Monad                     ((<=<), (>=>))
+import           Control.Monad.Trans.Reader        (ask)
+import           Data.Aeson                        
+import           Data.ByteString.Lazy              (ByteString)
+import qualified Data.Text                         as T
+import           Data.Text.Encoding                (encodeUtf8)
+import qualified Network.Wreq                      as W
 
+import           Network.Syncthing.Internal.Config
+import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Internal.Lens
-import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Internal.Monad
 
+
+type Param = (T.Text, T.Text)
+
+data HttpMethod =
+      Get
+    | Post Value
+    deriving (Eq, Show)
+
+data SyncRequest = SyncRequest {
+      path   :: String
+    , method :: HttpMethod
+    , params :: [Param]
+    } deriving (Eq, Show)
 
 query :: (MonadSync m, FromJSON a) => SyncRequest -> SyncM m a
 query = either (liftLeft . ParseError) liftRight . eitherDecode <=< request
@@ -36,7 +58,7 @@ request :: MonadSync m => SyncRequest -> SyncM m ByteString
 request req = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params req) W.defaults
-    let server  = unpack $ config ^. pServer
+    let server  = T.unpack $ config ^. pServer
     let proto   = if (config ^. pHttps) then "https://" else "http://"
     let url     = concat [proto, server, path req]
     liftInner $
@@ -58,4 +80,24 @@ prepareOptions cfg params' =
     setParams               = (& W.params .~ params')
     setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
     setApiKey Nothing       = id
+
+get :: HttpMethod
+get = Get
+
+post :: ToJSON a => a -> HttpMethod
+post = Post . toJSON
+
+getRequest :: SyncRequest
+getRequest = SyncRequest {
+      path   = "/rest/ping"
+    , method = get
+    , params = []
+    }
+
+postRequest :: SyncRequest
+postRequest = SyncRequest {
+      path   = "/rest/ping"
+    , method = post ()
+    , params = []
+    }
 

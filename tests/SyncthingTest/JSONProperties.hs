@@ -5,8 +5,7 @@ import           Data.Aeson                  (decode, encode)
 import           Test.Tasty
 import           Test.Tasty.QuickCheck
 
-import           Network.Syncthing.Types
-import           Network.Syncthing.Types.Ping
+import           Network.Syncthing
 
 import           SyncthingTest.Arbitrary
 import           SyncthingTest.JSONInstances
@@ -14,8 +13,10 @@ import           SyncthingTest.JSONInstances
 
 prop_json x = Just x == (decode . encode $ x)
 
+genTestName s = s ++ " == decode . encode"
+
 jsonProps = testGroup "JSON parsing"
-    [ testProperty "Ping == decode . encode" (prop_json :: Ping -> Bool)
-    , testProperty "Version == decode . encode" (prop_json :: Version -> Bool)
+    [ testProperty (genTestName "Ping")    (prop_json :: Ping -> Bool)
+    , testProperty (genTestName "Version") (prop_json :: Version -> Bool)
     ]
 

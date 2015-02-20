@@ -102,7 +102,7 @@ withManagerNoVerify $ \cfg -> do
 λ: let cfg = defaultConfig & pApiKey ?~ "XXXX"
 λ: syncthing cfg $ Post.sendError "Error 1"
 Right ()
-λ: syncthing cfg $ Post.scanFolder Post.defaultFolder (Just "foo/bar")
+λ: syncthing cfg $ Post.scanFolder defaultFolder (Just "foo/bar")
 Right ()
 λ: syncthing cfg $ Post.restart
 Right (Just Restarting)

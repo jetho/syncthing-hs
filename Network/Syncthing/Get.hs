@@ -15,11 +15,8 @@
 
 module Network.Syncthing.Get
     (
-    -- * Defaults
-      defaultFolder
-
     -- * Request functions
-    , ping
+      ping
     , apiKey
     , config
     , completion
@@ -41,13 +38,9 @@ import           Control.Monad                      ((>=>))
 import qualified Data.Map                           as M
 import           Data.Text                          (Text)
 
-import           Network.Syncthing.Internal.Query
-import           Network.Syncthing.Internal.Types
-import           Network.Syncthing.Types
-import           Network.Syncthing.Types.Common     (defaultFolder)
-import           Network.Syncthing.Types.Completion (getCompletion)
-import           Network.Syncthing.Types.Ping       (getPing)
-import           Network.Syncthing.Types.Sync       (getSync)
+import           Network.Syncthing
+import           Network.Syncthing.Internal.Monad
+import           Network.Syncthing.Internal.Request
 import           Network.Syncthing.Types.Error      (getErrors)
 import           Network.Syncthing.Types.DeviceId   ()
 

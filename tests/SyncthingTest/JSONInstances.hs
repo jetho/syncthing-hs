@@ -7,8 +7,7 @@ module SyncthingTest.JSONInstances where
 
 import           Data.Aeson
 
-import           Network.Syncthing.Types
-import           Network.Syncthing.Types.Ping
+import           Network.Syncthing
 
 
 instance ToJSON Version where
@@ -21,3 +20,6 @@ instance ToJSON Version where
 
 instance ToJSON Ping where
     toJSON Ping {..} = object [ "ping" .= getPing ]
+
+instance ToJSON Completion where
+    toJSON Completion {..} = object [ "completion" .= getCompletion ]

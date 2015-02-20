@@ -16,11 +16,8 @@
 
 module Network.Syncthing.Post
     ( 
-    -- * Defaults
-      defaultFolder
-
     -- * Request functions
-    , ping
+      ping
     , bump
     , hint
     , sendConfig
@@ -40,11 +37,9 @@ import qualified Data.Map                         as Map
 import           Data.Maybe                       (maybeToList)
 import           Data.Text                        (Text)
 
-import           Network.Syncthing.Internal.Query
-import           Network.Syncthing.Internal.Types
-import           Network.Syncthing.Types
-import           Network.Syncthing.Types.Common   (defaultFolder)
-import           Network.Syncthing.Types.Ping     (getPing)
+import           Network.Syncthing
+import           Network.Syncthing.Internal.Monad
+import           Network.Syncthing.Internal.Request
 
 
 querySystemMsg :: MonadSync m => SyncRequest -> SyncM m (Maybe SystemMsg)

@@ -10,8 +10,7 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.HashMap.Lazy                (member)
 import           Data.Text                        ()
 
-import           Network.Syncthing.Internal.Types
-import           Network.Syncthing.Internal.Utils (decodeDeviceError)
+import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Types.Common
 
 

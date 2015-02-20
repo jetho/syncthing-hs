@@ -19,8 +19,8 @@ import qualified Data.Map                         as M
 import           Data.Maybe                       (fromMaybe)
 import           Data.Text                        (Text, cons, uncons)
 
-import           Network.Syncthing.Internal.Utils
 import           Network.Syncthing.Types.Common
+import           Network.Syncthing.Internal.Utils
 
 
 

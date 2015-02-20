@@ -9,8 +9,8 @@ module Network.Syncthing.Internal.Lens
     , pManager
     ) where
 
-import           Control.Lens            (makeLenses)
-import           Network.Syncthing.Internal.Types (SyncConfig)
+import           Control.Lens                      (makeLenses)
+import           Network.Syncthing.Internal.Config (SyncConfig)
 
 $(makeLenses ''SyncConfig)
 
