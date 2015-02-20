@@ -130,3 +130,12 @@ result = do
     return (p, v)
  ```
 
+
+### Concurrent requests
+
+ ```haskell 
+λ: import Control.Concurrent.Async
+λ: let pings = replicate 1000 Get.ping
+λ: withManager $ \cfg -> mapConcurrently (syncthing cfg) pings
+[Right "pong",Right "pong",Right "pong",Right "pong", ... ]
+ ```

@@ -179,7 +179,7 @@ instance MonadSync IO where
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManager :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
+withManager :: (SyncConfig -> IO a) -> IO a
 withManager = withManager' defaultManagerSettings
 
 -- | Creates a manager with disabled SSL certificate verification. 
@@ -196,7 +196,7 @@ withManager = withManager' defaultManagerSettings
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManagerNoVerify :: (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
+withManagerNoVerify :: (SyncConfig -> IO a) -> IO a
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
 -- | Creates a manager by using the provided manager settings.
@@ -208,7 +208,7 @@ withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withManager' :: HTTP.ManagerSettings -> (SyncConfig -> IO (SyncResult a)) -> IO (SyncResult a)
+withManager' :: HTTP.ManagerSettings -> (SyncConfig -> IO a) -> IO a
 withManager' settings act =
     HTTP.withManager settings $ \mgr ->
         act $ defaultConfig & pManager .~ Right mgr
