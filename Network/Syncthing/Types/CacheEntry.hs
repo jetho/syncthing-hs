@@ -19,7 +19,7 @@ import           Network.Syncthing.Types.Common   (Addr)
 data CacheEntry = CacheEntry {
       getAddr :: Addr
     , getSeen :: Maybe UTCTime
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON CacheEntry where
     parseJSON (Object v) =

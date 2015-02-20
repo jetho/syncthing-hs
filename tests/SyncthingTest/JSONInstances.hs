@@ -5,9 +5,12 @@
 
 module SyncthingTest.JSONInstances where
 
+import           Control.Applicative              ((<$>))
 import           Data.Aeson
+import           Data.Maybe                       (fromMaybe)
 
 import           Network.Syncthing
+import           Network.Syncthing.Internal.Utils
 
 
 instance ToJSON Version where
@@ -23,3 +26,10 @@ instance ToJSON Ping where
 
 instance ToJSON Completion where
     toJSON Completion {..} = object [ "completion" .= getCompletion ]
+
+instance ToJSON CacheEntry where
+    toJSON CacheEntry {..} =
+        object [ "Address"  .= encodeAddr getAddr
+               , "Seen"     .= fromMaybe "" (show <$> getSeen)
+               ]
+
