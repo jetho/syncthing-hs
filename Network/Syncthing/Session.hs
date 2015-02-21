@@ -108,6 +108,6 @@ runSyncSession = syncthing . getConfig
 -- 'withSyncSession' cfg $ \\session ->
 --     'runSyncSession' session $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
 -- @
-withSyncSession :: SyncConfig -> (SyncSession -> IO (SyncResult a)) -> IO (SyncResult a)
+withSyncSession :: SyncConfig -> (SyncSession -> IO a) -> IO a
 withSyncSession config = bracket (newSyncSession config) closeSyncSession
 
