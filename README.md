@@ -64,7 +64,17 @@ syncthing defaultConfig Get.ping
  
 ### Connection sharing for running multiple requests
 
-Running multiple requests with the default configuration is somewhat inefficient since a new connection manager is created for each request. It's recommended using the withManager* functions for connection sharing among multiple requests.
+Running multiple requests with the default configuration is somewhat 
+inefficient since a new connection manager is created for each request. 
+If you are already using a connection manager elsewhere in your application, 
+you can reuse the manager by customizing the Syncthing configuration:
+
+ ```haskell
+ let cfg = defaultconfig & pManager .~ Right mgr
+ ```
+
+If you don't have an active connection manager, it's recommended using 
+the withManager* functions for connection sharing among multiple requests.
 
  ```haskell
 withManager $ \cfg ->
@@ -139,3 +149,4 @@ result = do
 λ: withManager $ \cfg -> mapConcurrently (syncthing cfg) pings
 [Right "pong",Right "pong",Right "pong",Right "pong", ... ]
  ```
+

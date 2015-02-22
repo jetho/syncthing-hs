@@ -8,10 +8,13 @@ module SyncthingTest.JSONInstances where
 import           Control.Applicative              ((<$>))
 import           Data.Aeson
 import           Data.Maybe                       (fromMaybe)
+import qualified Data.Text                        as T
 
 import           Network.Syncthing
 import           Network.Syncthing.Internal.Utils
 
+
+encodeUTC = fromMaybe "" . fmap fromUTC 
 
 instance ToJSON Version where
     toJSON Version {..} =
@@ -30,6 +33,15 @@ instance ToJSON Completion where
 instance ToJSON CacheEntry where
     toJSON CacheEntry {..} =
         object [ "Address"  .= encodeAddr getAddr
-               , "Seen"     .= fromMaybe "" (show <$> getSeen)
+               , "Seen"     .= encodeUTC getSeen
+               ]
+
+instance ToJSON Connection where
+    toJSON Connection {..} =
+        object [ "At"            .= encodeUTC getAt
+               , "InBytesTotal"  .= getInBytesTotal
+               , "OutBytesTotal" .= getOutBytesTotal
+               , "Address"       .= encodeAddr getAddress
+               , "ClientVersion" .= getClientVersion
                ]
 

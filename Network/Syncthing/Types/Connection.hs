@@ -22,7 +22,7 @@ data Connection = Connection {
     , getOutBytesTotal :: Integer
     , getAddress       :: Addr
     , getClientVersion :: Text
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON Connection where
     parseJSON (Object v) =
