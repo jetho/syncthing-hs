@@ -67,7 +67,7 @@ syncthing defaultConfig Get.ping
 Running multiple requests with the default configuration is somewhat 
 inefficient since a new connection manager is created for each request. 
 If you are already using a connection manager elsewhere in your application, 
-you can reuse the manager by customizing the Syncthing configuration:
+you can reuse the manager by setting the pManager field in the configuration:
 
  ```haskell
  let cfg = defaultconfig & pManager .~ Right mgr
