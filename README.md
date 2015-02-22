@@ -70,7 +70,7 @@ If you are already using a connection manager elsewhere in your application,
 you can reuse the manager by updating the pManager field of the configuration:
 
  ```haskell
- let cfg = defaultconfig & pManager .~ Right mgr
+ let cfg = defaultConfig & pManager .~ Right mgr
  ```
 
 If you don't have an active connection manager, it's recommended using 
