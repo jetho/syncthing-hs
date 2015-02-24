@@ -15,7 +15,7 @@ import           Data.Text           (Text)
 data Ignore = Ignore {
       getIgnores  :: Maybe [Text]
     , getPatterns :: Maybe [Text]
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON Ignore where
     parseJSON (Object v) =

@@ -11,16 +11,19 @@ import           SyncthingTest.Arbitrary
 import           SyncthingTest.JSONInstances
 
 
+jsonTest name prop = testProperty testName prop
+  where
+    testName = name ++ " == decode . encode"
+
 prop_json x = Just x == (decode . encode $ x)
 
-testName s = s ++ " == decode . encode"
-
-jsonProps = testGroup "JSON parsing"
-    [ testProperty (testName "Ping")       (prop_json :: Ping -> Bool)
-    , testProperty (testName "Version")    (prop_json :: Version -> Bool)
-    , testProperty (testName "Completion") (prop_json :: Completion -> Bool)
-    , testProperty (testName "CacheEntry") (prop_json :: CacheEntry -> Bool)
-    , testProperty (testName "Connection") (prop_json :: Connection -> Bool)
-    , testProperty (testName "Model")      (prop_json :: Model -> Bool)
+jsonProps = testGroup "Parsing JSON"
+    [ jsonTest "Ping"       (prop_json :: Ping -> Bool)
+    , jsonTest "Version"    (prop_json :: Version -> Bool)
+    , jsonTest "Completion" (prop_json :: Completion -> Bool)
+    , jsonTest "CacheEntry" (prop_json :: CacheEntry -> Bool)
+    , jsonTest "Connection" (prop_json :: Connection -> Bool)
+    , jsonTest "Model"      (prop_json :: Model -> Bool)
+    , jsonTest "Upgrade"    (prop_json :: Upgrade -> Bool)
     ]
 

@@ -16,7 +16,7 @@ data Upgrade = Upgrade {
       getLatest  :: Text
     , getNewer   :: Bool
     , getRunning :: Text
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON Upgrade where
     parseJSON (Object v) =

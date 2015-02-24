@@ -75,3 +75,16 @@ instance ToJSON Model where
                , "version"       .= getModelVersion  
                ]
 
+instance ToJSON Upgrade where
+    toJSON Upgrade {..} =
+        object [ "latest"  .= getLatest
+               , "newer"   .= getNewer
+               , "running" .= getRunning
+               ]
+
+instance ToJSON Ignore where
+    toJSON Ignore {..} =
+        object [ "ignores"  .= getIgnores
+               , "patterns" .= getPatterns
+               ]
+

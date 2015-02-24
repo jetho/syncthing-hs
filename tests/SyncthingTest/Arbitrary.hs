@@ -67,5 +67,7 @@ concat <$> mapM (derive makeArbitrary)
                 , ''Ping
                 , ''Completion
                 , ''ModelState
+                , ''Upgrade
+                , ''Ignore
                 ]
 
