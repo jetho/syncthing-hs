@@ -39,7 +39,7 @@ data Model = Model {
     , getStateChanged  :: Maybe UTCTime
     , getInvalid       :: Maybe Text
     , getModelVersion  :: Int
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON Model where
     parseJSON (Object v) =

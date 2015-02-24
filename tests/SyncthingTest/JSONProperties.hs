@@ -21,5 +21,6 @@ jsonProps = testGroup "JSON parsing"
     , testProperty (testName "Completion") (prop_json :: Completion -> Bool)
     , testProperty (testName "CacheEntry") (prop_json :: CacheEntry -> Bool)
     , testProperty (testName "Connection") (prop_json :: Connection -> Bool)
+    , testProperty (testName "Model")      (prop_json :: Model -> Bool)
     ]
 

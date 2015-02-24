@@ -14,7 +14,19 @@ import           Network.Syncthing
 import           Network.Syncthing.Internal.Utils
 
 
-encodeUTC = fromMaybe "" . fmap fromUTC 
+encodeMaybe = fromMaybe ""
+
+encodeUTC = encodeMaybe . fmap fromUTC 
+
+encodeInvalid = encodeMaybe . fmap T.unpack 
+
+encodeModelState = encodeMaybe . fmap encodeState
+  where encodeState state = 
+            case state of
+                Idle     -> "idle"
+                Scanning -> "scanning"
+                Cleaning -> "cleaning"
+                Syncing  -> "syncing"
 
 instance ToJSON Version where
     toJSON Version {..} =
@@ -43,5 +55,23 @@ instance ToJSON Connection where
                , "OutBytesTotal" .= getOutBytesTotal
                , "Address"       .= encodeAddr getAddress
                , "ClientVersion" .= getClientVersion
+               ]
+
+instance ToJSON Model where
+    toJSON Model {..} =
+        object [ "globalBytes"   .= getGlobalBytes   
+               , "globalDeleted" .= getGlobalDeleted 
+               , "globalFiles"   .= getGlobalFiles   
+               , "inSyncBytes"   .= getInSyncBytes   
+               , "inSyncFiles"   .= getInSyncFiles   
+               , "localBytes"    .= getLocalBytes    
+               , "localDeleted"  .= getLocalDeleted  
+               , "localFiles"    .= getLocalFiles    
+               , "needBytes"     .= getNeedBytes     
+               , "needFiles"     .= getNeedFiles     
+               , "state"         .= encodeModelState getState         
+               , "stateChanged"  .= encodeUTC getStateChanged  
+               , "invalid"       .= encodeInvalid getInvalid
+               , "version"       .= getModelVersion  
                ]
 
