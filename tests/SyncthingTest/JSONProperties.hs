@@ -25,5 +25,9 @@ jsonProps = testGroup "Parsing JSON"
     , jsonTest "Connection" (prop_json :: Connection -> Bool)
     , jsonTest "Model"      (prop_json :: Model -> Bool)
     , jsonTest "Upgrade"    (prop_json :: Upgrade -> Bool)
+    , jsonTest "Ignore"     (prop_json :: Ignore -> Bool)
+    , jsonTest "Progress"   (prop_json :: Progress -> Bool)
+    , jsonTest "Need"       (prop_json :: Need -> Bool)
+    , jsonTest "Sync"       (prop_json :: Sync -> Bool)
     ]
 

@@ -18,7 +18,7 @@ data Need = Need {
       getProgress :: [Progress]
     , getQueued   :: [Text]
     , getRest     :: [Text]
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 -- | A file that is currently downloading. 
 data Progress = Progress { 
@@ -29,7 +29,7 @@ data Progress = Progress {
     , getLocalVersion    :: Int
     , getNumBlocks       :: Int
     , getSize            :: Integer
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 instance FromJSON Progress where
     parseJSON (Object v) =

@@ -69,5 +69,8 @@ concat <$> mapM (derive makeArbitrary)
                 , ''ModelState
                 , ''Upgrade
                 , ''Ignore
+                , ''Progress    
+                , ''Need
+                , ''Sync
                 ]
 

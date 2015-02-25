@@ -42,6 +42,9 @@ instance ToJSON Ping where
 instance ToJSON Completion where
     toJSON Completion {..} = object [ "completion" .= getCompletion ]
 
+instance ToJSON Sync where
+    toJSON Sync {..} = object [ "configInSync" .= getSync ]
+
 instance ToJSON CacheEntry where
     toJSON CacheEntry {..} =
         object [ "Address"  .= encodeAddr getAddr
@@ -84,7 +87,25 @@ instance ToJSON Upgrade where
 
 instance ToJSON Ignore where
     toJSON Ignore {..} =
-        object [ "ignores"  .= getIgnores
+        object [ "ignore"   .= getIgnores
                , "patterns" .= getPatterns
+               ]
+
+instance ToJSON Need where
+    toJSON Need {..} =
+        object [ "progress" .= getProgress
+               , "queued"   .= getQueued
+               , "rest"     .= getRest
+               ]
+
+instance ToJSON Progress where
+    toJSON Progress {..} =
+        object [ "Name"         .= getName            
+               , "Flags"        .= getFlags           
+               , "Modified"     .= getModified        
+               , "Version"      .= getProgressVersion 
+               , "LocalVersion" .= getLocalVersion    
+               , "NumBlocks"    .= getNumBlocks       
+               , "Size"         .= getSize            
                ]
 
