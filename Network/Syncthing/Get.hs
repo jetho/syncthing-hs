@@ -61,7 +61,7 @@ apiKey = getApiKey . getGuiConfig <$> config
 
 -- | Returns the completion percentage (0 to 100) for a given device and
 -- folder. 
-completion :: MonadSync m => DeviceId -> FolderName -> SyncM m Int
+completion :: MonadSync m => Device -> FolderName -> SyncM m Int
 completion device folder = getCompletion <$> completion'
   where
     completion' = query $ getRequest { path   = "/rest/completion"
@@ -71,21 +71,21 @@ completion device folder = getCompletion <$> completion'
 
 -- | Returns the list of current connections and some metadata associated
 -- with the connection/peer.
-connections :: MonadSync m => SyncM m (M.Map DeviceId Connection)
+connections :: MonadSync m => SyncM m (M.Map Device Connection)
 connections = query $ getRequest { path = "/rest/connections" }
 
 -- | Verifies and formats a device ID. Returns either a valid device ID in
 -- modern format, or an error.
-deviceId :: MonadSync m => DeviceId -> SyncM m DeviceId
+deviceId :: MonadSync m => Device -> SyncM m Device
 deviceId = deviceId' >=> either (liftLeft . InvalidDeviceId) liftRight
   where
-    deviceId' :: MonadSync m => DeviceId -> SyncM m (Either DeviceError DeviceId)
+    deviceId' :: MonadSync m => Device -> SyncM m (Either DeviceError Device)
     deviceId' device = query $ getRequest { path   = "/rest/deviceid"
                                           , params = [("id", device)]
                                           }
 
 -- | Returns the contents of the local discovery cache.
-discovery :: MonadSync m => SyncM m (M.Map DeviceId [CacheEntry])
+discovery :: MonadSync m => SyncM m (M.Map Device [CacheEntry])
 discovery = query $ getRequest { path = "/rest/discovery" }
 
 -- | Returns the list of recent errors.

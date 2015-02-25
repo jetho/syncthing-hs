@@ -1,11 +1,12 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 
 module SyncthingTest.JSONInstances where
 
-import           Control.Applicative              ((<$>))
+import           Control.Applicative              ((<$>), pure)
 import           Data.Aeson
 import           Data.Maybe                       (fromMaybe)
 import qualified Data.Text                        as T
@@ -108,4 +109,16 @@ instance ToJSON Progress where
                , "NumBlocks"    .= getNumBlocks       
                , "Size"         .= getSize            
                ]
+
+instance ToJSON (Either DeviceError Device) where
+    toJSON = object . pure . either deviceError deviceId 
+      where deviceError = ("error" .=) . encodeDeviceError 
+            deviceId    = ("id" .=) 
+
+encodeDeviceError :: DeviceError -> T.Text
+encodeDeviceError err = 
+    case err of
+        IncorrectLength     -> "device ID invalid: incorrect length"
+        IncorrectCheckDigit -> "check digit incorrect"
+        OtherDeviceError e  -> e
 

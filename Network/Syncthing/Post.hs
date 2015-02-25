@@ -59,7 +59,7 @@ bump folder filePath =
                         }
 
 -- | Add an entry to the discovery cache.
-hint:: MonadSync m => DeviceId -> Server -> SyncM m ()
+hint:: MonadSync m => Device -> Server -> SyncM m ()
 hint device server=
     send $ postRequest { path   = "/rest/discovery/hint"
                        , params = [("device", device), ("addr", server)]

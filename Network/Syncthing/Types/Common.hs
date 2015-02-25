@@ -3,7 +3,7 @@
 
 module Network.Syncthing.Types.Common
     (
-      DeviceId
+      Device
     , FolderName
     , Path
     , Host
@@ -15,7 +15,7 @@ module Network.Syncthing.Types.Common
 import           Data.Text (Text)
 
 
-type DeviceId   = Text
+type Device     = Text
 
 type FolderName = Text
 

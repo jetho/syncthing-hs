@@ -52,7 +52,7 @@ module Network.Syncthing
     (
     -- * Types
       Server
-    , DeviceId
+    , Device
     , FolderName
     , Path
     , Host
@@ -143,6 +143,7 @@ import           Network.Syncthing.Types.Config
 import           Network.Syncthing.Types.Common
 import           Network.Syncthing.Types.Completion
 import           Network.Syncthing.Types.Connection
+import           Network.Syncthing.Types.DeviceId ()
 import           Network.Syncthing.Types.Error
 import           Network.Syncthing.Types.Ignore
 import           Network.Syncthing.Types.Model

@@ -1,4 +1,5 @@
 
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 
@@ -72,5 +73,6 @@ concat <$> mapM (derive makeArbitrary)
                 , ''Progress    
                 , ''Need
                 , ''Sync
+                , ''DeviceError
                 ]
 

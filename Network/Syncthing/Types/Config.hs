@@ -83,7 +83,7 @@ encodeAddressType (Address addr) = encodeAddr addr
 data FolderConfig = FolderConfig {
       getId              :: FolderName
     , getPath            :: Path
-    , getFolderDevices   :: [DeviceId]
+    , getFolderDevices   :: [Device]
     , getReadOnly        :: Bool
     , getRescanIntervalS :: Int
     , getIgnorePerms     :: Bool
@@ -98,7 +98,7 @@ instance FromJSON FolderConfig where
     parseJSON (Object v) =
         FolderConfig <$> (v .: "ID")
                      <*> (v .: "Path")
-                     <*> (map getFolderDeviceId <$> (v .: "Devices"))
+                     <*> (map getFolderDevice <$> (v .: "Devices"))
                      <*> (v .: "ReadOnly")
                      <*> (v .: "RescanIntervalS")
                      <*> (v .: "IgnorePerms")
@@ -154,7 +154,7 @@ instance ToJSON VersioningConfig where
 
 -- | Device specific configuration information.
 data DeviceConfig = DeviceConfig {
-      getDeviceId    :: DeviceId
+      getDevice      :: Device
     , getDeviceName  :: Text
     , getAddresses   :: [AddressType]
     , getCompression :: Bool
@@ -174,7 +174,7 @@ instance FromJSON DeviceConfig where
 
 instance ToJSON DeviceConfig where
     toJSON DeviceConfig {..} =
-        object [ "DeviceID"     .= getDeviceId
+        object [ "DeviceID"     .= getDevice
                , "Name"         .= getDeviceName
                , "Addresses"    .= map encodeAddressType getAddresses
                , "Compression"  .= getCompression
@@ -188,7 +188,7 @@ instance ToJSON DeviceConfig where
 -------------------------------------------------------------------------------
 
 data FolderDeviceConfig = FolderDeviceConfig {
-      getFolderDeviceId :: DeviceId
+      getFolderDevice :: Device
     } deriving (Eq, Show)
 
 instance FromJSON FolderDeviceConfig where
@@ -196,8 +196,8 @@ instance FromJSON FolderDeviceConfig where
     parseJSON _          = mzero
 
 instance ToJSON FolderDeviceConfig where
-    toJSON (FolderDeviceConfig deviceId) =
-        object [ "DeviceID" .= deviceId ]
+    toJSON (FolderDeviceConfig device) =
+        object [ "DeviceID" .= device ]
 
 
 -------------------------------------------------------------------------------

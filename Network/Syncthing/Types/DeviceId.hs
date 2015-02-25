@@ -14,7 +14,7 @@ import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Types.Common
 
 
-instance FromJSON (Either DeviceError DeviceId) where
+instance FromJSON (Either DeviceError Device) where
     parseJSON (Object v) = result
       where hasId        = member "id" v
             result       = parseIdResult hasId v

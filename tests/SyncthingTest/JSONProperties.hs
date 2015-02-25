@@ -29,5 +29,6 @@ jsonProps = testGroup "Parsing JSON"
     , jsonTest "Progress"   (prop_json :: Progress -> Bool)
     , jsonTest "Need"       (prop_json :: Need -> Bool)
     , jsonTest "Sync"       (prop_json :: Sync -> Bool)
+    , jsonTest "DeviceId"   (prop_json :: (Either DeviceError Device) -> Bool)
     ]
 
