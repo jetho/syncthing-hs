@@ -8,17 +8,17 @@ module Network.Syncthing.Internal.Utils
     , fromUTC
     ) where
 
-import           Control.Applicative               ((<$>))
-import           Control.Arrow                     (second, (***))
-import           Data.Maybe                        (fromMaybe)
-import qualified Data.Text                         as T
-import           Data.Time.Clock                   (UTCTime)
-import           Data.Time.Format                  (parseTime, formatTime)
-import           System.Locale                     (defaultTimeLocale)
-import           Text.Regex.Posix                  ((=~))
+import           Control.Applicative                     ((<$>))
+import           Control.Arrow                           (second, (***))
+import           Data.Maybe                              (fromMaybe)
+import qualified Data.Text                               as T
+import           Data.Time.Clock                         (UTCTime)
+import           Data.Time.Format                        (formatTime, parseTime)
+import           System.Locale                           (defaultTimeLocale)
+import           Text.Regex.Posix                        ((=~))
 
 import           Network.Syncthing.Internal.Config
-import           Network.Syncthing.Types.Common
+import           Network.Syncthing.Internal.Types.Common
 
 
 -- | Parse server string (SERVER:PORT) into an address type.

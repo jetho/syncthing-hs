@@ -1,10 +1,11 @@
 
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 
 module SyncthingTest.Arbitrary where
 
-import           Control.Applicative       ((<$>), (<*>))
+import           Control.Applicative       (pure, (<$>), (<*>))
 import           Data.Char                 (isSpace)
 import           Data.Derive.Arbitrary
 import           Data.DeriveTH
@@ -12,15 +13,20 @@ import qualified Data.Text                 as T
 import           Test.QuickCheck.Instances
 import           Test.Tasty.QuickCheck
 
-import           Network.Syncthing
+import           Network.Syncthing.Internal.Error
+import           Network.Syncthing.Internal.Types
 
 
 newtype NonEmptyText = NonEmptyText {getNonEmptyText :: T.Text}
                        deriving (Eq, Ord, Show, Read)
 
 instance Arbitrary NonEmptyText where
-    arbitrary = NonEmptyText . T.pack <$> listOf1 (arbitrary `suchThat` (not . isSpace))
-    shrink (NonEmptyText txt) = map NonEmptyText . filter (not . T.all isSpace) $ shrink txt
+    arbitrary = NonEmptyText . T.pack <$> listOf1 notSpace
+      where notSpace = arbitrary `suchThat` (not . isSpace)
+    shrink =   map NonEmptyText 
+             . filter (not . T.all isSpace) 
+             . shrink 
+             . getNonEmptyText
 
 genAddr :: Gen Addr
 genAddr = (,) <$> host <*> port
@@ -39,8 +45,52 @@ instance Arbitrary Connection where
                            <*> genAddr
                            <*> arbitrary
 
+instance Arbitrary SystemMsg where
+    arbitrary = oneof $ otherSystemMsg : knownMessages
+      where
+        knownMessages  = map pure [Restarting, ShuttingDown, ResettingFolders]
+        otherSystemMsg = OtherSystemMsg <$> notReservedMsg
+        notReservedMsg = arbitrary `suchThat` flip notElem reservedMsgs
+        reservedMsgs   = ["restarting", "shutting down", "resetting folders"]
+
 instance Arbitrary Model where
-    arbitrary = Model <$> arbitrary
+    arbitrary = 
+        Model <$> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> arbitrary
+              <*> (fmap getNonEmptyText <$> arbitrary)
+              <*> arbitrary
+
+instance Arbitrary GuiConfig where
+    arbitrary = 
+        GuiConfig <$> arbitrary
+                  <*> (fmap getNonEmptyText <$> arbitrary)
+                  <*> genAddr
+                  <*> arbitrary
+                  <*> arbitrary
+                  <*> arbitrary
+
+instance Arbitrary DeviceConfig where
+    arbitrary = 
+        DeviceConfig <$> arbitrary
+                     <*> arbitrary
+                     <*> (listOf $ oneof [pure Dynamic, Address <$> genAddr])
+                     <*> arbitrary
+                     <*> arbitrary
+                     <*> arbitrary
+
+instance Arbitrary OptionsConfig where
+    arbitrary = 
+        OptionsConfig <$> (listOf genAddr)
                       <*> arbitrary
                       <*> arbitrary
                       <*> arbitrary
@@ -52,16 +102,20 @@ instance Arbitrary Model where
                       <*> arbitrary
                       <*> arbitrary
                       <*> arbitrary
-                      <*> (fmap getNonEmptyText <$> arbitrary)
+                      <*> arbitrary
+                      <*> arbitrary
+                      <*> arbitrary
+                      <*> arbitrary
+                      <*> arbitrary
+                      <*> arbitrary
+                      <*> arbitrary
+                      <*> arbitrary
                       <*> arbitrary
 
 concat <$> mapM (derive makeArbitrary)
                 [ ''AddressType
-                , ''DeviceConfig
                 , ''FolderConfig
                 , ''VersioningConfig
-                , ''GuiConfig
-                , ''OptionsConfig
                 , ''Config
                 , ''Version
                 , ''Ping
@@ -69,9 +123,11 @@ concat <$> mapM (derive makeArbitrary)
                 , ''ModelState
                 , ''Upgrade
                 , ''Ignore
-                , ''Progress    
+                , ''Progress
                 , ''Need
                 , ''Sync
                 , ''DeviceError
+                , ''Error
+                , ''Errors
                 ]
 

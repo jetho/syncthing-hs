@@ -25,24 +25,25 @@ library
                      Network.Syncthing.Internal.Error
                      Network.Syncthing.Internal.Monad
                      Network.Syncthing.Internal.Request
+                     Network.Syncthing.Internal.Types
                      Network.Syncthing.Internal.Utils
   other-modules:     Network.Syncthing.Internal.Lens
-                     Network.Syncthing.Types.CacheEntry
-                     Network.Syncthing.Types.Common
-                     Network.Syncthing.Types.Completion
-                     Network.Syncthing.Types.Config
-                     Network.Syncthing.Types.Connection
-                     Network.Syncthing.Types.DeviceId
-                     Network.Syncthing.Types.Error
-                     Network.Syncthing.Types.Ignore
-                     Network.Syncthing.Types.Model
-                     Network.Syncthing.Types.Need
-                     Network.Syncthing.Types.Ping
-                     Network.Syncthing.Types.Sync
-                     Network.Syncthing.Types.System
-                     Network.Syncthing.Types.SystemMsg
-                     Network.Syncthing.Types.Upgrade
-                     Network.Syncthing.Types.Version
+                     Network.Syncthing.Internal.Types.CacheEntry
+                     Network.Syncthing.Internal.Types.Common
+                     Network.Syncthing.Internal.Types.Completion
+                     Network.Syncthing.Internal.Types.Config
+                     Network.Syncthing.Internal.Types.Connection
+                     Network.Syncthing.Internal.Types.DeviceId
+                     Network.Syncthing.Internal.Types.Error
+                     Network.Syncthing.Internal.Types.Ignore
+                     Network.Syncthing.Internal.Types.Model
+                     Network.Syncthing.Internal.Types.Need
+                     Network.Syncthing.Internal.Types.Ping
+                     Network.Syncthing.Internal.Types.Sync
+                     Network.Syncthing.Internal.Types.System
+                     Network.Syncthing.Internal.Types.SystemMsg
+                     Network.Syncthing.Internal.Types.Upgrade
+                     Network.Syncthing.Internal.Types.Version
   -- other-extensions:    
   build-depends:       aeson >=0.8.0.1
                      , base >=4.5 && <5
@@ -76,3 +77,4 @@ test-Suite tests
                      , text >=1.2.0.0
   hs-source-dirs:      tests
   default-language:    Haskell2010
+

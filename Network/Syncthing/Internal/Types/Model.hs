@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Types.Model
+module Network.Syncthing.Internal.Types.Model
     ( Model(..)
     , ModelState(..)
     ) where

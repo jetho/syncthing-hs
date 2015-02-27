@@ -1,8 +1,8 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Types.Sync
-    ( Sync(..)
+module Network.Syncthing.Internal.Types.Completion
+    ( Completion(..)
     ) where
 
 import           Control.Applicative              ((<$>))
@@ -10,10 +10,10 @@ import           Control.Monad                    (MonadPlus (mzero))
 import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
 
 
-newtype Sync = Sync { getSync :: Bool } 
-               deriving (Eq, Show)
+newtype Completion = Completion { getCompletion :: Int } 
+                     deriving (Eq, Show)
 
-instance FromJSON Sync where
-    parseJSON (Object v) = Sync <$> (v .: "configInSync")
+instance FromJSON Completion where
+    parseJSON (Object v) = Completion <$> (v .: "completion")
     parseJSON _          = mzero
 

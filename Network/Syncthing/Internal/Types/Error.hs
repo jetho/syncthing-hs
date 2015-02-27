@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Types.Error
+module Network.Syncthing.Internal.Types.Error
     ( Error(..)
     , Errors(..)
     ) where
@@ -19,9 +19,10 @@ import           Network.Syncthing.Internal.Utils (toUTC)
 data Error = Error {
       getTime :: Maybe UTCTime
     , getMsg  :: Text
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 newtype Errors = Errors { getErrors :: [Error] }
+                 deriving (Eq, Show)
 
 instance FromJSON Error where
     parseJSON (Object v) =

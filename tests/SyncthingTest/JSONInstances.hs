@@ -7,11 +7,12 @@
 module SyncthingTest.JSONInstances where
 
 import           Control.Applicative              ((<$>), pure)
-import           Data.Aeson
+import           Data.Aeson                       hiding (Error)
 import           Data.Maybe                       (fromMaybe)
 import qualified Data.Text                        as T
 
-import           Network.Syncthing
+import           Network.Syncthing.Internal.Error
+import           Network.Syncthing.Internal.Types
 import           Network.Syncthing.Internal.Utils
 
 
@@ -29,6 +30,9 @@ encodeModelState = encodeMaybe . fmap encodeState
                 Cleaning -> "cleaning"
                 Syncing  -> "syncing"
 
+singleField :: ToJSON a => T.Text -> a -> Value
+singleField fieldName = object . pure . (fieldName .=)
+
 instance ToJSON Version where
     toJSON Version {..} =
         object [ "arch"         .= getArch
@@ -38,13 +42,13 @@ instance ToJSON Version where
                ]
 
 instance ToJSON Ping where
-    toJSON Ping {..} = object [ "ping" .= getPing ]
+    toJSON = singleField "ping" . getPing
 
 instance ToJSON Completion where
-    toJSON Completion {..} = object [ "completion" .= getCompletion ]
+    toJSON = singleField "completion" . getCompletion 
 
 instance ToJSON Sync where
-    toJSON Sync {..} = object [ "configInSync" .= getSync ]
+    toJSON = singleField "configInSync" . getSync 
 
 instance ToJSON CacheEntry where
     toJSON CacheEntry {..} =
@@ -121,4 +125,22 @@ encodeDeviceError err =
         IncorrectLength     -> "device ID invalid: incorrect length"
         IncorrectCheckDigit -> "check digit incorrect"
         OtherDeviceError e  -> e
+
+instance ToJSON SystemMsg where
+    toJSON msg = object [ "ok" .= decodedSystemMsg ]
+      where 
+        decodedSystemMsg = case msg of
+            Restarting       -> "restarting"
+            ShuttingDown     -> "shutting down"
+            ResettingFolders -> "resetting folders"
+            OtherSystemMsg m -> m
+
+instance ToJSON Error where
+    toJSON Error {..} =
+        object [ "Time"  .= encodeUTC getTime
+               , "Error" .= getMsg
+               ]
+
+instance ToJSON Errors where
+    toJSON = singleField "errors" . getErrors 
 

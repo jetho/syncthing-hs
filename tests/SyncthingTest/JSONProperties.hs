@@ -1,36 +1,46 @@
 
-module SyncthingTest.JSONProperties where
+module SyncthingTest.JSONProperties
+    ( jsonProps
+    ) where
 
-import           Data.Aeson                  (decode, encode)
+import           Data.Aeson                       (decode, encode)
 import           Test.Tasty
 import           Test.Tasty.QuickCheck
 
-import           Network.Syncthing
+import           Network.Syncthing.Internal.Error
+import           Network.Syncthing.Internal.Types
 
 import           SyncthingTest.Arbitrary
 import           SyncthingTest.JSONInstances
 
 
-jsonTest name prop = testProperty testName prop
+test name prop = testProperty testName prop
   where
     testName = name ++ " == decode . encode"
 
 prop_json x = Just x == (decode . encode $ x)
 
-jsonProps = testGroup "Parsing JSON"
-    [ jsonTest "Ping"       (prop_json :: Ping -> Bool)
-    , jsonTest "Version"    (prop_json :: Version -> Bool)
-    , jsonTest "Completion" (prop_json :: Completion -> Bool)
-    , jsonTest "CacheEntry" (prop_json :: CacheEntry -> Bool)
-    , jsonTest "Connection" (prop_json :: Connection -> Bool)
-    , jsonTest "Model"      (prop_json :: Model -> Bool)
-    , jsonTest "Upgrade"    (prop_json :: Upgrade -> Bool)
-    , jsonTest "Ignore"     (prop_json :: Ignore -> Bool)
-    , jsonTest "Progress"   (prop_json :: Progress -> Bool)
-    , jsonTest "Need"       (prop_json :: Need -> Bool)
-    , jsonTest "Sync"       (prop_json :: Sync -> Bool)
-    , jsonTest "DeviceId"   (prop_json :: (Either DeviceError Device) -> Bool)
-    , jsonTest "VersioningConfig" (prop_json :: VersioningConfig -> Bool)
-    , jsonTest "FolderConfig" (prop_json :: FolderConfig -> Bool)
+jsonProps = testGroup "JSON Parsers"
+    [ test "Ping"             (prop_json :: Ping -> Bool)
+    , test "Version"          (prop_json :: Version -> Bool)
+    , test "Completion"       (prop_json :: Completion -> Bool)
+    , test "CacheEntry"       (prop_json :: CacheEntry -> Bool)
+    , test "Connection"       (prop_json :: Connection -> Bool)
+    , test "Model"            (prop_json :: Model -> Bool)
+    , test "Upgrade"          (prop_json :: Upgrade -> Bool)
+    , test "Ignore"           (prop_json :: Ignore -> Bool)
+    , test "Progress"         (prop_json :: Progress -> Bool)
+    , test "Need"             (prop_json :: Need -> Bool)
+    , test "Sync"             (prop_json :: Sync -> Bool)
+    , test "DeviceId"         (prop_json :: (Either DeviceError Device) -> Bool)
+    , test "SystemMsg"        (prop_json :: SystemMsg -> Bool)
+    , test "VersioningConfig" (prop_json :: VersioningConfig -> Bool)
+    , test "FolderConfig"     (prop_json :: FolderConfig -> Bool)
+    , test "GuiConfig"        (prop_json :: GuiConfig -> Bool)
+    , test "OptionsConfig"    (prop_json :: OptionsConfig -> Bool)
+    , test "DeviceConfig"     (prop_json :: DeviceConfig -> Bool)
+    , test "Config"           (prop_json :: Config -> Bool)
+    , test "Error"            (prop_json :: Error -> Bool)
+    , test "Errors"           (prop_json :: Errors -> Bool)
     ]
 

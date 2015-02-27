@@ -15,7 +15,7 @@
 -- The POST requests.
 
 module Network.Syncthing.Post
-    ( 
+    (
     -- * Request functions
       ping
     , bump
@@ -31,19 +31,20 @@ module Network.Syncthing.Post
     , upgrade
     ) where
 
-import           Control.Applicative              ((<$>))
-import           Control.Monad                    (join, (>=>))
-import qualified Data.Map                         as Map
-import           Data.Maybe                       (maybeToList)
-import           Data.Text                        (Text)
+import           Control.Applicative                ((<$>))
+import           Control.Monad                      (join, (>=>))
+import qualified Data.Map                           as Map
+import           Data.Maybe                         (maybeToList)
+import           Data.Text                          (Text)
 
 import           Network.Syncthing
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Internal.Request
+import           Network.Syncthing.Internal.Types
 
 
-querySystemMsg :: MonadSync m => SyncRequest -> SyncM m (Maybe SystemMsg)
-querySystemMsg = queryMaybe >=> return . join
+maybeSystemMsg :: MonadSync m => SyncRequest -> SyncM m (Maybe SystemMsg)
+maybeSystemMsg = queryMaybe >=> return . join
 
 -- | Ping the Syncthing server. Returns the string \"pong\".
 ping :: MonadSync m => SyncM m Text
@@ -64,7 +65,7 @@ hint device server=
     send $ postRequest { path   = "/rest/discovery/hint"
                        , params = [("device", device), ("addr", server)]
                        }
- 
+
 -- | Update the server configuration. The configuration will be saved to
 -- disk and the configInSync flag set to false. 'Network.Syncthing.Post.restart' Syncthing to
 -- activate.
@@ -104,20 +105,20 @@ scanFolder folder subPath =
                        }
 
 -- | Restart Syncthing.
-restart :: MonadSync m => SyncM m (Maybe SystemMsg)
-restart = querySystemMsg $ postRequest { path = "/rest/restart" }
+restart :: MonadSync m => SyncM m SystemMsg
+restart = query postRequest { path = "/rest/restart" }
 
 -- | Shutdown Syncthing.
-shutdown :: MonadSync m => SyncM m (Maybe SystemMsg)
-shutdown = querySystemMsg $ postRequest { path = "/rest/shutdown" }
+shutdown :: MonadSync m => SyncM m SystemMsg
+shutdown = query postRequest { path = "/rest/shutdown" }
 
 -- | Reset Syncthing by renaming all folder directories to temporary,
 -- unique names, wiping all indexes and restarting.
-reset :: MonadSync m => SyncM m (Maybe SystemMsg)
-reset = querySystemMsg $ postRequest { path = "/rest/reset" }
+reset :: MonadSync m => SyncM m SystemMsg
+reset = query postRequest { path = "/rest/reset" }
 
 -- | Perform an upgrade to the newest release and restart. Does nothing if
 -- there is no newer version.
 upgrade :: MonadSync m => SyncM m (Maybe SystemMsg)
-upgrade = querySystemMsg $ postRequest { path = "/rest/upgrade" }
+upgrade = maybeSystemMsg $ postRequest { path = "/rest/upgrade" }
 

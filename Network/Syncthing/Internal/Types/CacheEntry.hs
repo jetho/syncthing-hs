@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Types.CacheEntry
+module Network.Syncthing.Internal.Types.CacheEntry
     ( CacheEntry(..)
     ) where
 
@@ -12,7 +12,7 @@ import           Data.Text                        ()
 import           Data.Time.Clock                  (UTCTime)
 
 import           Network.Syncthing.Internal.Utils (parseAddr, toUTC)
-import           Network.Syncthing.Types.Common   (Addr)
+import           Network.Syncthing.Internal.Types.Common   (Addr)
 
 
 -- | Represents an entry in the discovery cache.
