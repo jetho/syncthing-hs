@@ -16,6 +16,9 @@ import           Network.Syncthing.Internal.Types
 import           Network.Syncthing.Internal.Utils
 
 
+singleField :: ToJSON a => T.Text -> a -> Value
+singleField fieldName = object . pure . (fieldName .=)
+
 encodeMaybe = fromMaybe ""
 
 encodeUTC = encodeMaybe . fmap fromUTC 
@@ -29,9 +32,6 @@ encodeModelState = encodeMaybe . fmap encodeState
                 Scanning -> "scanning"
                 Cleaning -> "cleaning"
                 Syncing  -> "syncing"
-
-singleField :: ToJSON a => T.Text -> a -> Value
-singleField fieldName = object . pure . (fieldName .=)
 
 instance ToJSON Version where
     toJSON Version {..} =

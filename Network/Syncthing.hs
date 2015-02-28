@@ -1,6 +1,7 @@
 
 {-# OPTIONS_HADDOCK show-extensions #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 
 -- |
 -- Module      : Network.Syncthing
