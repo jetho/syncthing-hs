@@ -1,4 +1,5 @@
 
+{-# OPTIONS_HADDOCK show-extensions, not-home #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Network.Syncthing.Internal.Utils
@@ -17,7 +18,6 @@ import           Data.Time.Format                        (formatTime, parseTime)
 import           System.Locale                           (defaultTimeLocale)
 import           Text.Regex.Posix                        ((=~))
 
-import           Network.Syncthing.Internal.Config
 import           Network.Syncthing.Types.Common
 
 

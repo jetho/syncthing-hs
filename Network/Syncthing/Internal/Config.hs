@@ -1,19 +1,18 @@
 
-{-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE RecordWildCards            #-}
+{-# OPTIONS_HADDOCK show-extensions, not-home #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Network.Syncthing.Internal.Config
-    ( Server 
-    , SyncConfig(..)
+    ( SyncConfig(..)
     ) where
 
-import qualified Data.Text                  as T
-import           Network.HTTP.Client        (Manager, ManagerSettings)
-import qualified Network.Wreq               as W
+import qualified Data.Text                      as T
+import           Network.HTTP.Client            (Manager, ManagerSettings)
+import qualified Network.Wreq                   as W
 
+import           Network.Syncthing.Types.Common (Server)
 
--- | Use the SERVER:PORT format for specifying servers.
-type Server = T.Text
 
 -- | The Syncthing configuration for specifying the Syncthing server,
 -- authentication, the API Key etc.

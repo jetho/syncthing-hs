@@ -1,4 +1,5 @@
 
+{-# OPTIONS_HADDOCK show-extensions, not-home #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Network.Syncthing.Internal.Lens

@@ -21,11 +21,12 @@ library
                      Network.Syncthing.Session
                      Network.Syncthing.Get
                      Network.Syncthing.Post
+                     Network.Syncthing.Internal.Config
+                     Network.Syncthing.Internal.Error
                      Network.Syncthing.Internal.Monad
                      Network.Syncthing.Internal.Request
-  other-modules:     Network.Syncthing.Internal.Config
-                     Network.Syncthing.Internal.Error
-                     Network.Syncthing.Internal.Lens
+  other-modules:     Network.Syncthing.Internal.Lens
+                     Network.Syncthing.Internal.Utils
                      Network.Syncthing.Types
                      Network.Syncthing.Types.CacheEntry
                      Network.Syncthing.Types.Common
@@ -43,7 +44,6 @@ library
                      Network.Syncthing.Types.SystemMsg
                      Network.Syncthing.Types.Upgrade
                      Network.Syncthing.Types.Version
-                     Network.Syncthing.Internal.Utils
   -- other-extensions:    
   build-depends:       aeson >=0.8.0.1
                      , base >=4.5 && <5

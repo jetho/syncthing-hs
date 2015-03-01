@@ -3,7 +3,8 @@
 
 module Network.Syncthing.Types.Common
     (
-      Device
+      Server
+    , Device
     , FolderName
     , Path
     , Host
@@ -14,6 +15,9 @@ module Network.Syncthing.Types.Common
 
 import           Data.Text (Text)
 
+
+-- | Use the SERVER:PORT format for specifying servers.
+type Server     = Text
 
 type Device     = Text
 
