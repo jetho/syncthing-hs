@@ -1,5 +1,4 @@
 
-{-# OPTIONS_HADDOCK show-extensions, not-home #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Network.Syncthing.Internal.Utils
