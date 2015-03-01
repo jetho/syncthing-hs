@@ -8,9 +8,9 @@ import           Test.Tasty
 import           Test.Tasty.QuickCheck
 
 import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Types
 
-import           SyncthingTest.Arbitrary
+import           SyncthingTest.JSONArbitrary
 import           SyncthingTest.JSONInstances
 
 

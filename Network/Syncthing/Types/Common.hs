@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Types.Common
+module Network.Syncthing.Types.Common
     (
       Device
     , FolderName

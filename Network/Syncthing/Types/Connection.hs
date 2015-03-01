@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Types.Connection
+module Network.Syncthing.Types.Connection
     ( Connection(..)
     ) where
 
@@ -11,7 +11,7 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 import           Data.Time.Clock                  (UTCTime)
 
-import           Network.Syncthing.Internal.Types.Common   (Addr)
+import           Network.Syncthing.Types.Common   (Addr)
 import           Network.Syncthing.Internal.Utils (parseAddr, toUTC)
 
 

@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Types.Need
+module Network.Syncthing.Types.Need
     ( Need(..)
     , Progress(..)
     ) where

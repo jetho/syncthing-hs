@@ -12,8 +12,8 @@ import           Data.Maybe                       (fromMaybe)
 import qualified Data.Text                        as T
 
 import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Internal.Types
 import           Network.Syncthing.Internal.Utils
+import           Network.Syncthing.Types
 
 
 singleField :: ToJSON a => T.Text -> a -> Value

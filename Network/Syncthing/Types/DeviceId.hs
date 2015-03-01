@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Types.DeviceId where
+module Network.Syncthing.Types.DeviceId where
 
 import           Control.Applicative              ((<$>))
 import           Control.Monad                    (MonadPlus (mzero))
@@ -11,7 +11,7 @@ import           Data.HashMap.Lazy                (member)
 import           Data.Text                        ()
 
 import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Internal.Types.Common
+import           Network.Syncthing.Types.Common
 
 
 instance FromJSON (Either DeviceError Device) where

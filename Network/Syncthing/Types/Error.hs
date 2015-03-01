@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Types.Error
+module Network.Syncthing.Types.Error
     ( Error(..)
     , Errors(..)
     ) where

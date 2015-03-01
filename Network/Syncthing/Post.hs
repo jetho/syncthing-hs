@@ -40,7 +40,7 @@ import           Data.Text                          (Text)
 import           Network.Syncthing
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Internal.Request
-import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Types
 
 
 maybeSystemMsg :: MonadSync m => SyncRequest -> SyncM m (Maybe SystemMsg)

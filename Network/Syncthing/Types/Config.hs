@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 
-module Network.Syncthing.Internal.Types.Config
+module Network.Syncthing.Types.Config
     ( Config(..)
     , FolderConfig(..)
     , DeviceConfig(..)
@@ -19,7 +19,7 @@ import qualified Data.Map                         as M
 import           Data.Maybe                       (fromMaybe)
 import           Data.Text                        (Text, cons, uncons)
 
-import           Network.Syncthing.Internal.Types.Common
+import           Network.Syncthing.Types.Common
 import           Network.Syncthing.Internal.Utils
 
 

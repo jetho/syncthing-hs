@@ -1,8 +1,8 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Types.Upgrade
-    ( Upgrade(..)
+module Network.Syncthing.Types.Version
+    ( Version(..)
     ) where
 
 import           Control.Applicative              ((<$>), (<*>))
@@ -11,17 +11,19 @@ import           Data.Aeson                       (FromJSON, Value (..), parseJS
 import           Data.Text                        (Text)
 
 
--- | Information about the current software version and upgrade possibilities.
-data Upgrade = Upgrade {
-      getLatest  :: Text
-    , getNewer   :: Bool
-    , getRunning :: Text
+-- | Current Syncthing version information.
+data Version = Version {
+      getArch        :: Text
+    , getLongVersion :: Text
+    , getOs          :: Text
+    , getVersion     :: Text
     } deriving (Eq, Show)
 
-instance FromJSON Upgrade where
+instance FromJSON Version where
     parseJSON (Object v) =
-        Upgrade <$> (v .: "latest")
-                <*> (v .: "newer")
-                <*> (v .: "running")
+        Version <$> (v .: "arch")
+                <*> (v .: "longVersion")
+                <*> (v .: "os")
+                <*> (v .: "version")
     parseJSON _          = mzero
 

@@ -65,7 +65,7 @@ module Network.Syncthing
     , SyncM
     , syncthing
 
-    -- * Multiple requests and connection sharing
+    -- * Connection sharing
     , withManager
     , withManagerNoVerify
     , withManager'
@@ -115,6 +115,7 @@ module Network.Syncthing
     , parseAddr 
     , encodeAddr
     , toUTC
+    , fromUTC
     ) where
 
 import           Control.Applicative              ((<$>))
@@ -134,8 +135,8 @@ import           Network.Syncthing.Internal.Config
 import           Network.Syncthing.Internal.Error
 import qualified Network.Syncthing.Internal.Lens  as PL
 import           Network.Syncthing.Internal.Monad
-import           Network.Syncthing.Internal.Types
 import           Network.Syncthing.Internal.Utils
+import           Network.Syncthing.Types
 
 
 -- | Use Wreq's getWith and postWith functions when running in IO

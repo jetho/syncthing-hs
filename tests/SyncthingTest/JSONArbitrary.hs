@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 
 
-module SyncthingTest.Arbitrary where
+module SyncthingTest.JSONArbitrary where
 
 import           Control.Applicative       (pure, (<$>), (<*>))
 import           Data.Char                 (isSpace)
@@ -14,7 +14,7 @@ import           Test.QuickCheck.Instances
 import           Test.Tasty.QuickCheck
 
 import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Types
 
 
 newtype NonEmptyText = NonEmptyText {getNonEmptyText :: T.Text}

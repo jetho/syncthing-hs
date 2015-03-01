@@ -18,7 +18,7 @@ import           System.Locale                           (defaultTimeLocale)
 import           Text.Regex.Posix                        ((=~))
 
 import           Network.Syncthing.Internal.Config
-import           Network.Syncthing.Internal.Types.Common
+import           Network.Syncthing.Types.Common
 
 
 -- | Parse server string (SERVER:PORT) into an address type.

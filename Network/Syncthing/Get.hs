@@ -41,7 +41,10 @@ import           Data.Text                          (Text)
 import           Network.Syncthing
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Internal.Request
-import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Types.Completion
+import           Network.Syncthing.Types.Error      (getErrors)
+import           Network.Syncthing.Types.Ping
+import           Network.Syncthing.Types.Sync
 
 
 -- | Ping the Syncthing server. Returns the string \"pong\".
@@ -59,7 +62,7 @@ apiKey :: MonadSync m => SyncM m (Maybe Text)
 apiKey = getApiKey . getGuiConfig <$> config
 
 -- | Returns the completion percentage (0 to 100) for a given device and
--- folder. 
+-- folder.
 completion :: MonadSync m => Device -> FolderName -> SyncM m Int
 completion device folder = getCompletion <$> completion'
   where
@@ -106,7 +109,7 @@ model folder = query $ getRequest { path   = "/rest/model"
                                   }
 
 -- | Returns lists of files which are needed by this device in order for it
--- to become in sync. 
+-- to become in sync.
 need :: MonadSync m => FolderName -> SyncM m Need
 need folder = query $ getRequest { path   = "/rest/need"
                                  , params = [ ("folder", folder) ]

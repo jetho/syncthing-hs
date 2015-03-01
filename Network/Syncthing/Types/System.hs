@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Syncthing.Internal.Types.System
+module Network.Syncthing.Types.System
     ( System(..)
     ) where
 
