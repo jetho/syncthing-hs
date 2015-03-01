@@ -38,13 +38,10 @@ import           Control.Monad                      ((>=>))
 import qualified Data.Map                           as M
 import           Data.Text                          (Text)
 
-import           Network.Syncthing
+import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Internal.Request
-import           Network.Syncthing.Types.Completion
-import           Network.Syncthing.Types.Error      (getErrors)
-import           Network.Syncthing.Types.Ping
-import           Network.Syncthing.Types.Sync
+import           Network.Syncthing.Types
 
 
 -- | Ping the Syncthing server. Returns the string \"pong\".

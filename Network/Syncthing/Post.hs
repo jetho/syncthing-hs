@@ -37,7 +37,7 @@ import qualified Data.Map                           as Map
 import           Data.Maybe                         (maybeToList)
 import           Data.Text                          (Text)
 
-import           Network.Syncthing
+import           Network.Syncthing.Internal.Config  (Server)
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Internal.Request
 import           Network.Syncthing.Types
