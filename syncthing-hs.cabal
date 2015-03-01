@@ -21,11 +21,12 @@ library
                      Network.Syncthing.Session
                      Network.Syncthing.Get
                      Network.Syncthing.Post
-                     Network.Syncthing.Internal.Config
+                     Network.Syncthing.Internal
+  other-modules:     Network.Syncthing.Internal.Config
                      Network.Syncthing.Internal.Error
                      Network.Syncthing.Internal.Monad
                      Network.Syncthing.Internal.Request
-  other-modules:     Network.Syncthing.Internal.Lens
+                     Network.Syncthing.Internal.Lens
                      Network.Syncthing.Internal.Utils
                      Network.Syncthing.Types
                      Network.Syncthing.Types.CacheEntry
