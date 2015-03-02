@@ -1,5 +1,5 @@
 
-module SyncthingTest.JSONProperties
+module SyncthingTest.JsonProperties
     ( jsonProps
     ) where
 
@@ -10,8 +10,8 @@ import           Test.Tasty.QuickCheck
 import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Types
 
-import           SyncthingTest.JSONArbitrary
-import           SyncthingTest.JSONInstances
+import           SyncthingTest.JsonArbitrary
+import           SyncthingTest.JsonInstances
 
 
 test name prop = testProperty testName prop

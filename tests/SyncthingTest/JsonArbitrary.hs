@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 
 
-module SyncthingTest.JSONArbitrary where
+module SyncthingTest.JsonArbitrary where
 
 import           Control.Applicative       (pure, (<$>), (<*>))
 import           Data.Char                 (isSpace)
