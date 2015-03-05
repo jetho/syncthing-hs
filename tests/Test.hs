@@ -2,18 +2,21 @@
 module Main where
 
 import           Test.Tasty
-import           Test.Tasty.QuickCheck
 
-import           SyncthingTest.ErrorProperties
-import           SyncthingTest.JsonProperties
+import           Properties.ErrorProperties
+import           Properties.JsonProperties
+import           UnitTests.Errors
 
 
 main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [properties]
+tests = testGroup "Tests" [properties, unitTests]
 
 properties :: TestTree
 properties = testGroup "Properties" [jsonProps, errorProps]
+
+unitTests :: TestTree
+unitTests = testGroup "Unit Tests" [errorUnits]
 

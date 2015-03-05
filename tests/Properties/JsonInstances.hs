@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 
-module SyncthingTest.JsonInstances where
+module Properties.JsonInstances where
 
 import           Control.Applicative              ((<$>), pure)
 import           Data.Aeson                       hiding (Error)

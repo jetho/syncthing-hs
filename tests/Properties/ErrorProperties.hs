@@ -1,5 +1,5 @@
 
-module SyncthingTest.ErrorProperties
+module Properties.ErrorProperties
     ( errorProps
     ) where
 
