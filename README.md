@@ -62,7 +62,7 @@ SyncConfig { pServer = "192.168.0.10:8080"
 syncthing defaultConfig Get.ping
  ```
  
-### Connection sharing for running multiple requests
+### Connection sharing for multiple requests
 
 Running multiple requests with the default configuration is somewhat 
 inefficient since a new connection manager is created for each request. 
