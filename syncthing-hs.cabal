@@ -4,6 +4,9 @@ synopsis:            Haskell bindings for the Syncthing REST API
 description:         
     .
     see: <https://github.com/syncthing/syncthing/wiki/REST-Interface>
+    .
+    A short tutorial is available at: 
+    <http://jetho.org/posts/2015-03-07-syncthing-hs-tutorial.html>
 homepage:            https://github.com/jetho/syncthing-hs
 license:             BSD3
 license-file:        LICENSE
