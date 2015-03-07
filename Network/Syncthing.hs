@@ -225,17 +225,21 @@ defaultConfig = SyncConfig {
     , _pManager  = Left defaultManagerSettings
     }
 
+defaultResponseTimeout :: Int
+defaultResponseTimeout = 300000000 
+
 -- | Set the response timeout (in microseconds).
 setResponseTimeout :: HTTP.ManagerSettings -> Int -> HTTP.ManagerSettings
 setResponseTimeout ms t = ms { HTTP.managerResponseTimeout = Just t }
 
 -- | The default manager settings used by 'defaultConfig'.
 defaultManagerSettings :: HTTP.ManagerSettings
-defaultManagerSettings = tlsManagerSettings `setResponseTimeout` 300000000 
+defaultManagerSettings = 
+    tlsManagerSettings `setResponseTimeout` defaultResponseTimeout 
 
 -- | Alternative manager settings with disabled SSL certificate verification.
 noSSLVerifyManagerSettings :: HTTP.ManagerSettings
-noSSLVerifyManagerSettings = ms `setResponseTimeout` 300000000 
+noSSLVerifyManagerSettings = ms `setResponseTimeout` defaultResponseTimeout 
   where ms = mkManagerSettings (TLSSettingsSimple True False False) Nothing
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
