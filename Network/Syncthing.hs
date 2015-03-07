@@ -228,7 +228,7 @@ defaultConfig = SyncConfig {
 defaultResponseTimeout :: Int
 defaultResponseTimeout = 300000000 
 
--- | Set the response timeout (in microseconds).
+-- | Set the response timeout (in microseconds). Default is 300 seconds.
 setResponseTimeout :: HTTP.ManagerSettings -> Int -> HTTP.ManagerSettings
 setResponseTimeout ms t = ms { HTTP.managerResponseTimeout = Just t }
 
