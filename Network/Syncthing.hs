@@ -84,6 +84,7 @@ module Network.Syncthing
     -- * Manager Settings
     , defaultManagerSettings
     , noSSLVerifyManagerSettings
+    , setResponseTimeout 
 
     -- * Error Handling
     , DeviceError(..)
@@ -224,14 +225,18 @@ defaultConfig = SyncConfig {
     , _pManager  = Left defaultManagerSettings
     }
 
+-- | Set the response timeout (in microseconds).
+setResponseTimeout :: HTTP.ManagerSettings -> Int -> HTTP.ManagerSettings
+setResponseTimeout ms t = ms { HTTP.managerResponseTimeout = Just t }
+
 -- | The default manager settings used by 'defaultConfig'.
 defaultManagerSettings :: HTTP.ManagerSettings
-defaultManagerSettings = tlsManagerSettings
+defaultManagerSettings = tlsManagerSettings `setResponseTimeout` 300000000 
 
 -- | Alternative manager settings with disabled SSL certificate verification.
 noSSLVerifyManagerSettings :: HTTP.ManagerSettings
-noSSLVerifyManagerSettings =
-    mkManagerSettings (TLSSettingsSimple True False False) Nothing
+noSSLVerifyManagerSettings = ms `setResponseTimeout` 300000000 
+  where ms = mkManagerSettings (TLSSettingsSimple True False False) Nothing
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
 --
