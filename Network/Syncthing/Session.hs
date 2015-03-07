@@ -21,15 +21,15 @@
 -- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'))
 -- import "Network.Syncthing"
 -- import "Network.Syncthing.Session"
--- import "Network.Syncthing.Get" ('Network.Syncthing.Get.ping', 'Network.Syncthing.Get.version')
+-- import qualified "Network.Syncthing.Get" as Get
 --
 -- \-\- Customized configuration.
 -- settings1 = 'defaultConfig' 'Control.Lens.&' 'Network.Syncthing.pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --
 -- session1 = do
 --     session <- 'newSyncSession' settings1
---     p       <- 'runSyncSession' session 'Network.Syncthing.Get.ping'
---     v       <- 'runSyncSession' session 'Network.Syncthing.Get.version'
+--     p       <- 'runSyncSession' session Get.'Network.Syncthing.Get.ping'
+--     v       <- 'runSyncSession' session Get.'Network.Syncthing.Get.version'
 --     'closeSyncSession' session
 --     return (p, v)
 --
@@ -39,8 +39,8 @@
 --
 -- session2 = do
 --     session <- 'newSyncSession' settings2
---     p       <- 'runSyncSession' session 'Network.Syncthing.Get.ping'
---     v       <- 'runSyncSession' session 'Network.Syncthing.Get.version'
+--     p       <- 'runSyncSession' session Get.'Network.Syncthing.Get.ping'
+--     v       <- 'runSyncSession' session Get.'Network.Syncthing.Get.version'
 --     'closeSyncSession' session
 --     return (p, v)
 -- @
@@ -97,7 +97,7 @@ runSyncSession = syncthing . getConfig
 --
 -- @
 -- 'withSyncSession' 'defaultConfig' $ \\session ->
---     'runSyncSession' session $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+--     'runSyncSession' session $ 'Control.Monad.liftM2' (,) Get.'Network.Syncthing.Get.ping' Get.'Network.Syncthing.Get.version'
 -- @
 -- @
 -- import qualified "Network.Wreq" as Wreq
@@ -106,7 +106,7 @@ runSyncSession = syncthing . getConfig
 --                         'Control.Lens.&' 'pAuth'   'Control.Lens.?~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
 --                         'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
 -- 'withSyncSession' cfg $ \\session ->
---     'runSyncSession' session $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+--     'runSyncSession' session $ 'Control.Monad.liftM2' (,) Get.'Network.Syncthing.Get.ping' Get.'Network.Syncthing.Get.version'
 -- @
 withSyncSession :: SyncConfig -> (SyncSession -> IO a) -> IO a
 withSyncSession config = bracket (newSyncSession config) closeSyncSession

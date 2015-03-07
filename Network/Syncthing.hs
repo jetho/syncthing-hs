@@ -26,18 +26,18 @@
 -- import "Control.Monad" ('Control.Monad.liftM2')
 -- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'), ('Control.Lens.?~'))
 -- import "Network.Syncthing"
--- import "Network.Syncthing.Get" ('Network.Syncthing.Get.ping', 'Network.Syncthing.Get.version')
+-- import qualified "Network.Syncthing.Get" as Get 
 --
 -- \-\- A single Syncthing request.
--- single = 'syncthing' 'defaultConfig' 'Network.Syncthing.Get.ping'
+-- single = 'syncthing' 'defaultConfig' Get.'Network.Syncthing.Get.ping'
 --
 -- \-\- Running multiple requests with the default configuration is somewhat inefficient 
 -- \-\- since a new connection manager is created for each request. It's recommended using
 -- \-\- the 'withManager' function which allows connection sharing among multiple requests.
 -- multiple1 = 'withManager' $ \\cfg ->
 --     'syncthing' cfg $ do
---         p <- 'Network.Syncthing.Get.ping'
---         v <- 'Network.Syncthing.Get.version'
+--         p <- Get.'Network.Syncthing.Get.ping'
+--         v <- Get.'Network.Syncthing.Get.version'
 --         return (p, v)
 --
 -- \-\- Multiple Syncthing requests with connection sharing and customized configuration.
@@ -45,7 +45,7 @@
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
 --                    'Control.Lens.&' 'pHttps'  'Control.Lens..~' True
 --                    'Control.Lens.&' 'pAuth'   'Control.Lens.?~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
---     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) Get.'Network.Syncthing.Get.ping' Get.'Network.Syncthing.Get.version'
 -- @
 
 module Network.Syncthing
@@ -155,12 +155,12 @@ instance MonadSync IO where
 --
 -- @
 -- 'withManager' $ \\cfg ->
---     'syncthing' cfg $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+--     'syncthing' cfg $ 'Control.Monad.liftM2' (,) Get.'Network.Syncthing.Get.ping' Get.'Network.Syncthing.Get.version'
 -- @
 -- @
 -- 'withManager' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pServer' 'Control.Lens..~' \"192.168.0.10:8080\"
---     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) Get.'Network.Syncthing.Get.ping' Get.'Network.Syncthing.Get.version'
 -- @
 withManager :: (SyncConfig -> IO a) -> IO a
 withManager = withManager' defaultManagerSettings
@@ -177,7 +177,7 @@ withManager = withManager' defaultManagerSettings
 -- @
 -- 'withManagerNoVerify' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
---     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) Get.'Network.Syncthing.Get.ping' Get.'Network.Syncthing.Get.version'
 -- @
 withManagerNoVerify :: (SyncConfig -> IO a) -> IO a
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
@@ -189,7 +189,7 @@ withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 -- @
 -- 'withManager'' 'noSSLVerifyManagerSettings' $ \\cfg -> do
 --     let cfg\' = cfg 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
---     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) 'Network.Syncthing.Get.ping' 'Network.Syncthing.Get.version'
+--     'syncthing' cfg\' $ 'Control.Monad.liftM2' (,) Get.'Network.Syncthing.Get.ping' Get.'Network.Syncthing.Get.version'
 -- @
 withManager' :: HTTP.ManagerSettings -> (SyncConfig -> IO a) -> IO a
 withManager' settings act =
@@ -239,7 +239,7 @@ noSSLVerifyManagerSettings =
 --
 -- @
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
--- 'syncthing' cfg 'Network.Syncthing.Get.ping'
+-- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
 -- @
 pServer :: Lens' SyncConfig Server
 pServer  = PL.pServer
@@ -250,7 +250,7 @@ pServer  = PL.pServer
 --
 -- @
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
--- 'syncthing' cfg 'Network.Syncthing.Get.ping'
+-- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
 -- @
 pApiKey :: Lens' SyncConfig (Maybe Text)
 pApiKey  = PL.pApiKey
@@ -265,7 +265,7 @@ pApiKey  = PL.pApiKey
 --
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
 --                         'Control.Lens.&' 'pAuth'  'Control.Lens.?~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
--- 'syncthing' cfg 'Network.Syncthing.Get.ping'
+-- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
 -- @
 pAuth :: Lens' SyncConfig (Maybe W.Auth)
 pAuth    = PL.pAuth
@@ -276,7 +276,7 @@ pAuth    = PL.pAuth
 --
 -- @
 -- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
--- 'syncthing' cfg 'Network.Syncthing.Get.ping'
+-- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
 -- @
 pHttps :: Lens' SyncConfig Bool
 pHttps = PL.pHttps

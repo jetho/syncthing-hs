@@ -29,16 +29,16 @@ import qualified Network.Wreq as Wreq
 import Control.Monad (liftM2)
 import Control.Lens ((&), (.~), (?~))
 import Network.Syncthing
-import Network.Syncthing.Get (ping, version)
+import qualified Network.Syncthing.Get as Get
 
 -- A single Syncthing request.
-single = syncthing defaultConfig ping
+single = syncthing defaultConfig Get.ping
 
 -- Connection sharing for multiple Syncthing requests.
 multiple1 = withManager $ \cfg ->
     syncthing cfg $ do
-        p <- ping
-        v <- version
+        p <- Get.ping
+        v <- Get.version
         return (p, v)
 
 -- Multiple Syncthing requests with connection sharing and customized configuration.
@@ -46,6 +46,6 @@ multiple2 = withManager $ \cfg -> do
     let cfg' = cfg & pServer .~ "192.168.0.10:8080"
                    & pHttps  .~ True
                    & pAuth   ?~ Wreq.basicAuth "user" "pass"
-    syncthing cfg' $ liftM2 (,) ping version
+    syncthing cfg' $ liftM2 (,) Get.ping Get.version
 ```
 
