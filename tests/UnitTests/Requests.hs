@@ -9,8 +9,9 @@ module UnitTests.Requests
 import           Control.Lens               ((&), (.~), (^.))
 import           Control.Monad.Trans.Either (runEitherT)
 import           Control.Monad.Trans.Reader (runReaderT)
-import           Control.Monad.Trans.Writer (Writer, runWriter, tell)
+import           Control.Monad.Trans.Writer (Writer, execWriter, tell)
 import qualified Data.Text                  as T
+import qualified Network.Wreq               as W
 import           Test.Tasty
 import           Test.Tasty.HUnit
 
@@ -19,18 +20,21 @@ import qualified Network.Syncthing.Get      as Get
 import           Network.Syncthing.Internal
 
 
-instance MonadSync (Writer String) where
-    getMethod  o s   = tell s >> return ""
-    postMethod o s p = tell s >> return ""
+type LoggedRequest = (String, W.Options)
+type RequestLogger = Writer [LoggedRequest]
 
-mockedSyncthing :: SyncConfig -> SyncM (Writer String) a -> Writer String (SyncResult a)
+instance MonadSync RequestLogger where
+    getMethod  o s   = tell [(s, o)] >> return ""
+    postMethod o s p = tell [(s, o)] >> return ""
+
+mockedSyncthing :: SyncConfig -> SyncM RequestLogger a -> RequestLogger (SyncResult a)
 mockedSyncthing config action = 
     flip runReaderT config $ runEitherT $ runSyncthing action
 
-extractRequest :: Writer String (SyncResult a) -> String
-extractRequest = snd . runWriter
+extractRequest :: RequestLogger (SyncResult a) -> LoggedRequest
+extractRequest = head . execWriter
 
-getUrl cfg action = extractRequest $ mockedSyncthing cfg action
+getUrl cfg action = fst . extractRequest $ mockedSyncthing cfg action
 
 testUrl cfg action url =
     testCase url $
@@ -39,5 +43,7 @@ testUrl cfg action url =
 
 requestUnits :: TestTree
 requestUnits = testGroup "Requests"
-    [ testUrl defaultConfig Get.ping "/rest/ping" ]
+    [ testUrl defaultConfig Get.ping "/rest/ping" 
+    , testUrl defaultConfig Get.version "/rest/version" 
+    ]
 
