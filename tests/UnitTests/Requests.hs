@@ -66,21 +66,26 @@ getOptions = reqOptions .: execRequest
 serverString :: SyncConfig -> String
 serverString = T.unpack . (^. pServer)
 
+withRequest :: LogAction a -> (LoggedRequest -> b) -> b
+withRequest action f = f $ execRequest defaultConfig action
+
+
+
 -------------- Basic Tests --------------
 
-basicGetRequest = do
-    let (LoggedRequest url opts _) = execRequest defaultConfig Get.ping
-    assertBool "correct url is generated" $
-        ("http://" ++ serverString defaultConfig) `isPrefixOf` url
-    assertEqual "Accept header contains application/json"
-        ["application/json"] (opts ^. W.header "Accept")
+basicGetRequest = withRequest Get.ping $ 
+    \LoggedRequest {..} -> do
+        assertBool "correct url is generated" $
+            ("http://" ++ serverString defaultConfig) `isPrefixOf` reqUrl
+        assertEqual "Accept header contains application/json"
+            ["application/json"] (reqOptions ^. W.header "Accept")
 
-basicPostRequest = do
-    let (LoggedRequest url opts _) = execRequest defaultConfig Post.ping
-    assertBool "correct url is generated" $
-        ("http://" ++ serverString defaultConfig) `isPrefixOf` url
-    assertEqual "Accept header contains application/json"
-        ["application/json"] (opts ^. W.header "Accept")
+basicPostRequest = withRequest Post.ping $ 
+    \LoggedRequest {..} -> do
+        assertBool "correct url is generated" $
+            ("http://" ++ serverString defaultConfig) `isPrefixOf` reqUrl
+        assertEqual "Accept header contains application/json"
+            ["application/json"] (reqOptions ^. W.header "Accept")
 
 changeServer = assertBool "Url reflects server modification" $
     ("http://" ++ serverString cfg) `isPrefixOf` url
@@ -117,10 +122,6 @@ disableHttps = assertBool "HTTP protocol is used" $
 
 
 -------------- GET and POST Requests --------------
-
-withRequest :: LogAction a -> (LoggedRequest -> TestTree) -> TestTree
-withRequest action f = f $ execRequest defaultConfig action
-
 
 testGet :: String -> [Param] -> LogAction a -> TestTree
 testGet endpoint params action = withRequest action $ 
