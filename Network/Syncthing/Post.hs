@@ -70,8 +70,8 @@ hint device server=
 -- activate.
 sendConfig :: MonadSync m => Config -> SyncM m ()
 sendConfig cfg = send $ postRequest { path   = "/rest/config"
-                                     , method = post cfg
-                                     }
+                                    , method = post cfg
+                                    }
 
 -- | Register a new error message.
 sendError :: MonadSync m => Text -> SyncM m ()

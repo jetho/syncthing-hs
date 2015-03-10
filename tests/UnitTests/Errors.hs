@@ -5,7 +5,7 @@ module UnitTests.Errors
     ( errorUnits
     ) where
 
-import           Data.ByteString.Lazy             (ByteString)
+import qualified Data.ByteString.Lazy.Char8       as BS 
 import qualified Data.Text                        as T
 import           Test.Tasty
 import           Test.Tasty.HUnit
@@ -13,17 +13,30 @@ import           Test.Tasty.HUnit
 import           Network.Syncthing.Internal.Error
 
 
-testDecodeError :: SyncError -> ByteString -> TestTree
+createTestName :: Show err => err -> String
+createTestName = ("Decode " ++) . show
+
+createDescription :: Show err => err -> String -> String
+createDescription errType errMsg =
+    concat [show errMsg, " decodes to ", show errType]
+
+testDecodeError :: SyncError -> BS.ByteString -> TestTree
 testDecodeError errType errMsg =
-    testCase (show errType) $ decodeError errMsg @?= Just errType 
+    testCase (createTestName errType) $ 
+        assertEqual (createDescription errType $ BS.unpack errMsg)
+                    (Just errType)
+                    (decodeError errMsg) 
 
 testDecodeDeviceError :: DeviceError -> T.Text -> TestTree
 testDecodeDeviceError errType errMsg =
-    testCase (show errType) $ decodeDeviceError errMsg @?= errType 
+    testCase (show errType) $ 
+        assertEqual (createDescription errType $ T.unpack errMsg)
+                    errType 
+                    (decodeDeviceError errMsg)
 
 
 errorUnits :: TestTree
-errorUnits = testGroup "Error Decoding Unit Tests" $
+errorUnits = testGroup "Unit Tests for error messages" $
     map (uncurry testDecodeError)
     [ (CSRFError, "CSRF Error")
     , (NotAuthorized, "Not Authorized")

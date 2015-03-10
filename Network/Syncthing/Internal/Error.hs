@@ -10,8 +10,7 @@ module Network.Syncthing.Internal.Error
     ) where
 
 import           Control.Exception          (Exception)
-import           Data.ByteString.Lazy       (ByteString)
-import           Data.ByteString.Lazy.Char8 (unpack)
+import qualified Data.ByteString.Lazy.Char8 as BS
 import           Data.List                  (find)
 import           Data.Maybe                 (fromMaybe)
 import qualified Data.Text                  as T
@@ -41,12 +40,12 @@ deviceIdLength, deviceIdCheckDigit :: String
 deviceIdLength     = "device ID invalid: incorrect length"
 deviceIdCheckDigit = "check digit incorrect"
 
-decodeError :: ByteString -> Maybe SyncError
+decodeError :: BS.ByteString -> Maybe SyncError
 decodeError =
       fmap snd
     . flip find errorPatterns
     . (\msg patTup -> msg =~ fst patTup)
-    . unpack
+    . BS.unpack
   where
     errorPatterns :: [(String, SyncError)]
     errorPatterns =
