@@ -7,6 +7,7 @@ module UnitTests.Requests
     ( requestUnits
     ) where
 
+import           Control.Applicative        ((<$>))
 import           Control.Lens               ((&), (.~), (?~), (^.))
 import           Control.Monad.Trans.Either (runEitherT)
 import           Control.Monad.Trans.Reader (runReaderT)
@@ -19,35 +20,47 @@ import           Data.Text.Encoding         (encodeUtf8)
 import qualified Network.Wreq               as W
 import           Test.Tasty
 import           Test.Tasty.HUnit
+import           Test.Tasty.QuickCheck
 
 import           Network.Syncthing
 import qualified Network.Syncthing.Get      as Get
 import           Network.Syncthing.Internal
 import qualified Network.Syncthing.Post     as Post
 
+import           Properties.JsonArbitrary
+import           Properties.JsonInstances
+
 
 
 -------------- Test Infrastructure --------------
 
+type Endpoint = String
+type Url      = String
+type Params   = [Param]
+
+data RequestType = GET | POST
+                 deriving (Eq, Show)
+
 data LoggedRequest = LoggedRequest {
-      reqUrl     :: String
+      reqType    :: RequestType
+    , reqUrl     :: String
     , reqOptions :: W.Options
     , reqPayload :: Maybe Value
     }
 
 type RequestLogger  = Writer [LoggedRequest]
 type LogAction      = SyncM RequestLogger
-type LoggerResult a = RequestLogger (SyncResult a)
+type LogResult a    = RequestLogger (SyncResult a)
 
 instance MonadSync RequestLogger where
-    getMethod  o s   = tell [ LoggedRequest s o Nothing  ] >> return ""
-    postMethod o s p = tell [ LoggedRequest s o (Just p) ] >> return ""
+    getMethod  o s   = tell [ LoggedRequest GET  s o Nothing  ] >> return ""
+    postMethod o s p = tell [ LoggedRequest POST s o (Just p) ] >> return ""
 
-mockedSyncthing :: SyncConfig -> LogAction a -> LoggerResult a
+mockedSyncthing :: SyncConfig -> LogAction a -> LogResult a
 mockedSyncthing config action =
     flip runReaderT config $ runEitherT $ runSyncthing action
 
-extractRequest :: LoggerResult a -> LoggedRequest
+extractRequest :: LogResult a -> LoggedRequest
 extractRequest = head . execWriter
 
 execRequest :: SyncConfig -> LogAction a -> LoggedRequest
@@ -59,25 +72,63 @@ withConfigRequest cfg action f = f $ execRequest cfg action
 withRequest :: LogAction a -> (LoggedRequest -> b) -> b
 withRequest = withConfigRequest defaultConfig
 
+
+
+-------------- Helper Functions --------------
+
+noPayload :: ()
+noPayload = ()
+
+noParams :: Params
+noParams = []
+
+createIgnoresMap :: [T.Text] -> M.Map T.Text [T.Text] 
+createIgnoresMap = M.singleton "ignore" 
+
 serverString :: SyncConfig -> String
 serverString = T.unpack . (^. pServer)
+
+assertReqType :: RequestType -> RequestType -> Assertion
+assertReqType rType reqType =
+    assertEqual (show rType ++ " Request is executed") rType reqType 
+
+assertUrl :: SyncConfig -> Endpoint -> Url -> Assertion
+assertUrl cfg endpoint reqUrl =
+    let url = "http://" ++ serverString cfg ++ endpoint
+    in  assertEqual "Request url is correct" url reqUrl
+
+assertParams :: Params -> W.Options -> Assertion
+assertParams params reqOptions =
+    let reqParams = reqOptions ^. W.params
+    in  assertEqual "Params set correctly" (sort params) (sort reqParams)
+
+assertPayload :: ToJSON p => p -> Maybe Value -> Assertion 
+assertPayload payload reqPayload =
+    let payload' = Just . toJSON $ payload
+    in  assertEqual "Payload injected correctly" payload' reqPayload
+
+assertGet :: LoggedRequest -> Endpoint -> Params -> Assertion
+assertGet LoggedRequest{..} endpoint params = do
+    assertReqType GET reqType
+    assertUrl defaultConfig endpoint reqUrl
+    assertParams params reqOptions
+
+assertPost :: ToJSON p => LoggedRequest -> Endpoint -> Params -> p -> Assertion
+assertPost LoggedRequest{..} endpoint params payload = do
+    assertReqType POST reqType
+    assertUrl defaultConfig endpoint reqUrl
+    assertParams params reqOptions
+    assertPayload payload reqPayload
 
 
 
 -------------- Basic Tests --------------
 
-basicGetRequest = withRequest Get.ping $
-    \LoggedRequest {..} -> do
-        assertBool "correct url is generated" $
-            ("http://" ++ serverString defaultConfig) `isPrefixOf` reqUrl
-        assertEqual "Accept header contains application/json"
-            ["application/json"] (reqOptions ^. W.header "Accept")
-
-basicPostRequest = withRequest Post.ping $
-    \LoggedRequest {..} -> do
-        assertBool "correct url is generated" $
-            ("http://" ++ serverString defaultConfig) `isPrefixOf` reqUrl
-        assertEqual "Accept header contains application/json"
+basicRequest rType endpoint action  = withRequest action $
+    \LoggedRequest{..} -> do
+        assertReqType rType reqType 
+        assertUrl defaultConfig endpoint reqUrl
+        assertEqual "Accept header contains 'application/json'"
             ["application/json"] (reqOptions ^. W.header "Accept")
 
 changeServer =
@@ -85,16 +136,14 @@ changeServer =
         cfg    = defaultConfig & pServer .~ server
     in
     withConfigRequest cfg Get.ping $
-        \LoggedRequest {..} -> 
-            assertBool "Url reflects server modification" $
-                ("http://" ++ serverString cfg) `isPrefixOf` reqUrl
+        \LoggedRequest{..} -> assertUrl cfg "/rest/ping" reqUrl
 
 setApiKey =
     let apiKey = "123456789XYZ"
         cfg    = defaultConfig & pApiKey ?~ apiKey
     in
     withConfigRequest cfg Get.ping $
-        \LoggedRequest {..} -> 
+        \LoggedRequest{..} -> 
             assertEqual "ApiKey is set as X-API-KEY header"
                 [encodeUtf8 apiKey] (reqOptions ^. W.header "X-API-KEY")
 
@@ -103,61 +152,58 @@ enableAuth =
         cfg  = defaultConfig & pAuth ?~ auth
     in
     withConfigRequest cfg Get.ping $
-        \LoggedRequest {..} -> 
-            assertEqual "Authentication enabled"
-                (Just auth) (reqOptions ^. W.auth)
+        \LoggedRequest{..} -> 
+            assertEqual "Auth enabled" (Just auth) (reqOptions ^. W.auth)
 
 enableHttps =
     let cfg = defaultConfig & pHttps .~ True
     in
     withConfigRequest cfg Get.ping $
-        \LoggedRequest {..} -> 
+        \LoggedRequest{..} -> 
             assertBool "HTTPS protocol is used" $ "https://" `isPrefixOf` reqUrl
 
 disableHttps =
     let cfg = defaultConfig & pHttps .~ False
     in
     withConfigRequest cfg Get.ping $
-        \LoggedRequest {..} -> 
+        \LoggedRequest{..} -> 
             assertBool "HTTP protocol is used" $ "http://" `isPrefixOf` reqUrl
 
 
 
 -------------- GET and POST Requests --------------
 
-testGet :: String -> [Param] -> LogAction a -> TestTree
+testGet :: Endpoint -> Params -> LogAction a -> TestTree
 testGet endpoint params action = withRequest action $
-    \LoggedRequest {..} ->
-        testCase ("Test GET " ++ endpoint) $ do
-            let url = "http://" ++ serverString defaultConfig ++ endpoint
-            assertEqual "Request url is correct" url reqUrl
+    \loggedRequest ->
+        testCase ("Test GET " ++ endpoint) $ 
+            assertGet loggedRequest endpoint params            
 
-            let reqParams = reqOptions ^. W.params
-            assertEqual "Params set correctly" (sort params) (sort reqParams)
+testPost :: ToJSON p => Endpoint -> Params -> p -> LogAction a -> TestTree
+testPost endpoint params payload action = withRequest action $
+    \loggedRequest ->
+        testCase ("Test POST " ++ endpoint) $ 
+            assertPost loggedRequest endpoint params payload
 
-
-testPost :: ToJSON v => String -> [Param] -> v -> LogAction a -> TestTree
-testPost endpoint params val action = withRequest action $
-    \LoggedRequest {..} ->
-        testCase ("Test POST " ++ endpoint) $ do
-            let url = "http://" ++ serverString defaultConfig ++ endpoint
-            assertEqual "Request url is correct" url reqUrl
-
-            let reqParams = reqOptions ^. W.params
-            assertEqual "Params set correctly" (sort params) (sort reqParams)
-
-            let payload = Just . toJSON $ val
-            assertEqual "Payload injected correctly" payload reqPayload
+-- | Post.sendConfig requires special treatment. Use Quickcheck to generate
+-- sample data for the payload.
+testPostConfig :: Endpoint -> Params -> TestTree
+testPostConfig endpoint params = 
+    testCase ("Test POST " ++ endpoint) $ do
+        configSample <- head <$> sample' (arbitrary :: Gen Config)
+        withRequest (Post.sendConfig configSample) $ 
+            \loggedRequest -> 
+                assertPost loggedRequest endpoint params configSample
 
 
 
 -------------- Test Suite --------------
 
 requestUnits :: TestTree
-requestUnits = testGroup "Unit Tests for Requests" $
+requestUnits = testGroup "Unit Tests for Requests" 
     [ testGroup "Basic Tests"
-        [ testCase "basic GET Request"      basicGetRequest
-        , testCase "basic POST Request"     basicPostRequest
+        [ testCase "GET Request"  $ basicRequest GET  "/rest/ping" Get.ping
+        , testCase "POST Request" $ basicRequest POST "/rest/ping" Post.ping
         , testCase "changeServer"           changeServer
         , testCase "set ApiKey"             setApiKey
         , testCase "enable Authentication"  enableAuth
@@ -165,48 +211,63 @@ requestUnits = testGroup "Unit Tests for Requests" $
         , testCase "disable HTTPS usage"    disableHttps
         ]
     , testGroup "GET Requests"
-        [ testGet "/rest/ping" [] Get.ping
+        [ testGet "/rest/ping"          noParams Get.ping
         , testGet "/rest/completion"
-                  [("folder","default"), ("device", "device1")] $
-                  Get.completion "device1" "default"
-        , testGet "/rest/config" [] Get.config
-        , testGet "/rest/connections" [] Get.connections
-        , testGet "/rest/deviceid" [("id", "device1")] $ Get.deviceId "device1"
-        , testGet "/rest/discovery" [] Get.discovery
-        , testGet "/rest/errors" [] Get.errors
-        , testGet "/rest/ignores" [("folder", "default")] $
-                  Get.ignores "default"
-        , testGet "/rest/model" [("folder", "default")] $ Get.model "default"
-        , testGet "/rest/need" [("folder", "default")] $ Get.need "default"
-        , testGet "/rest/config/sync" [] Get.sync
-        , testGet "/rest/system" [] Get.system
-        , testGet "/rest/upgrade" [] Get.upgrade
-        , testGet "/rest/version" [] Get.version
+                  [("folder","default"), ("device", "device1")] 
+                  (Get.completion "device1" "default")
+        , testGet "/rest/config"        noParams Get.config
+        , testGet "/rest/connections"   noParams Get.connections
+        , testGet "/rest/deviceid" 
+                  [("id", "device1")] 
+                  (Get.deviceId "device1")
+        , testGet "/rest/discovery"     noParams Get.discovery
+        , testGet "/rest/errors"        noParams Get.errors
+        , testGet "/rest/ignores" 
+                  [("folder", "default")] 
+                  (Get.ignores "default")
+        , testGet "/rest/model" 
+                  [("folder", "default")] 
+                  (Get.model "default")
+        , testGet "/rest/need"  
+                  [("folder", "default")] 
+                  (Get.need "default")
+        , testGet "/rest/config/sync"   noParams Get.sync
+        , testGet "/rest/system"        noParams Get.system
+        , testGet "/rest/upgrade"       noParams Get.upgrade
+        , testGet "/rest/version"       noParams Get.version
         ]
     , testGroup "POST Requests"
-        [ testPost "/rest/ping" [] () Post.ping
+        [ testPost "/rest/ping"         noParams noPayload Post.ping
         , testPost "/rest/bump"
-                   [("folder", "default"), ("file", "foo/bar")] () $
-                   Post.bump "default" "foo/bar"
+                   [("folder", "default"), ("file", "foo/bar")] 
+                   noPayload
+                   (Post.bump "default" "foo/bar")
         , testPost "/rest/discovery/hint"
-                   [("device", "device1"), ("addr", "192.168.0.10:8080")] () $
-                   Post.hint "device1" "192.168.0.10:8080"
-        , testPost "/rest/error" [] (T.pack "Error 1") $
-                   Post.sendError "Error 1"
-        , testPost "/rest/error/clear" [] () Post.clearErrors
-        , testPost "/rest/scan" [("folder", "default")] () $
-                   Post.scanFolder "default" Nothing
+                   [("device", "device1"), ("addr", "192.168.0.10:8080")] 
+                   noPayload
+                   (Post.hint "device1" "192.168.0.10:8080")
+        , testPost "/rest/error" 
+                   noParams 
+                   (T.pack "Error 1") 
+                   (Post.sendError "Error 1")
+        , testPost "/rest/error/clear"  noParams noPayload Post.clearErrors
+        , testPost "/rest/scan" 
+                   [("folder", "default")] 
+                   noPayload 
+                   (Post.scanFolder "default" Nothing)
         , testPost "/rest/scan"
-                   [("folder", "default"), ("sub", "foo/bar")] () $
-                   Post.scanFolder "default" (Just "foo/bar")
-        , testPost "/rest/restart" [] () Post.restart
-        , testPost "/rest/shutdown" [] () Post.shutdown
-        , testPost "/rest/reset" [] () Post.reset
-        , testPost "/rest/upgrade" [] () Post.upgrade
-        , let ignores = ["file1", "file2", "foo/bar"]
-              ignMap  = M.singleton "ignore" ignores :: M.Map T.Text [T.Text]
-          in testPost "/rest/ignores" [("folder", "default")] ignMap $
-                      Post.sendIgnores "default" ignores
+                   [("folder", "default"), ("sub", "foo/bar")] 
+                   noPayload 
+                   (Post.scanFolder "default" (Just "foo/bar"))
+        , testPost "/rest/restart"      noParams noPayload Post.restart
+        , testPost "/rest/shutdown"     noParams noPayload Post.shutdown
+        , testPost "/rest/reset"        noParams noPayload Post.reset
+        , testPost "/rest/upgrade"      noParams noPayload Post.upgrade
+        , testPost "/rest/ignores" 
+                   [("folder", "default")] 
+                   (createIgnoresMap ["file1", "file2", "foo/bar"])
+                   (Post.sendIgnores "default" ["file1", "file2", "foo/bar"])
+        , testPostConfig "/rest/config" noParams
         ]
     ]
 

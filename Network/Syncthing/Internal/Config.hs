@@ -24,7 +24,7 @@ data SyncConfig = SyncConfig {
     }
 
 instance Show SyncConfig where
-    show (SyncConfig {..}) =
+    show SyncConfig{..} =
         concat [ "SyncConfig { "
                , "pServer = ", show _pServer
                , ", pApiKey = ", show _pApiKey

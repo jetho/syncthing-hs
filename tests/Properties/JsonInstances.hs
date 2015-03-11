@@ -34,7 +34,7 @@ encodeModelState = encodeMaybe . fmap encodeState
                 Syncing  -> "syncing"
 
 instance ToJSON Version where
-    toJSON Version {..} =
+    toJSON Version{..} =
         object [ "arch"         .= getArch
                , "longVersion"  .= getLongVersion
                , "os"           .= getOs
@@ -51,13 +51,13 @@ instance ToJSON Sync where
     toJSON = singleField "configInSync" . getSync 
 
 instance ToJSON CacheEntry where
-    toJSON CacheEntry {..} =
+    toJSON CacheEntry{..} =
         object [ "Address"  .= encodeAddr getAddr
                , "Seen"     .= encodeUTC getSeen
                ]
 
 instance ToJSON Connection where
-    toJSON Connection {..} =
+    toJSON Connection{..} =
         object [ "At"            .= encodeUTC getAt
                , "InBytesTotal"  .= getInBytesTotal
                , "OutBytesTotal" .= getOutBytesTotal
@@ -66,7 +66,7 @@ instance ToJSON Connection where
                ]
 
 instance ToJSON Model where
-    toJSON Model {..} =
+    toJSON Model{..} =
         object [ "globalBytes"   .= getGlobalBytes   
                , "globalDeleted" .= getGlobalDeleted 
                , "globalFiles"   .= getGlobalFiles   
@@ -84,27 +84,27 @@ instance ToJSON Model where
                ]
 
 instance ToJSON Upgrade where
-    toJSON Upgrade {..} =
+    toJSON Upgrade{..} =
         object [ "latest"  .= getLatest
                , "newer"   .= getNewer
                , "running" .= getRunning
                ]
 
 instance ToJSON Ignore where
-    toJSON Ignore {..} =
+    toJSON Ignore{..} =
         object [ "ignore"   .= getIgnores
                , "patterns" .= getPatterns
                ]
 
 instance ToJSON Need where
-    toJSON Need {..} =
+    toJSON Need{..} =
         object [ "progress" .= getProgress
                , "queued"   .= getQueued
                , "rest"     .= getRest
                ]
 
 instance ToJSON Progress where
-    toJSON Progress {..} =
+    toJSON Progress{..} =
         object [ "Name"         .= getName            
                , "Flags"        .= getFlags           
                , "Modified"     .= getModified        
@@ -136,7 +136,7 @@ instance ToJSON SystemMsg where
             OtherSystemMsg m -> m
 
 instance ToJSON Error where
-    toJSON Error {..} =
+    toJSON Error{..} =
         object [ "Time"  .= encodeUTC getTime
                , "Error" .= getMsg
                ]

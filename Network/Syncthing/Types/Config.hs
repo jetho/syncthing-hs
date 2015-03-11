@@ -47,7 +47,7 @@ instance FromJSON Config where
     parseJSON _          = mzero
 
 instance ToJSON Config where
-    toJSON Config {..} =
+    toJSON Config{..} =
         object [ "Version"  .= getConfigVersion
                , "Folders"  .= getFolderConfigs
                , "Devices"  .= getDeviceConfigs
@@ -110,7 +110,7 @@ instance FromJSON FolderConfig where
     parseJSON _          = mzero
 
 instance ToJSON FolderConfig where
-    toJSON FolderConfig {..} =
+    toJSON FolderConfig{..} =
         object [ "ID"              .= getId
                , "Path"            .= getPath
                , "Devices"         .= map FolderDeviceConfig getFolderDevices
@@ -142,7 +142,7 @@ instance FromJSON VersioningConfig where
     parseJSON _          = mzero
 
 instance ToJSON VersioningConfig where
-    toJSON VersioningConfig {..} =
+    toJSON VersioningConfig{..} =
         object [ "Type"   .= getType
                , "Params" .= getParams
                ]
@@ -173,7 +173,7 @@ instance FromJSON DeviceConfig where
     parseJSON _          = mzero
 
 instance ToJSON DeviceConfig where
-    toJSON DeviceConfig {..} =
+    toJSON DeviceConfig{..} =
         object [ "DeviceID"     .= getDevice
                , "Name"         .= getDeviceName
                , "Addresses"    .= map encodeAddressType getAddresses
@@ -225,7 +225,7 @@ instance FromJSON GuiConfig where
     parseJSON _          = mzero
 
 instance ToJSON GuiConfig where
-    toJSON GuiConfig {..} =
+    toJSON GuiConfig{..} =
         object [ "Enabled"  .= getEnabled
                , "APIKey"   .= encodeApiKey getApiKey
                , "Address"  .= encodeAddr getGuiAddress
@@ -296,7 +296,7 @@ instance FromJSON OptionsConfig where
     parseJSON _          = mzero
 
 instance ToJSON OptionsConfig where
-    toJSON OptionsConfig {..} =
+    toJSON OptionsConfig{..} =
         object [ "ListenAddress"           .= map encodeAddr getListenAddress
                , "GlobalAnnServers"        .= getGlobalAnnServers
                , "GlobalAnnEnabled"        .= getGlobalAnnEnabled

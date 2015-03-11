@@ -29,7 +29,7 @@ testDecodeError errType errMsg =
 
 testDecodeDeviceError :: DeviceError -> T.Text -> TestTree
 testDecodeDeviceError errType errMsg =
-    testCase (show errType) $ 
+    testCase (createTestName errType) $ 
         assertEqual (createDescription errType $ T.unpack errMsg)
                     errType 
                     (decodeDeviceError errMsg)
