@@ -1,5 +1,6 @@
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 {-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
@@ -29,6 +30,7 @@ module Network.Syncthing.Get
     , need
     , sync
     , system
+    , tree
     , upgrade
     , version
     ) where
@@ -36,7 +38,8 @@ module Network.Syncthing.Get
 import           Control.Applicative                ((<$>))
 import           Control.Monad                      ((>=>))
 import qualified Data.Map                           as M
-import           Data.Text                          (Text)
+import           Data.Maybe                         (catMaybes)
+import           Data.Text                          (Text, pack)
 
 import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Internal.Monad
@@ -121,6 +124,20 @@ sync = getSync <$> sync'
 -- | Returns information about current system status and resource usage.
 system :: MonadSync m => SyncM m System
 system = query $ getRequest { path = "/rest/system" }
+
+-- | Returns the directory tree of the global model.
+tree :: MonadSync m 
+    => FolderName -- ^ root folder
+    -> Maybe Path -- ^ defines a prefix within the tree where to start building the structure
+    -> Maybe Int  -- ^ defines how deep within the tree we want to dwell down (0 based, defaults to unlimited depth)  
+    -> SyncM m (Maybe DirTree)
+tree folder prefix levels  = 
+    queryMaybe $ getRequest { path   = "/rest/tree"
+                            , params = [("folder", folder)] ++ optionals
+                            }
+  where 
+    optionals  = catMaybes [("prefix",) <$> prefix, ("levels",) <$> levelsText]
+    levelsText = pack . show <$> levels
 
 -- | Checks for a possible upgrade.
 upgrade :: MonadSync m => SyncM m Upgrade

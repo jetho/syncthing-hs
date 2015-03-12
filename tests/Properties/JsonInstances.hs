@@ -114,6 +114,16 @@ instance ToJSON Progress where
                , "Size"         .= getSize            
                ]
 
+instance ToJSON System where
+    toJSON System{..} =
+        object [ "alloc"            .= getAlloc            
+               , "cpuPercent"       .= getCpuPercent           
+               , "extAnnounceOK"    .= getExtAnnounceOK        
+               , "goroutines"       .= getGoRoutines 
+               , "myID"             .= getMyId    
+               , "sys"              .= getSys       
+               ]
+
 instance ToJSON (Either DeviceError Device) where
     toJSON = object . pure . either deviceError deviceId 
       where deviceError = ("error" .=) . encodeDeviceError 
@@ -143,4 +153,8 @@ instance ToJSON Error where
 
 instance ToJSON Errors where
     toJSON = singleField "errors" . getErrors 
+
+instance ToJSON DirTree where
+    toJSON DirTree{..}  = toJSON getDirTree
+    toJSON File{..}     = toJSON [getModTime, getFileSize] 
 

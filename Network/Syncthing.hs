@@ -100,6 +100,7 @@ module Network.Syncthing
     , GuiConfig(..)
     , OptionsConfig(..)
     , Connection(..)
+    , DirTree(..)
     , Error(..)
     , Ignore(..)
     , Model(..)

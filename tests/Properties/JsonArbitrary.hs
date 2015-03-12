@@ -112,6 +112,19 @@ instance Arbitrary OptionsConfig where
                       <*> arbitrary
                       <*> arbitrary
 
+instance Arbitrary DirTree where
+    arbitrary = sized dirTree
+      where
+        dirTree 0 = File <$> arbitrary <*> arbitrary  
+        dirTree n | n>0 =
+            oneof [ File <$> arbitrary <*> arbitrary 
+                  , DirTree <$> subtree
+                  ]
+          where 
+            subtree = (dirTree (n `div` 2)) `suchThat` isDir
+            isDir (DirTree _) = True
+            isDir _           = False
+
 concat <$> mapM (derive makeArbitrary)
                 [ ''AddressType
                 , ''FolderConfig
@@ -129,5 +142,6 @@ concat <$> mapM (derive makeArbitrary)
                 , ''DeviceError
                 , ''Error
                 , ''Errors
+                , ''System
                 ]
 

@@ -38,6 +38,7 @@ library
                      Network.Syncthing.Types.Config
                      Network.Syncthing.Types.Connection
                      Network.Syncthing.Types.DeviceId
+                     Network.Syncthing.Types.DirTree
                      Network.Syncthing.Types.Error
                      Network.Syncthing.Types.Ignore
                      Network.Syncthing.Types.Model

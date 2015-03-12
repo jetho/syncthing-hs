@@ -47,5 +47,7 @@ jsonProps = testGroup "JSON Parsers"
     , genProp "Config"           (prop_json :: Config -> Bool)
     , genProp "Error"            (prop_json :: Error -> Bool)
     , genProp "Errors"           (prop_json :: Errors -> Bool)
+    , genProp "System"           (prop_json :: System -> Bool)
+    , genProp "DirTree"          (prop_json :: DirTree -> Bool)
     ]
 

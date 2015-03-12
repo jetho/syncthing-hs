@@ -233,6 +233,18 @@ requestUnits = testGroup "Unit Tests for Requests"
                   (Get.need "default")
         , testGet "/rest/config/sync"   noParams Get.sync
         , testGet "/rest/system"        noParams Get.system
+        , testGet "/rest/tree"        
+                  [("folder", "default")]
+                  (Get.tree "default" Nothing Nothing)
+        , testGet "/rest/tree"        
+                  [("folder", "default"), ("prefix", "foo/bar")]
+                  (Get.tree "default" (Just "foo/bar") Nothing)
+        , testGet "/rest/tree"        
+                  [("folder", "default"), ("levels", "2")]
+                  (Get.tree "default" Nothing (Just 2))
+        , testGet "/rest/tree"        
+                  [("folder", "default"),("prefix", "foo/bar"),("levels", "2")]
+                  (Get.tree "default" (Just "foo/bar") (Just 2))
         , testGet "/rest/upgrade"       noParams Get.upgrade
         , testGet "/rest/version"       noParams Get.version
         ]
