@@ -13,22 +13,23 @@ import           Data.Text           (Text)
 
 
 -- | A directory tree contains files or subdirectories.
-data DirTree = DirTree {
-      getDirTree :: M.Map Text DirTree
-    }
-    |
-    File {
-      getModTime  :: Integer    -- ^ file modification time
-    , getFileSize :: Integer    -- ^ file size
-    } deriving (Eq, Show)
+data DirTree 
+    = Dir {
+        getDirContents :: M.Map Text DirTree
+      }
+    | File {
+        getModTime  :: Integer    -- ^ file modification time
+      , getFileSize :: Integer    -- ^ file size
+      } 
+    deriving (Eq, Show)
 
 instance FromJSON DirTree where
-    parseJSON obj@(Object _) = DirTree <$> parseJSON obj
-    parseJSON arr@(Array _)  = decodeFileInfo <$> parseJSON arr
+    parseJSON obj@(Object _) = Dir <$> parseJSON obj
+    parseJSON arr@(Array _)  = decodeFile <$> parseJSON arr
     parseJSON _              = mzero
 
 
-decodeFileInfo :: [Integer] -> DirTree
-decodeFileInfo [modTime, fileSize] = File modTime fileSize
-decodeFileInfo _                   = File 0 0
+decodeFile :: [Integer] -> DirTree
+decodeFile [modTime, fileSize] = File modTime fileSize
+decodeFile _                   = File 0 0
 

@@ -155,6 +155,6 @@ instance ToJSON Errors where
     toJSON = singleField "errors" . getErrors 
 
 instance ToJSON DirTree where
-    toJSON DirTree{..}  = toJSON getDirTree
-    toJSON File{..}     = toJSON [getModTime, getFileSize] 
+    toJSON Dir{..}  = toJSON getDirContents
+    toJSON File{..} = toJSON [getModTime, getFileSize] 
 

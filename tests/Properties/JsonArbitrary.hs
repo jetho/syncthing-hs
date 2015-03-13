@@ -9,6 +9,7 @@ import           Control.Applicative       (pure, (<$>), (<*>))
 import           Data.Char                 (isSpace)
 import           Data.Derive.Arbitrary
 import           Data.DeriveTH
+import qualified Data.Map                  as M
 import qualified Data.Text                 as T
 import           Test.QuickCheck.Instances
 import           Test.Tasty.QuickCheck
@@ -113,17 +114,17 @@ instance Arbitrary OptionsConfig where
                       <*> arbitrary
 
 instance Arbitrary DirTree where
-    arbitrary = sized dirTree
+    arbitrary = choose (0, 5) >>= dirTree
       where
-        dirTree 0 = File <$> arbitrary <*> arbitrary  
+        dirTree :: Int -> Gen DirTree
+        dirTree 0       = File <$> arbitrary <*> arbitrary
         dirTree n | n>0 =
-            oneof [ File <$> arbitrary <*> arbitrary 
-                  , DirTree <$> subtree
-                  ]
+            frequency [ (2, File <$> arbitrary <*> arbitrary)
+                      , (1, Dir  <$> dirContents)
+                      ]
           where 
-            subtree = (dirTree (n `div` 2)) `suchThat` isDir
-            isDir (DirTree _) = True
-            isDir _           = False
+            dirContents = M.fromList <$> (listOf $ dirEntry)
+            dirEntry    = (,) <$> arbitrary <*> dirTree (n `div` 2)
 
 concat <$> mapM (derive makeArbitrary)
                 [ ''AddressType
