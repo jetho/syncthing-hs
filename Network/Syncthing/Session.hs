@@ -69,7 +69,7 @@ import           Network.Syncthing
 -- | Holds the session configuration and the connection manager.
 newtype SyncSession = SyncSession { getConfig :: SyncConfig }
 
--- | Creates a new Syncthing session for the provided configuration. You should
+-- | Create a new Syncthing session for with provided configuration. You should
 -- reuse the session whenever possible because of connection sharing.
 newSyncSession :: SyncConfig -> IO SyncSession
 newSyncSession config = do
@@ -79,14 +79,14 @@ newSyncSession config = do
     createManager (Left settings)   = newManager settings
     createManager (Right mgr)       = return mgr
 
--- | Closes a Syncthing session.
+-- | Close a Syncthing session.
 closeSyncSession :: SyncSession -> IO ()
 closeSyncSession session = either doNothing closeManager mgr
   where
     doNothing   = const $ return ()
     mgr         = getConfig session ^. pManager
 
--- | Runs a Syncthing request using connection sharing within a session.
+-- | Run a Syncthing request using connection sharing within a session.
 runSyncSession :: SyncSession -> SyncM IO a -> IO (SyncResult a)
 runSyncSession = syncthing . getConfig
 

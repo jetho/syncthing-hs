@@ -31,9 +31,7 @@
 -- \-\- A single Syncthing request.
 -- single = 'syncthing' 'defaultConfig' Get.'Network.Syncthing.Get.ping'
 --
--- \-\- Running multiple requests with the default configuration is somewhat inefficient 
--- \-\- since a new connection manager is created for each request. It's recommended using
--- \-\- the 'withManager' function which allows connection sharing among multiple requests.
+-- \-\- Connection sharing for multiple Syncthing requests.
 -- multiple1 = 'withManager' $ \\cfg ->
 --     'syncthing' cfg $ do
 --         p <- Get.'Network.Syncthing.Get.ping'
@@ -145,7 +143,7 @@ instance MonadSync IO where
     getMethod  o s   = (^. W.responseBody) <$> W.getWith  o s
     postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 
--- | Creates a default configuration with a new manager for connection
+-- | Create a default configuration with a new manager for connection
 -- sharing. The manager is released after running the Syncthing actions(s).
 -- This is equivalent to:
 --
@@ -167,7 +165,7 @@ instance MonadSync IO where
 withManager :: (SyncConfig -> IO a) -> IO a
 withManager = withManager' defaultManagerSettings
 
--- | Creates a manager with disabled SSL certificate verification. 
+-- | Create a manager with disabled SSL certificate verification. 
 -- This is equivalent to:
 --
 -- @
@@ -184,7 +182,7 @@ withManager = withManager' defaultManagerSettings
 withManagerNoVerify :: (SyncConfig -> IO a) -> IO a
 withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 
--- | Creates a manager by using the provided manager settings.
+-- | Create a manager by using the provided manager settings.
 --
 -- /Example:/
 --
@@ -198,7 +196,7 @@ withManager' settings act =
     HTTP.withManager settings $ \mgr ->
         act $ defaultConfig & pManager .~ Right mgr
 
--- | Runs a single or multiple Syncthing requests.
+-- | Run Syncthing requests.
 syncthing :: SyncConfig -> SyncM IO a -> IO (SyncResult a)
 syncthing config action =
     runReaderT (runEitherT $ runSyncthing action) config `catch` handler
@@ -265,8 +263,8 @@ pServer  = PL.pServer
 pApiKey :: Lens' SyncConfig (Maybe Text)
 pApiKey  = PL.pApiKey
 
--- | A lens for the authentication functionality provided by the 'Network.Wreq'
--- package (see 'Network.Wreq.Auth').
+-- | A lens for configuring request authentication provided by the 
+-- 'Network.Wreq' package (see 'Network.Wreq.Auth').
 --
 -- /Example:/
 --
@@ -280,7 +278,7 @@ pApiKey  = PL.pApiKey
 pAuth :: Lens' SyncConfig (Maybe W.Auth)
 pAuth    = PL.pAuth
 
--- | A lens for configuring HTTPS usage.
+-- | A lens for enabling HTTPS usage.
 --
 -- /Example:/
 --

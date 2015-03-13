@@ -12,7 +12,7 @@
 -- Stability   : experimental
 -- Portability : GHC
 --
--- The POST requests.
+-- Syncthing POST requests.
 
 module Network.Syncthing.Post
     (
@@ -51,7 +51,7 @@ ping = getPing <$> ping'
   where
     ping' = query $ postRequest { path = "/rest/ping" }
 
--- | Moves the given file to the top of the download queue.
+-- | Move the given file to the top of the download queue.
 bump :: MonadSync m => FolderName -> Path -> SyncM m Need
 bump folder filePath =
     query $ postRequest { path   = "/rest/bump"
@@ -66,8 +66,8 @@ hint device server=
                        }
 
 -- | Update the server configuration. The configuration will be saved to
--- disk and the configInSync flag set to false. 'Network.Syncthing.Post.restart' Syncthing to
--- activate.
+-- disk and the configInSync flag set to false. 
+-- 'Network.Syncthing.Post.restart' Syncthing to activate.
 sendConfig :: MonadSync m => Config -> SyncM m ()
 sendConfig cfg = send $ postRequest { path   = "/rest/config"
                                     , method = post cfg

@@ -1,7 +1,7 @@
 
 {-# OPTIONS_HADDOCK not-home #-}
 
--- | Internal constructors and helper functions. You should not use this
+-- | Internal constructors and helper functions. You should NOT use this
 -- module under normal circumstances! 
 module Network.Syncthing.Internal (
     -- * Configuration

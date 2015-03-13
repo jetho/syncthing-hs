@@ -12,7 +12,7 @@
 -- Stability   : experimental
 -- Portability : GHC
 --
--- The GET requests.
+-- Syncthing GET requests.
 
 module Network.Syncthing.Get
     (
@@ -53,7 +53,7 @@ ping = getPing <$> ping'
   where
     ping' = query $ getRequest { path = "/rest/ping" }
 
--- | Returns the current configuration.
+-- | Return the current configuration.
 config :: MonadSync m => SyncM m Config
 config = query $ getRequest { path = "/rest/config" }
 
@@ -61,7 +61,7 @@ config = query $ getRequest { path = "/rest/config" }
 apiKey :: MonadSync m => SyncM m (Maybe Text)
 apiKey = getApiKey . getGuiConfig <$> config
 
--- | Returns the completion percentage (0 to 100) for a given device and
+-- | Return the completion percentage (0 to 100) for a given device and
 -- folder.
 completion :: MonadSync m => Device -> FolderName -> SyncM m Int
 completion device folder = getCompletion <$> completion'
@@ -71,12 +71,12 @@ completion device folder = getCompletion <$> completion'
                                                 , ("folder", folder) ]
                                      }
 
--- | Returns the list of current connections and some metadata associated
+-- | Get the list of current connections and some metadata associated
 -- with the connection/peer.
 connections :: MonadSync m => SyncM m (M.Map Device Connection)
 connections = query $ getRequest { path = "/rest/connections" }
 
--- | Verifies and formats a device ID. Returns either a valid device ID in
+-- | Verifiy and format a device ID. Return either a valid device ID in
 -- modern format, or an error.
 deviceId :: MonadSync m => Device -> SyncM m Device
 deviceId = deviceId' >=> either (liftLeft . InvalidDeviceId) liftRight
@@ -86,36 +86,36 @@ deviceId = deviceId' >=> either (liftLeft . InvalidDeviceId) liftRight
                                           , params = [("id", device)]
                                           }
 
--- | Returns the contents of the local discovery cache.
+-- | Fetch the contents of the local discovery cache.
 discovery :: MonadSync m => SyncM m (M.Map Device [CacheEntry])
 discovery = query $ getRequest { path = "/rest/discovery" }
 
--- | Returns the list of recent errors.
+-- | Get the list of recent errors.
 errors :: MonadSync m => SyncM m [Error]
 errors = getErrors <$> errors'
   where
     errors' = query $ getRequest { path = "/rest/errors" }
 
--- | Returns the ignores list.
+-- | Fetch the ignores list.
 ignores :: MonadSync m => FolderName -> SyncM m Ignore
 ignores folder = query $ getRequest { path   = "/rest/ignores"
                                     , params = [ ("folder", folder) ]
                                     }
 
--- | Returns information about the current status of a folder.
+-- | Get information about the current status of a folder.
 model :: MonadSync m => FolderName -> SyncM m Model
 model folder = query $ getRequest { path   = "/rest/model"
                                   , params = [("folder", folder)]
                                   }
 
--- | Returns lists of files which are needed by this device in order for it
+-- | Get lists of files which are needed by this device in order for it
 -- to become in sync.
 need :: MonadSync m => FolderName -> SyncM m Need
 need folder = query $ getRequest { path   = "/rest/need"
                                  , params = [ ("folder", folder) ]
                                  }
 
--- | Returns whether the config is in sync.
+-- | Determine whether the config is in sync.
 sync :: MonadSync m => SyncM m Bool
 sync = getSync <$> sync'
   where
@@ -125,7 +125,7 @@ sync = getSync <$> sync'
 system :: MonadSync m => SyncM m System
 system = query $ getRequest { path = "/rest/system" }
 
--- | Returns the directory tree of the global model.
+-- | Get the directory tree of the global model.
 tree :: MonadSync m 
     => FolderName -- ^ root folder
     -> Maybe Path -- ^ defines a prefix within the tree where to start building the structure
@@ -139,11 +139,11 @@ tree folder prefix levels  =
     optionals  = catMaybes [("prefix",) <$> prefix, ("levels",) <$> levelsText]
     levelsText = pack . show <$> levels
 
--- | Checks for a possible upgrade.
+-- | Check for a possible upgrade.
 upgrade :: MonadSync m => SyncM m Upgrade
 upgrade = query $ getRequest { path   = "/rest/upgrade" }
 
--- | Returns the current syncthing version information.
+-- | Get the current syncthing version information.
 version :: MonadSync m => SyncM m Version
 version = query $ getRequest { path = "/rest/version" }
 

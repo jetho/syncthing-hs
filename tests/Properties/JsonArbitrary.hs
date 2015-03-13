@@ -5,12 +5,12 @@
 
 module Properties.JsonArbitrary where
 
-import           Control.Applicative       (pure, (<$>), (<*>))
-import           Data.Char                 (isSpace)
+import           Control.Applicative              (pure, (<$>), (<*>))
+import           Data.Char                        (isSpace)
 import           Data.Derive.Arbitrary
 import           Data.DeriveTH
-import qualified Data.Map                  as M
-import qualified Data.Text                 as T
+import qualified Data.Map                         as M
+import qualified Data.Text                        as T
 import           Test.QuickCheck.Instances
 import           Test.Tasty.QuickCheck
 
@@ -24,9 +24,9 @@ newtype NonEmptyText = NonEmptyText {getNonEmptyText :: T.Text}
 instance Arbitrary NonEmptyText where
     arbitrary = NonEmptyText . T.pack <$> listOf1 notSpace
       where notSpace = arbitrary `suchThat` (not . isSpace)
-    shrink =   map NonEmptyText 
-             . filter (not . T.all isSpace) 
-             . shrink 
+    shrink =   map NonEmptyText
+             . filter (not . T.all isSpace)
+             . shrink
              . getNonEmptyText
 
 genAddr :: Gen Addr
@@ -55,7 +55,7 @@ instance Arbitrary SystemMsg where
         reservedMsgs   = ["restarting", "shutting down", "resetting folders"]
 
 instance Arbitrary Model where
-    arbitrary = 
+    arbitrary =
         Model <$> arbitrary
               <*> arbitrary
               <*> arbitrary
@@ -72,7 +72,7 @@ instance Arbitrary Model where
               <*> arbitrary
 
 instance Arbitrary GuiConfig where
-    arbitrary = 
+    arbitrary =
         GuiConfig <$> arbitrary
                   <*> (fmap getNonEmptyText <$> arbitrary)
                   <*> genAddr
@@ -81,7 +81,7 @@ instance Arbitrary GuiConfig where
                   <*> arbitrary
 
 instance Arbitrary DeviceConfig where
-    arbitrary = 
+    arbitrary =
         DeviceConfig <$> arbitrary
                      <*> arbitrary
                      <*> (listOf $ oneof [pure Dynamic, Address <$> genAddr])
@@ -90,7 +90,7 @@ instance Arbitrary DeviceConfig where
                      <*> arbitrary
 
 instance Arbitrary OptionsConfig where
-    arbitrary = 
+    arbitrary =
         OptionsConfig <$> (listOf genAddr)
                       <*> arbitrary
                       <*> arbitrary
@@ -116,16 +116,18 @@ instance Arbitrary OptionsConfig where
 instance Arbitrary DirTree where
     arbitrary = choose (0, 5) >>= dirTree
       where
-        dirTree :: Int -> Gen DirTree
-        dirTree 0       = File <$> arbitrary <*> arbitrary
-        dirTree n | n>0 =
-            frequency [ (2, File <$> arbitrary <*> arbitrary)
-                      , (1, Dir  <$> dirContents)
-                      ]
-          where 
-            dirContents = M.fromList <$> (listOf $ dirEntry)
-            dirEntry    = (,) <$> arbitrary <*> dirTree (n `div` 2)
+        genFile = File <$> arbitrary <*> arbitrary
 
+        dirTree :: Int -> Gen DirTree
+        dirTree 0       = genFile
+        dirTree n | n>0 = frequency [(2, genFile), (1, Dir <$> dirContents)]
+          where
+            dirContents = M.fromList <$> listOf dirEntry
+            dirEntry    = (,) <$> entryName <*> dirTree (n `div` 2)
+            entryName   = getNonEmptyText <$> arbitrary
+
+
+-- | Let Template Haskell derive trivial instances.
 concat <$> mapM (derive makeArbitrary)
                 [ ''AddressType
                 , ''FolderConfig
