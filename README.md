@@ -2,6 +2,7 @@
 syncthing-hs 
 ============
 
+[![Hackage](https://img.shields.io/hackage/v/syncthing-hs.svg)](https://hackage.haskell.org/package/syncthing-hs)
 [![Build Status](https://travis-ci.org/jetho/syncthing-hs.svg?branch=master)](https://travis-ci.org/jetho/syncthing-hs)
 
 Haskell bindings for the [Syncthing REST API](https://github.com/syncthing/syncthing/wiki/REST-Interface).
