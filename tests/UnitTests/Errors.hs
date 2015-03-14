@@ -5,12 +5,12 @@ module UnitTests.Errors
     ( errorUnits
     ) where
 
-import qualified Data.ByteString.Lazy.Char8       as BS 
-import qualified Data.Text                        as T
+import qualified Data.ByteString.Lazy.Char8 as BS
+import qualified Data.Text                  as T
 import           Test.Tasty
 import           Test.Tasty.HUnit
 
-import           Network.Syncthing.Internal.Error
+import           Network.Syncthing.Internal
 
 
 createTestName :: Show err => err -> String
@@ -22,16 +22,16 @@ createDescription errType errMsg =
 
 testDecodeError :: SyncError -> BS.ByteString -> TestTree
 testDecodeError errType errMsg =
-    testCase (createTestName errType) $ 
+    testCase (createTestName errType) $
         assertEqual (createDescription errType $ BS.unpack errMsg)
                     (Just errType)
-                    (decodeError errMsg) 
+                    (decodeError errMsg)
 
 testDecodeDeviceError :: DeviceError -> T.Text -> TestTree
 testDecodeDeviceError errType errMsg =
-    testCase (createTestName errType) $ 
+    testCase (createTestName errType) $
         assertEqual (createDescription errType $ T.unpack errMsg)
-                    errType 
+                    errType
                     (decodeDeviceError errMsg)
 
 
@@ -46,7 +46,7 @@ errorUnits = testGroup "Unit Tests for error messages" $
     , ((InvalidDeviceId IncorrectCheckDigit), "check digit incorrect")
     ]
     ++
-    map (uncurry testDecodeDeviceError) 
+    map (uncurry testDecodeDeviceError)
     [ (IncorrectLength, "device ID invalid: incorrect length")
     , (IncorrectCheckDigit, "check digit incorrect")
     ]

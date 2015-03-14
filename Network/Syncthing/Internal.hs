@@ -12,6 +12,10 @@ module Network.Syncthing.Internal (
     , module Network.Syncthing.Internal.Request
     -- * Error Handling
     , module Network.Syncthing.Internal.Error
+    -- * Utils
+    , module Network.Syncthing.Internal.Utils
+
+    , module Network.Syncthing.Internal.Types
     ) where
 
 
@@ -20,4 +24,6 @@ import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Internal.Monad   hiding (liftEither,
                                                      liftInner, liftReader)
 import           Network.Syncthing.Internal.Request
+import           Network.Syncthing.Internal.Types
+import           Network.Syncthing.Internal.Utils
 

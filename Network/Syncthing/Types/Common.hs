@@ -10,7 +10,6 @@ module Network.Syncthing.Types.Common
     , Host
     , Port
     , Addr
-    , defaultFolder
     ) where
 
 import           Data.Text (Text)
@@ -30,8 +29,4 @@ type Host       = Text
 type Port       = Int
 
 type Addr       = (Host, Maybe Port)
-
--- | The default folder name.
-defaultFolder :: FolderName
-defaultFolder = "default"
 

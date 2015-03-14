@@ -11,9 +11,7 @@ import           Data.Aeson                       hiding (Error)
 import           Data.Maybe                       (fromMaybe)
 import qualified Data.Text                        as T
 
-import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Internal.Utils
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal
 
 
 singleField :: ToJSON a => T.Text -> a -> Value

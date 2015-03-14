@@ -48,17 +48,8 @@
 
 module Network.Syncthing
     (
-    -- * Types
-      Server
-    , Device
-    , FolderName
-    , Path
-    , Host
-    , Port
-    , Addr
-
     -- * The Syncthing Monad
-    , SyncResult
+      SyncResult
     , SyncM
     , syncthing
 
@@ -88,33 +79,11 @@ module Network.Syncthing
     , DeviceError(..)
     , SyncError(..)
 
-    -- * Data Types
-    , CacheEntry(..)
-    , Config(..)
-    , AddressType(..)
-    , FolderConfig(..)
-    , DeviceConfig(..)
-    , VersioningConfig(..)
-    , GuiConfig(..)
-    , OptionsConfig(..)
-    , Connection(..)
-    , DirTree(..)
-    , Error(..)
-    , Ignore(..)
-    , Model(..)
-    , ModelState(..)
-    , Need(..)
-    , Progress(..)
-    , System(..)
-    , SystemMsg(..)
-    , Upgrade(..)
-    , Version(..)
-
     -- * Utility functions
-    , parseAddr 
-    , encodeAddr
-    , toUTC
-    , fromUTC
+    , module Network.Syncthing.Utils
+
+    -- * Types
+    , module Network.Syncthing.Types 
     ) where
 
 import           Control.Applicative              ((<$>))
@@ -134,8 +103,8 @@ import           Network.Syncthing.Internal.Config
 import           Network.Syncthing.Internal.Error
 import qualified Network.Syncthing.Internal.Lens  as PL
 import           Network.Syncthing.Internal.Monad
-import           Network.Syncthing.Internal.Utils
 import           Network.Syncthing.Types
+import           Network.Syncthing.Utils
 
 
 -- | Use Wreq's getWith and postWith functions when running in IO
@@ -223,6 +192,10 @@ defaultConfig = SyncConfig {
     , _pHttps    = False
     , _pManager  = Left defaultManagerSettings
     }
+
+-- | The default folder name.
+defaultFolder :: FolderName
+defaultFolder = "default"
 
 defaultResponseTimeout :: Int
 defaultResponseTimeout = 300000000 

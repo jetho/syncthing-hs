@@ -7,8 +7,7 @@ import           Data.Aeson
 import           Test.Tasty
 import           Test.Tasty.QuickCheck
 
-import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal
 
 import           Properties.JsonArbitrary
 import           Properties.JsonInstances

@@ -13,7 +13,7 @@ import qualified Data.Text                        as T
 import           Test.Tasty
 import           Test.Tasty.QuickCheck
 
-import           Network.Syncthing.Internal.Error
+import           Network.Syncthing.Internal
 
 
 newtype FolderErrText = FolderErrText { getFolderErrText :: BS.ByteString }

@@ -44,7 +44,7 @@ import           Data.Text                          (Text, pack)
 import           Network.Syncthing.Internal.Error
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Internal.Request
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal.Types
 
 
 -- | Ping the Syncthing server. Returns the string \"pong\".

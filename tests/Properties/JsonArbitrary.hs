@@ -14,8 +14,7 @@ import qualified Data.Text                        as T
 import           Test.QuickCheck.Instances
 import           Test.Tasty.QuickCheck
 
-import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Types
+import           Network.Syncthing.Internal
 
 
 newtype NonEmptyText = NonEmptyText {getNonEmptyText :: T.Text}
