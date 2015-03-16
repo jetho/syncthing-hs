@@ -26,7 +26,7 @@
 -- import "Control.Monad" ('Control.Monad.liftM2')
 -- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'), ('Control.Lens.?~'))
 -- import "Network.Syncthing"
--- import qualified "Network.Syncthing.Get" as Get 
+-- import qualified "Network.Syncthing.Get" as Get
 --
 -- \-\- A single Syncthing request.
 -- single = 'syncthing' 'defaultConfig' Get.'Network.Syncthing.Get.ping'
@@ -73,44 +73,41 @@ module Network.Syncthing
     -- * Manager Settings
     , defaultManagerSettings
     , noSSLVerifyManagerSettings
-    , setResponseTimeout 
+    , setResponseTimeout
 
     -- * Error Handling
     , DeviceError(..)
     , SyncError(..)
 
+    -- * Manual Session Handling
+    , module Network.Syncthing.Session
+
     -- * Utility functions
     , module Network.Syncthing.Utils
 
     -- * Types
-    , module Network.Syncthing.Types 
+    , module Network.Syncthing.Types
     ) where
 
-import           Control.Applicative              ((<$>))
-import           Control.Exception                (catch, throwIO)
-import           Control.Lens                     (Lens', (&), (.~), (^.))
-import           Control.Monad                    ((<=<))
-import           Control.Monad.Trans.Either       (runEitherT)
-import           Control.Monad.Trans.Reader       (runReaderT)
-import           Data.ByteString.Lazy             (fromStrict)
-import           Data.Text                        (Text)
-import           Network.Connection               (TLSSettings (..))
-import qualified Network.HTTP.Client              as HTTP
-import           Network.HTTP.Client.TLS          (mkManagerSettings, tlsManagerSettings)
-import qualified Network.Wreq                     as W
+import           Control.Lens                      (Lens', (&), (.~))
+import           Data.Text                         (Text)
+import           Network.Connection                (TLSSettings (..))
+import qualified Network.HTTP.Client               as HTTP
+import           Network.HTTP.Client.TLS           (mkManagerSettings, tlsManagerSettings)
+import qualified Network.Wreq                      as W
 
 import           Network.Syncthing.Internal.Config
 import           Network.Syncthing.Internal.Error
-import qualified Network.Syncthing.Internal.Lens  as PL
+import qualified Network.Syncthing.Internal.Lens   as PL
 import           Network.Syncthing.Internal.Monad
+import           Network.Syncthing.Session
 import           Network.Syncthing.Types
 import           Network.Syncthing.Utils
 
 
--- | Use Wreq's getWith and postWith functions when running in IO
-instance MonadSync IO where
-    getMethod  o s   = (^. W.responseBody) <$> W.getWith  o s
-    postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
+-- | Run Syncthing requests.
+syncthing :: SyncConfig -> SyncM IO a -> IO (SyncResult a)
+syncthing = syncthingIO
 
 -- | Create a default configuration with a new manager for connection
 -- sharing. The manager is released after running the Syncthing actions(s).
@@ -134,7 +131,7 @@ instance MonadSync IO where
 withManager :: (SyncConfig -> IO a) -> IO a
 withManager = withManager' defaultManagerSettings
 
--- | Create a manager with disabled SSL certificate verification. 
+-- | Create a manager with disabled SSL certificate verification.
 -- This is equivalent to:
 --
 -- @
@@ -165,16 +162,6 @@ withManager' settings act =
     HTTP.withManager settings $ \mgr ->
         act $ defaultConfig & pManager .~ Right mgr
 
--- | Run Syncthing requests.
-syncthing :: SyncConfig -> SyncM IO a -> IO (SyncResult a)
-syncthing config action =
-    runReaderT (runEitherT $ runSyncthing action) config `catch` handler
-  where
-    handler e@(HTTP.StatusCodeException _ headers _) =
-        maybe (throwIO e) (return . Left) $ maybeSyncError headers
-    handler unhandledErr = throwIO unhandledErr
-    maybeSyncError = decodeError . fromStrict <=< lookup "X-Response-Body-Start"
-
 -- | The default Syncthing configuration. Customize it to your needs by using
 -- the SyncConfig lenses.
 --
@@ -198,7 +185,7 @@ defaultFolder :: FolderName
 defaultFolder = "default"
 
 defaultResponseTimeout :: Int
-defaultResponseTimeout = 300000000 
+defaultResponseTimeout = 300000000
 
 -- | Set the response timeout (in microseconds). Default is 300 seconds.
 setResponseTimeout :: HTTP.ManagerSettings -> Int -> HTTP.ManagerSettings
@@ -206,12 +193,12 @@ setResponseTimeout ms t = ms { HTTP.managerResponseTimeout = Just t }
 
 -- | The default manager settings used by 'defaultConfig'.
 defaultManagerSettings :: HTTP.ManagerSettings
-defaultManagerSettings = 
-    tlsManagerSettings `setResponseTimeout` defaultResponseTimeout 
+defaultManagerSettings =
+    tlsManagerSettings `setResponseTimeout` defaultResponseTimeout
 
 -- | Alternative manager settings with disabled SSL certificate verification.
 noSSLVerifyManagerSettings :: HTTP.ManagerSettings
-noSSLVerifyManagerSettings = ms `setResponseTimeout` defaultResponseTimeout 
+noSSLVerifyManagerSettings = ms `setResponseTimeout` defaultResponseTimeout
   where ms = mkManagerSettings (TLSSettingsSimple True False False) Nothing
 
 -- | A lens for configuring the server address. Use the ADDRESS:PORT format.
@@ -236,7 +223,7 @@ pServer  = PL.pServer
 pApiKey :: Lens' SyncConfig (Maybe Text)
 pApiKey  = PL.pApiKey
 
--- | A lens for configuring request authentication provided by the 
+-- | A lens for configuring request authentication provided by the
 -- 'Network.Wreq' package (see 'Network.Wreq.Auth').
 --
 -- /Example:/

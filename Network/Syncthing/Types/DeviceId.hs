@@ -6,8 +6,9 @@ module Network.Syncthing.Types.DeviceId where
 
 import           Control.Applicative              ((<$>))
 import           Control.Monad                    (MonadPlus (mzero))
-import           Data.Aeson                       (FromJSON, Value (..), parseJSON, (.:))
-import           Data.HashMap.Lazy                (member)
+import           Data.Aeson                       (FromJSON, Value(..), parseJSON, (.:))
+import           Data.Aeson.Types                 (Parser, Object)
+import           Data.HashMap.Strict              (member)
 import           Data.Text                        ()
 
 import           Network.Syncthing.Internal.Error
@@ -20,6 +21,7 @@ instance FromJSON (Either DeviceError Device) where
             result       = parseIdResult hasId v
     parseJSON _          = mzero
 
+parseIdResult :: Bool -> Object -> Parser (Either DeviceError Device)
 parseIdResult hasId v
     | hasId     = Right <$> v .: "id"
     | otherwise = Left  <$> (decodeDeviceError <$> v .: "error")

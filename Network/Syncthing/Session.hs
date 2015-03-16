@@ -20,7 +20,6 @@
 --
 -- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'))
 -- import "Network.Syncthing"
--- import "Network.Syncthing.Session"
 -- import qualified "Network.Syncthing.Get" as Get
 --
 -- \-\- Customized configuration.
@@ -59,11 +58,13 @@ module Network.Syncthing.Session
     , runSyncSession
     ) where
 
-import           Control.Exception                (bracket)
-import           Control.Lens                     ((&), (.~), (^.))
-import           Network.HTTP.Client              (closeManager, newManager)
+import           Control.Exception                 (bracket)
+import           Control.Lens                      ((&), (.~), (^.))
+import           Network.HTTP.Client               (closeManager, newManager)
 
-import           Network.Syncthing
+import           Network.Syncthing.Internal.Config
+import           Network.Syncthing.Internal.Lens
+import           Network.Syncthing.Internal.Monad
 
 
 -- | Holds the session configuration and the connection manager.
@@ -88,7 +89,7 @@ closeSyncSession session = either doNothing closeManager mgr
 
 -- | Run a Syncthing request using connection sharing within a session.
 runSyncSession :: SyncSession -> SyncM IO a -> IO (SyncResult a)
-runSyncSession = syncthing . getConfig
+runSyncSession = syncthingIO . getConfig
 
 -- | Create a new session using the provided configuration, run the
 -- action and close the session.
