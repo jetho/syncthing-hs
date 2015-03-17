@@ -28,6 +28,7 @@ module Network.Syncthing.Get
     , ignores
     , model
     , need
+    , report
     , sync
     , system
     , tree
@@ -99,7 +100,7 @@ errors = getErrors <$> errors'
 -- | Fetch the ignores list.
 ignores :: MonadSync m => FolderName -> SyncM m Ignore
 ignores folder = query $ getRequest { path   = "/rest/ignores"
-                                    , params = [ ("folder", folder) ]
+                                    , params = [("folder", folder)]
                                     }
 
 -- | Get information about the current status of a folder.
@@ -112,8 +113,12 @@ model folder = query $ getRequest { path   = "/rest/model"
 -- to become in sync.
 need :: MonadSync m => FolderName -> SyncM m Need
 need folder = query $ getRequest { path   = "/rest/need"
-                                 , params = [ ("folder", folder) ]
+                                 , params = [("folder", folder)]
                                  }
+
+-- | Returns the data sent in the anonymous usage report.
+report :: MonadSync m => SyncM m UsageReport
+report = query $ getRequest { path   = "/rest/report" }
 
 -- | Determine whether the config is in sync.
 sync :: MonadSync m => SyncM m Bool

@@ -42,6 +42,7 @@ module Network.Syncthing.Types
     , System(..)
     , SystemMsg(..)
     , Upgrade(..)
+    , UsageReport(..)
     , Version(..)   
     ) where
 

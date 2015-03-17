@@ -232,6 +232,7 @@ requestUnits = testGroup "Unit Tests for Requests"
                   [("folder", "default")] 
                   (Get.need "default")
         , testGet "/rest/config/sync"   noParams Get.sync
+        , testGet "/rest/report"        noParams Get.report
         , testGet "/rest/system"        noParams Get.system
         , testGet "/rest/tree"        
                   [("folder", "default")]

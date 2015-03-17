@@ -26,7 +26,6 @@ import qualified Network.Wreq                      as W
 
 import           Network.Syncthing.Internal.Config
 import           Network.Syncthing.Internal.Error
-import           Network.Syncthing.Internal.Lens
 import           Network.Syncthing.Internal.Monad
 
 
@@ -58,9 +57,9 @@ request :: MonadSync m => SyncRequest -> SyncM m ByteString
 request req = do
     config     <- liftReader ask
     let opts    = prepareOptions config (params req) W.defaults
-    let server  = T.unpack $ config ^. pServer
+    let server' = T.unpack $ config ^. pServer
     let proto   = if (config ^. pHttps) then "https://" else "http://"
-    let url     = concat [proto, server, path req]
+    let url     = concat [proto, server', path req]
     liftInner $
         case method req of
             Get          -> getMethod opts url
@@ -74,12 +73,12 @@ prepareOptions cfg params' =
     . setParams
     . setJsonHeader
   where
-    setManager mgr          = (& W.manager .~ mgr)
-    setAuth authInfo        = (& W.auth .~ authInfo)
-    setJsonHeader           = (& W.header "Accept" .~ ["application/json"])
-    setParams               = (& W.params .~ params')
-    setApiKey (Just apiKey) = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey])
-    setApiKey Nothing       = id
+    setManager mgr           = (& W.manager .~ mgr)
+    setAuth authInfo         = (& W.auth .~ authInfo)
+    setJsonHeader            = (& W.header "Accept" .~ ["application/json"])
+    setParams                = (& W.params .~ params')
+    setApiKey (Just apiKey') = (& W.header "X-API-Key" .~ [encodeUtf8 apiKey'])
+    setApiKey Nothing        = id
 
 get :: HttpMethod
 get = Get

@@ -145,5 +145,6 @@ concat <$> mapM (derive makeArbitrary)
                 , ''Error
                 , ''Errors
                 , ''System
+                , ''UsageReport
                 ]
 

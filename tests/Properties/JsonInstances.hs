@@ -156,3 +156,20 @@ instance ToJSON DirTree where
     toJSON Dir{..}  = toJSON getDirContents
     toJSON File{..} = toJSON [getModTime, getFileSize] 
 
+instance ToJSON UsageReport where
+    toJSON UsageReport{..} =
+        object [ "folderMaxFiles" .= getFolderMaxFiles 
+               , "folderMaxMiB"   .= getFolderMaxMiB   
+               , "longVersion"    .= getLongVersionR   
+               , "memorySize"     .= getMemorySize     
+               , "memoryUsageMiB" .= getMemoryUsageMiB 
+               , "numDevices"     .= getNumDevices     
+               , "numFolders"     .= getNumFolders     
+               , "platform"       .= getPlatform       
+               , "sha256Perf"     .= getSHA256Perf     
+               , "totFiles"       .= getTotFiles       
+               , "totMiB"         .= getTotMiB         
+               , "uniqueID"       .= getUniqueId       
+               , "version"        .= getVersionR       
+               ]
+

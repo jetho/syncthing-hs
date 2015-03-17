@@ -63,7 +63,6 @@ import           Control.Lens                      ((&), (.~), (^.))
 import           Network.HTTP.Client               (closeManager, newManager)
 
 import           Network.Syncthing.Internal.Config
-import           Network.Syncthing.Internal.Lens
 import           Network.Syncthing.Internal.Monad
 
 
@@ -89,7 +88,7 @@ closeSyncSession session = either doNothing closeManager mgr
 
 -- | Run a Syncthing request using connection sharing within a session.
 runSyncSession :: SyncSession -> SyncM IO a -> IO (SyncResult a)
-runSyncSession = syncthingIO . getConfig
+runSyncSession = syncthingM . getConfig
 
 -- | Create a new session using the provided configuration, run the
 -- action and close the session.

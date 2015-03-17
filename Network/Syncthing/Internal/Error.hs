@@ -10,8 +10,8 @@ module Network.Syncthing.Internal.Error
     , decodeError
     ) where
 
-import           Control.Exception          (Exception, throwIO)
 import           Control.Monad              ((<=<))
+import           Control.Monad.Catch        (Exception, MonadThrow, throwM)
 import qualified Data.ByteString.Lazy.Char8 as BS
 import           Data.List                  (find)
 import           Data.Maybe                 (fromMaybe)
@@ -39,12 +39,12 @@ data SyncError =
 instance Exception SyncError
 
 
-syncErrHandler :: HTTP.HttpException -> IO (Either SyncError a)
+syncErrHandler :: MonadThrow m => HTTP.HttpException -> m (Either SyncError a)
 syncErrHandler e@(HTTP.StatusCodeException _ headers _) =
-    maybe (throwIO e) (return . Left) $ extractErr headers
+    maybe (throwM e) (return . Left) $ extractErr headers
   where
     extractErr = decodeError . BS.fromStrict <=< lookup "X-Response-Body-Start"
-syncErrHandler unhandledErr = throwIO unhandledErr
+syncErrHandler unhandledErr = throwM unhandledErr
 
 deviceIdLength, deviceIdCheckDigit :: String
 deviceIdLength     = "device ID invalid: incorrect length"

@@ -6,7 +6,7 @@ module Network.Syncthing.Internal.Monad
     ( SyncResult
     , SyncM(..)
     , MonadSync(..)
-    , syncthingIO
+    , syncthingM
     , liftEither
     , liftReader
     , liftInner
@@ -16,7 +16,7 @@ module Network.Syncthing.Internal.Monad
 
 import           Control.Applicative               (Applicative, (<$>))
 import           Control.Lens                      ((^.))
-import           Control.Exception                 (catch)
+import           Control.Monad.Catch               (MonadCatch, catch)
 import           Control.Monad.Trans.Class         (lift)
 import           Control.Monad.Trans.Either        (EitherT, left, right, runEitherT)
 import           Control.Monad.Trans.Reader        (ReaderT, runReaderT)
@@ -45,9 +45,9 @@ instance MonadSync IO where
     getMethod  o s   = (^. W.responseBody) <$> W.getWith  o s
     postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 
--- | Run Syncthing requests in the IO Monad.
-syncthingIO :: SyncConfig -> SyncM IO a -> IO (SyncResult a)
-syncthingIO config action =
+-- | Run Syncthing requests.
+syncthingM :: MonadCatch m => SyncConfig -> SyncM m a -> m (SyncResult a)
+syncthingM config action =
     runReaderT (runEitherT $ runSyncthing action) config `catch` syncErrHandler
 
 liftEither :: Monad m => EitherT SyncError (ReaderT SyncConfig m) a -> SyncM m a

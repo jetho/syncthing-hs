@@ -32,7 +32,6 @@ library
                      Network.Syncthing.Internal.Error
                      Network.Syncthing.Internal.Monad
                      Network.Syncthing.Internal.Request
-                     Network.Syncthing.Internal.Lens
                      Network.Syncthing.Internal.Types
                      Network.Syncthing.Internal.Utils
                      Network.Syncthing.Types.CacheEntry
@@ -51,6 +50,7 @@ library
                      Network.Syncthing.Types.System
                      Network.Syncthing.Types.SystemMsg
                      Network.Syncthing.Types.Upgrade
+                     Network.Syncthing.Types.UsageReport
                      Network.Syncthing.Types.Version
   -- other-extensions:    
   build-depends:       aeson >=0.7.0.5
@@ -59,6 +59,7 @@ library
                      , connection >=0.2.2
                      , containers >=0.5.5.1
                      , either >=4.0
+                     , exceptions >= 0.5
                      , http-client >=0.4.6
                      , http-client-tls >=0.2.2
                      , lens >=4.5

@@ -59,7 +59,7 @@ module Network.Syncthing
     , withManager'
 
     -- * Configuration
-    , SyncConfig
+    , SyncConfig(..)
     , pServer
     , pApiKey
     , pAuth
@@ -89,16 +89,12 @@ module Network.Syncthing
     , module Network.Syncthing.Types
     ) where
 
-import           Control.Lens                      (Lens', (&), (.~))
-import           Data.Text                         (Text)
-import           Network.Connection                (TLSSettings (..))
+import           Network.Connection                (TLSSettings(..))
 import qualified Network.HTTP.Client               as HTTP
 import           Network.HTTP.Client.TLS           (mkManagerSettings, tlsManagerSettings)
-import qualified Network.Wreq                      as W
 
 import           Network.Syncthing.Internal.Config
 import           Network.Syncthing.Internal.Error
-import qualified Network.Syncthing.Internal.Lens   as PL
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Session
 import           Network.Syncthing.Types
@@ -107,7 +103,7 @@ import           Network.Syncthing.Utils
 
 -- | Run Syncthing requests.
 syncthing :: SyncConfig -> SyncM IO a -> IO (SyncResult a)
-syncthing = syncthingIO
+syncthing = syncthingM
 
 -- | Create a default configuration with a new manager for connection
 -- sharing. The manager is released after running the Syncthing actions(s).
@@ -160,27 +156,31 @@ withManagerNoVerify = withManager' noSSLVerifyManagerSettings
 withManager' :: HTTP.ManagerSettings -> (SyncConfig -> IO a) -> IO a
 withManager' settings act =
     HTTP.withManager settings $ \mgr ->
-        act $ defaultConfig & pManager .~ Right mgr
+        act $ defaultConfig { manager = Right mgr }
 
 -- | The default Syncthing configuration. Customize it to your needs by using
--- the SyncConfig lenses.
+-- record syntax or the SyncConfig lenses.
 --
 -- /Example:/
 --
 -- >>> defaultConfig
--- SyncConfig { pServer = "127.0.0.1:8080", pApiKey = Nothing, pAuth = Nothing, pHttps = False, pManager = Left _ }
+-- SyncConfig { server = "127.0.0.1:8080", apiKey = Nothing, auth = Nothing, https = False, manager = Left _ }
+--
+-- >>> defaultConfig { server = "192.168.0.10:8080", apiKey = Just "XXXX" }
+-- SyncConfig { server = "192.168.0.10:8080", apiKey = Just "XXXX", auth = Nothing, https = False, manager = Left _ }
+--
 -- >>> defaultConfig & pServer .~ "192.168.0.10:8080" & pApiKey ?~ "XXXX"
--- SyncConfig { pServer = "192.168.0.10:8080", pApiKey = Just "XXXX", pAuth = Nothing, pHttps = False, pManager = Left _ }
+-- SyncConfig { server = "192.168.0.10:8080", apiKey = Just "XXXX", auth = Nothing, https = False, manager = Left _ }
 defaultConfig :: SyncConfig
 defaultConfig = SyncConfig {
-      _pServer   = "127.0.0.1:8080"
-    , _pApiKey   = Nothing
-    , _pAuth     = Nothing
-    , _pHttps    = False
-    , _pManager  = Left defaultManagerSettings
+      server   = "127.0.0.1:8080"
+    , apiKey   = Nothing
+    , auth     = Nothing
+    , https    = False
+    , manager  = Left defaultManagerSettings
     }
 
--- | The default folder name.
+-- | The Syncthing default folder (-> "default").
 defaultFolder :: FolderName
 defaultFolder = "default"
 
@@ -200,57 +200,4 @@ defaultManagerSettings =
 noSSLVerifyManagerSettings :: HTTP.ManagerSettings
 noSSLVerifyManagerSettings = ms `setResponseTimeout` defaultResponseTimeout
   where ms = mkManagerSettings (TLSSettingsSimple True False False) Nothing
-
--- | A lens for configuring the server address. Use the ADDRESS:PORT format.
---
--- /Example:/
---
--- @
--- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens..~' \"192.168.0.10:8080\"
--- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
--- @
-pServer :: Lens' SyncConfig Server
-pServer  = PL.pServer
-
--- | A lens for specifying the Syncthing API Key.
---
--- /Example:/
---
--- @
--- let cfg = 'defaultConfig' 'Control.Lens.&' 'pApiKey' 'Control.Lens.?~' \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
--- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
--- @
-pApiKey :: Lens' SyncConfig (Maybe Text)
-pApiKey  = PL.pApiKey
-
--- | A lens for configuring request authentication provided by the
--- 'Network.Wreq' package (see 'Network.Wreq.Auth').
---
--- /Example:/
---
--- @
--- import qualified "Network.Wreq" as Wreq
---
--- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
---                         'Control.Lens.&' 'pAuth'  'Control.Lens.?~' Wreq.'Network.Wreq.basicAuth' \"user\" \"pass\"
--- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
--- @
-pAuth :: Lens' SyncConfig (Maybe W.Auth)
-pAuth    = PL.pAuth
-
--- | A lens for enabling HTTPS usage.
---
--- /Example:/
---
--- @
--- let cfg = 'defaultConfig' 'Control.Lens.&' 'pHttps' 'Control.Lens..~' True
--- 'syncthing' cfg Get.'Network.Syncthing.Get.ping'
--- @
-pHttps :: Lens' SyncConfig Bool
-pHttps = PL.pHttps
-
--- | A lens for specifying your own ManagerSettings/Manager. For more
--- information, please refer to the "Network.HTTP.Client" package.
-pManager :: Lens' SyncConfig (Either HTTP.ManagerSettings HTTP.Manager)
-pManager = PL.pManager
 
