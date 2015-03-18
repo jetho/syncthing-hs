@@ -1,7 +1,7 @@
 0.1.2.0
 -------
 * Update lower bounds of package dependencies 
-* Re-export Network.Syncthing.Session in Network.Syncthing
+* Re-export Network.Syncthing.Session by Network.Syncthing
 * Add /rest/report GET request
 
 0.1.1.0
