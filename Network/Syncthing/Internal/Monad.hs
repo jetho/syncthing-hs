@@ -6,6 +6,7 @@ module Network.Syncthing.Internal.Monad
     ( SyncResult
     , SyncM(..)
     , MonadSync(..)
+    , runSyncM
     , syncthingM
     , liftEither
     , liftReader
@@ -45,10 +46,15 @@ instance MonadSync IO where
     getMethod  o s   = (^. W.responseBody) <$> W.getWith  o s
     postMethod o s p = (^. W.responseBody) <$> W.postWith o s p
 
--- | Run Syncthing requests.
+-- | Run Syncthing requests without error handling.
+runSyncM :: SyncConfig -> SyncM m a -> m (SyncResult a)
+runSyncM config action =
+    runReaderT (runEitherT $ runSyncthing action) config 
+
+-- | Run Syncthing requests with error handling.
 syncthingM :: MonadCatch m => SyncConfig -> SyncM m a -> m (SyncResult a)
 syncthingM config action =
-    runReaderT (runEitherT $ runSyncthing action) config `catch` syncErrHandler
+    runSyncM config action `catch` syncErrHandler
 
 liftEither :: Monad m => EitherT SyncError (ReaderT SyncConfig m) a -> SyncM m a
 liftEither = SyncM

@@ -9,8 +9,6 @@ module UnitTests.Requests
 
 import           Control.Applicative        ((<$>))
 import           Control.Lens               ((&), (.~), (?~), (^.))
-import           Control.Monad.Trans.Either (runEitherT)
-import           Control.Monad.Trans.Reader (runReaderT)
 import           Control.Monad.Trans.Writer (Writer, execWriter, tell)
 import           Data.Aeson                 (ToJSON, Value, toJSON)
 import           Data.List                  (isPrefixOf, sort)
@@ -57,8 +55,7 @@ instance MonadSync RequestLogger where
     postMethod o s p = tell [ LoggedRequest POST s o (Just p) ] >> return ""
 
 mockedSyncthing :: SyncConfig -> LogAction a -> LogResult a
-mockedSyncthing config action =
-    flip runReaderT config $ runEitherT $ runSyncthing action
+mockedSyncthing = runSyncM
 
 extractRequest :: LogResult a -> LoggedRequest
 extractRequest = head . execWriter

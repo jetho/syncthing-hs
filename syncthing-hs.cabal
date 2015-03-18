@@ -80,9 +80,13 @@ test-Suite tests
                      , base >=4.5 && <5
                      , bytestring >=0.9
                      , containers >= 0.5.5.1
+                     , data-default
                      , derive  
                      , either >=4.0
+                     , exceptions >= 0.5
                      , lens >=4.5 
+                     , http-client >=0.4.6
+                     , http-types >= 0.8
                      , quickcheck-instances
                      , syncthing-hs
                      , tasty
