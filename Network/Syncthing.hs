@@ -22,9 +22,9 @@
 -- @
 -- \{\-\# LANGUAGE OverloadedStrings \#\-\}
 --
--- import qualified "Network.Wreq" as Wreq
--- import "Control.Monad" ('Control.Monad.liftM2')
 -- import "Control.Lens" (('Control.Lens.&'), ('Control.Lens..~'), ('Control.Lens.?~'))
+-- import "Control.Monad" ('Control.Monad.liftM2')
+-- import qualified "Network.Wreq" as Wreq
 -- import "Network.Syncthing"
 -- import qualified "Network.Syncthing.Get" as Get
 --
