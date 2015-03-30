@@ -164,7 +164,7 @@ withManager' settings act =
 -- /Example:/
 --
 -- >>> defaultConfig
--- SyncConfig { server = "127.0.0.1:8080", apiKey = Nothing, auth = Nothing, https = False, manager = Left _ }
+-- SyncConfig { server = "127.0.0.1:8384", apiKey = Nothing, auth = Nothing, https = False, manager = Left _ }
 --
 -- >>> defaultConfig { server = "192.168.0.10:8080", apiKey = Just "XXXX" }
 -- SyncConfig { server = "192.168.0.10:8080", apiKey = Just "XXXX", auth = Nothing, https = False, manager = Left _ }
@@ -173,7 +173,7 @@ withManager' settings act =
 -- SyncConfig { server = "192.168.0.10:8080", apiKey = Just "XXXX", auth = Nothing, https = False, manager = Left _ }
 defaultConfig :: SyncConfig
 defaultConfig = SyncConfig {
-      server   = "127.0.0.1:8080"
+      server   = "127.0.0.1:8384"
     , apiKey   = Nothing
     , auth     = Nothing
     , https    = False

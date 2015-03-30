@@ -1,3 +1,8 @@
+0.1.3.0
+-------
+* Update default configuration (Port 8080 -> Port 8384)
+* Refactor package internals
+
 0.1.2.0
 -------
 * Update lower bounds of package dependencies 
