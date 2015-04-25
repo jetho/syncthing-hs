@@ -16,24 +16,34 @@
 
 module Network.Syncthing.Get
     (
-    -- * Request functions
+    -- * System Services
       ping
     , apiKey
     , config
-    , completion
+    , insync
     , connections
-    , deviceId
     , discovery
     , errors
-    , ignores
-    , model
-    , need
-    , report
-    , sync
-    , system
-    , tree
+    , sysStatus
     , upgrade
     , version
+
+    -- * Database Services
+    , browse
+    , completion
+    --, file
+    , ignores
+    , need
+    , dbStatus
+
+    -- * Statistics Services
+    --, device 
+    --, folder 
+
+    -- * Miscellaneous Services
+    , deviceId
+    , lang
+    , report
     ) where
 
 import           Control.Applicative                ((<$>))
@@ -50,13 +60,11 @@ import           Network.Syncthing.Internal.Types
 
 -- | Ping the Syncthing server. Returns the string \"pong\".
 ping :: MonadSync m => SyncM m Text
-ping = getPing <$> ping'
-  where
-    ping' = query $ getRequest { path = "/rest/ping" }
+ping = getPing <$> query getRequest { path = "/rest/system/ping" }
 
 -- | Return the current configuration.
 config :: MonadSync m => SyncM m Config
-config = query $ getRequest { path = "/rest/config" }
+config = query getRequest { path = "/rest/system/config" }
 
 -- | Get the API Key if available.
 apiKey :: MonadSync m => SyncM m (Maybe Text)
@@ -65,17 +73,16 @@ apiKey = getApiKey . getGuiConfig <$> config
 -- | Return the completion percentage (0 to 100) for a given device and
 -- folder.
 completion :: MonadSync m => Device -> FolderName -> SyncM m Int
-completion device folder = getCompletion <$> completion'
-  where
-    completion' = query $ getRequest { path   = "/rest/completion"
-                                     , params = [ ("device", device)
-                                                , ("folder", folder) ]
-                                     }
+completion device folder = 
+    getCompletion <$> query getRequest { path   = "/rest/db/completion"
+                                       , params = [ ("device", device)
+                                                  , ("folder", folder) ]
+                                       }
 
 -- | Get the list of current connections and some metadata associated
 -- with the connection/peer.
 connections :: MonadSync m => SyncM m (M.Map Device Connection)
-connections = query $ getRequest { path = "/rest/connections" }
+connections = query getRequest { path = "/rest/system/connections" }
 
 -- | Verifiy and format a device ID. Return either a valid device ID in
 -- modern format, or an error.
@@ -83,72 +90,73 @@ deviceId :: MonadSync m => Device -> SyncM m Device
 deviceId = deviceId' >=> either (liftLeft . InvalidDeviceId) liftRight
   where
     deviceId' :: MonadSync m => Device -> SyncM m (Either DeviceError Device)
-    deviceId' device = query $ getRequest { path   = "/rest/deviceid"
-                                          , params = [("id", device)]
-                                          }
+    deviceId' device = query getRequest { path   = "/rest/svc/deviceid"
+                                        , params = [("id", device)]
+                                        }
 
 -- | Fetch the contents of the local discovery cache.
 discovery :: MonadSync m => SyncM m (M.Map Device [CacheEntry])
-discovery = query $ getRequest { path = "/rest/discovery" }
+discovery = query getRequest { path = "/rest/system/discovery" }
 
 -- | Get the list of recent errors.
 errors :: MonadSync m => SyncM m [Error]
-errors = getErrors <$> errors'
-  where
-    errors' = query $ getRequest { path = "/rest/errors" }
+errors = getErrors <$> query getRequest { path = "/rest/system/error" }
 
 -- | Fetch the ignores list.
 ignores :: MonadSync m => FolderName -> SyncM m Ignore
-ignores folder = query $ getRequest { path   = "/rest/ignores"
-                                    , params = [("folder", folder)]
-                                    }
-
--- | Get information about the current status of a folder.
-model :: MonadSync m => FolderName -> SyncM m Model
-model folder = query $ getRequest { path   = "/rest/model"
+ignores folder = query getRequest { path   = "/rest/db/ignores"
                                   , params = [("folder", folder)]
                                   }
+
+-- | Get information about the current status of a folder.
+dbStatus :: MonadSync m => FolderName -> SyncM m Model
+dbStatus folder = query getRequest { path   = "/rest/db/status"
+                                   , params = [("folder", folder)]
+                                   }
 
 -- | Get lists of files which are needed by this device in order for it
 -- to become in sync.
 need :: MonadSync m => FolderName -> SyncM m Need
-need folder = query $ getRequest { path   = "/rest/need"
-                                 , params = [("folder", folder)]
-                                 }
+need folder = query getRequest { path   = "/rest/db/need"
+                               , params = [("folder", folder)]
+                               }
 
 -- | Returns the data sent in the anonymous usage report.
 report :: MonadSync m => SyncM m UsageReport
-report = query $ getRequest { path   = "/rest/report" }
+report = query getRequest { path   = "/rest/svc/report" }
 
 -- | Determine whether the config is in sync.
-sync :: MonadSync m => SyncM m Bool
-sync = getSync <$> sync'
-  where
-    sync' = query $ getRequest { path = "/rest/config/sync" }
+insync :: MonadSync m => SyncM m Bool
+insync = getSync <$> query getRequest { path = "/rest/system/config/insync" }
 
 -- | Returns information about current system status and resource usage.
-system :: MonadSync m => SyncM m System
-system = query $ getRequest { path = "/rest/system" }
+sysStatus :: MonadSync m => SyncM m System
+sysStatus = query getRequest { path = "/rest/system/status" }
 
 -- | Get the directory tree of the global model.
-tree :: MonadSync m 
+browse :: MonadSync m 
     => FolderName -- ^ root folder
     -> Maybe Path -- ^ defines a prefix within the tree where to start building the structure
     -> Maybe Int  -- ^ defines how deep within the tree we want to dwell down (0 based, defaults to unlimited depth)  
     -> SyncM m (Maybe DirTree)
-tree folder prefix levels  = 
-    queryMaybe $ getRequest { path   = "/rest/tree"
-                            , params = [("folder", folder)] ++ optionals
-                            }
+browse folder prefix levels  = 
+    queryMaybe getRequest { path   = "/rest/db/browse"
+                          , params = [("folder", folder)] ++ optionals
+                          }
   where 
     optionals  = catMaybes [("prefix",) <$> prefix, ("levels",) <$> levelsText]
     levelsText = pack . show <$> levels
 
 -- | Check for a possible upgrade.
 upgrade :: MonadSync m => SyncM m Upgrade
-upgrade = query $ getRequest { path   = "/rest/upgrade" }
+upgrade = query getRequest { path   = "/rest/system/upgrade" }
 
 -- | Get the current syncthing version information.
 version :: MonadSync m => SyncM m Version
-version = query $ getRequest { path = "/rest/version" }
+version = query getRequest { path = "/rest/system/version" }
+
+-- | Returns a list of canonicalized localization codes, as picked up from
+-- the Accept-Language header sent by the browser.
+lang :: MonadSync m => SyncM m [Text]
+lang = query getRequest { path = "/rest/svc/lang" }
 

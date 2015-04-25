@@ -16,19 +16,21 @@
 
 module Network.Syncthing.Post
     (
-    -- * Request functions
-      ping
-    , bump
+    -- * System services
+      config
     , hint
-    , sendConfig
+    , ping
     , sendError
     , clearErrors
-    , sendIgnores
-    , scanFolder
     , reset
     , restart
     , shutdown
     , upgrade
+
+    -- * Database Services
+    , ignores
+    , prio
+    , scan
     ) where
 
 import           Control.Applicative                ((<$>))
@@ -47,77 +49,75 @@ maybeSystemMsg = queryMaybe >=> return . join
 
 -- | Ping the Syncthing server. Returns the string \"pong\".
 ping :: MonadSync m => SyncM m Text
-ping = getPing <$> ping'
-  where
-    ping' = query $ postRequest { path = "/rest/ping" }
+ping = getPing <$> query postRequest { path = "/rest/system/ping" }
 
 -- | Move the given file to the top of the download queue.
-bump :: MonadSync m => FolderName -> Path -> SyncM m Need
-bump folder filePath =
-    query $ postRequest { path   = "/rest/bump"
-                        , params = [ ("folder", folder) , ("file", filePath) ]
-                        }
+prio :: MonadSync m => FolderName -> Path -> SyncM m Need
+prio folder filePath =
+    query postRequest { path   = "/rest/db/prio"
+                      , params = [ ("folder", folder) , ("file", filePath) ]
+                      }
 
 -- | Add an entry to the discovery cache.
 hint:: MonadSync m => Device -> Server -> SyncM m ()
 hint device server=
-    send $ postRequest { path   = "/rest/discovery/hint"
-                       , params = [("device", device), ("addr", server)]
-                       }
+    send postRequest { path   = "/rest/system/discovery/hint"
+                     , params = [("device", device), ("addr", server)]
+                     }
 
 -- | Update the server configuration. The configuration will be saved to
 -- disk and the configInSync flag set to false. 
 -- 'Network.Syncthing.Post.restart' Syncthing to activate.
-sendConfig :: MonadSync m => Config -> SyncM m ()
-sendConfig cfg = send $ postRequest { path   = "/rest/config"
-                                    , method = post cfg
-                                    }
+config :: MonadSync m => Config -> SyncM m ()
+config cfg = send postRequest { path   = "/rest/system/config"
+                              , method = post cfg
+                              }
 
 -- | Register a new error message.
 sendError :: MonadSync m => Text -> SyncM m ()
-sendError msg = send $ postRequest { path   = "/rest/error"
-                                   , method = post msg
-                                   }
+sendError msg = send postRequest { path   = "/rest/system/error"
+                             , method = post msg
+                             }
 
 -- | Remove all recent errors.
 clearErrors :: MonadSync m => SyncM m ()
-clearErrors = send $ postRequest { path = "/rest/error/clear" }
+clearErrors = send $ postRequest { path = "/rest/system/error/clear" }
 
 -- | Update the ignores list and echo it back as response.
-sendIgnores :: MonadSync m => FolderName -> [Text] -> SyncM m (Maybe [Text])
-sendIgnores folder ignores =
-    getIgnores <$> query postRequest { path   = "/rest/ignores"
+ignores :: MonadSync m => FolderName -> [Text] -> SyncM m (Maybe [Text])
+ignores folder ignoresList =
+    getIgnores <$> query postRequest { path   = "/rest/db/ignores"
                                      , method = post ignoresMap
                                      , params = [("folder", folder)]
                                      }
   where
     ignoresMap :: Map.Map Text [Text]
-    ignoresMap = Map.singleton "ignore" ignores
+    ignoresMap = Map.singleton "ignore" ignoresList
 
 -- | Request rescan of a folder. Restrict the scan to a relative subpath
 -- within the folder by specifying the optional path parameter.
-scanFolder:: MonadSync m => FolderName -> Maybe Path -> SyncM m ()
-scanFolder folder subPath =
-    send $ postRequest { path   = "/rest/scan"
-                       , params = [("folder", folder)]
-                                  ++ maybeToList (("sub",) <$> subPath)
-                       }
+scan:: MonadSync m => FolderName -> Maybe Path -> SyncM m ()
+scan folder subPath =
+    send postRequest { path   = "/rest/db/scan"
+                     , params = [("folder", folder)]
+                                ++ maybeToList (("sub",) <$> subPath)
+                     }
 
 -- | Restart Syncthing.
 restart :: MonadSync m => SyncM m SystemMsg
-restart = query postRequest { path = "/rest/restart" }
+restart = query postRequest { path = "/rest/system/restart" }
 
 -- | Shutdown Syncthing.
 shutdown :: MonadSync m => SyncM m SystemMsg
-shutdown = query postRequest { path = "/rest/shutdown" }
+shutdown = query postRequest { path = "/rest/system/shutdown" }
 
 -- | Reset Syncthing by renaming all folder directories to temporary,
 -- unique names, wiping all indexes and restarting.
 reset :: MonadSync m => SyncM m SystemMsg
-reset = query postRequest { path = "/rest/reset" }
+reset = query postRequest { path = "/rest/system/reset" }
 
 -- | Perform an upgrade to the newest release and restart. Does nothing if
 -- there is no newer version.
 upgrade :: MonadSync m => SyncM m (Maybe SystemMsg)
-upgrade = maybeSystemMsg $ postRequest { path = "/rest/upgrade" }
+upgrade = maybeSystemMsg postRequest { path = "/rest/system/upgrade" }
 

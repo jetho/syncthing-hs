@@ -121,7 +121,7 @@ assertPost LoggedRequest{..} endpoint params payload = do
 
 -------------- Basic Tests --------------
 
-basicRequest rType endpoint action  = withRequest action $
+basicReq rType endpoint action  = withRequest action $
     \LoggedRequest{..} -> do
         assertReqType rType reqType 
         assertUrl defaultConfig endpoint reqUrl
@@ -133,7 +133,7 @@ changeServer =
         cfg    = defaultConfig & pServer .~ server
     in
     withConfigRequest cfg Get.ping $
-        \LoggedRequest{..} -> assertUrl cfg "/rest/ping" reqUrl
+        \LoggedRequest{..} -> assertUrl cfg "/rest/system/ping" reqUrl
 
 setApiKey =
     let apiKey = "123456789XYZ"
@@ -188,7 +188,7 @@ testPostConfig :: Endpoint -> Params -> TestTree
 testPostConfig endpoint params = 
     testCase ("Test POST " ++ endpoint) $ do
         configSample <- head <$> sample' (arbitrary :: Gen Config)
-        withRequest (Post.sendConfig configSample) $ 
+        withRequest (Post.config configSample) $ 
             \loggedRequest -> 
                 assertPost loggedRequest endpoint params configSample
 
@@ -199,8 +199,8 @@ testPostConfig endpoint params =
 requestUnits :: TestTree
 requestUnits = testGroup "Unit Tests for Requests" 
     [ testGroup "Basic Tests"
-        [ testCase "GET Request"  $ basicRequest GET  "/rest/ping" Get.ping
-        , testCase "POST Request" $ basicRequest POST "/rest/ping" Post.ping
+        [ testCase "GET Request"  $ basicReq GET  "/rest/system/ping" Get.ping
+        , testCase "POST Request" $ basicReq POST "/rest/system/ping" Post.ping
         , testCase "changeServer"           changeServer
         , testCase "set ApiKey"             setApiKey
         , testCase "enable Authentication"  enableAuth
@@ -208,76 +208,78 @@ requestUnits = testGroup "Unit Tests for Requests"
         , testCase "disable HTTPS usage"    disableHttps
         ]
     , testGroup "GET Requests"
-        [ testGet "/rest/ping"          noParams Get.ping
-        , testGet "/rest/completion"
+        [ testGet "/rest/system/ping"           noParams Get.ping
+        , testGet "/rest/db/completion"
                   [("folder","default"), ("device", "device1")] 
                   (Get.completion "device1" "default")
-        , testGet "/rest/config"        noParams Get.config
-        , testGet "/rest/connections"   noParams Get.connections
-        , testGet "/rest/deviceid" 
+        , testGet "/rest/system/config"         noParams Get.config
+        , testGet "/rest/system/connections"    noParams Get.connections
+        , testGet "/rest/svc/deviceid" 
                   [("id", "device1")] 
                   (Get.deviceId "device1")
-        , testGet "/rest/discovery"     noParams Get.discovery
-        , testGet "/rest/errors"        noParams Get.errors
-        , testGet "/rest/ignores" 
+        , testGet "/rest/system/discovery"      noParams Get.discovery
+        , testGet "/rest/system/error"          noParams Get.errors
+        , testGet "/rest/db/ignores" 
                   [("folder", "default")] 
                   (Get.ignores "default")
-        , testGet "/rest/model" 
+        , testGet "/rest/db/status" 
                   [("folder", "default")] 
-                  (Get.model "default")
-        , testGet "/rest/need"  
+                  (Get.dbStatus "default")
+        , testGet "/rest/db/need"  
                   [("folder", "default")] 
                   (Get.need "default")
-        , testGet "/rest/config/sync"   noParams Get.sync
-        , testGet "/rest/report"        noParams Get.report
-        , testGet "/rest/system"        noParams Get.system
-        , testGet "/rest/tree"        
+        , testGet "/rest/system/config/insync"  noParams Get.insync
+        , testGet "/rest/svc/report"            noParams Get.report
+        , testGet "/rest/system/status"         noParams Get.sysStatus
+        , testGet "/rest/db/browse"        
                   [("folder", "default")]
-                  (Get.tree "default" Nothing Nothing)
-        , testGet "/rest/tree"        
+                  (Get.browse "default" Nothing Nothing)
+        , testGet "/rest/db/browse"        
                   [("folder", "default"), ("prefix", "foo/bar")]
-                  (Get.tree "default" (Just "foo/bar") Nothing)
-        , testGet "/rest/tree"        
+                  (Get.browse "default" (Just "foo/bar") Nothing)
+        , testGet "/rest/db/browse"        
                   [("folder", "default"), ("levels", "2")]
-                  (Get.tree "default" Nothing (Just 2))
-        , testGet "/rest/tree"        
+                  (Get.browse "default" Nothing (Just 2))
+        , testGet "/rest/db/browse"        
                   [("folder", "default"),("prefix", "foo/bar"),("levels", "2")]
-                  (Get.tree "default" (Just "foo/bar") (Just 2))
-        , testGet "/rest/upgrade"       noParams Get.upgrade
-        , testGet "/rest/version"       noParams Get.version
+                  (Get.browse "default" (Just "foo/bar") (Just 2))
+        , testGet "/rest/system/upgrade"        noParams Get.upgrade
+        , testGet "/rest/system/version"        noParams Get.version
+        , testGet "/rest/svc/lang"              noParams Get.lang
         ]
     , testGroup "POST Requests"
-        [ testPost "/rest/ping"         noParams noPayload Post.ping
-        , testPost "/rest/bump"
+        [ testPost "/rest/system/ping"          noParams noPayload Post.ping
+        , testPost "/rest/db/prio"
                    [("folder", "default"), ("file", "foo/bar")] 
                    noPayload
-                   (Post.bump "default" "foo/bar")
-        , testPost "/rest/discovery/hint"
+                   (Post.prio "default" "foo/bar")
+        , testPost "/rest/system/discovery/hint"
                    [("device", "device1"), ("addr", "192.168.0.10:8080")] 
                    noPayload
                    (Post.hint "device1" "192.168.0.10:8080")
-        , testPost "/rest/error" 
+        , testPost "/rest/system/error" 
                    noParams 
                    (T.pack "Error 1") 
                    (Post.sendError "Error 1")
-        , testPost "/rest/error/clear"  noParams noPayload Post.clearErrors
-        , testPost "/rest/scan" 
+        , testPost "/rest/system/error/clear" 
+                   noParams noPayload Post.clearErrors
+        , testPost "/rest/db/scan" 
                    [("folder", "default")] 
                    noPayload 
-                   (Post.scanFolder "default" Nothing)
-        , testPost "/rest/scan"
+                   (Post.scan "default" Nothing)
+        , testPost "/rest/db/scan"
                    [("folder", "default"), ("sub", "foo/bar")] 
                    noPayload 
-                   (Post.scanFolder "default" (Just "foo/bar"))
-        , testPost "/rest/restart"      noParams noPayload Post.restart
-        , testPost "/rest/shutdown"     noParams noPayload Post.shutdown
-        , testPost "/rest/reset"        noParams noPayload Post.reset
-        , testPost "/rest/upgrade"      noParams noPayload Post.upgrade
-        , testPost "/rest/ignores" 
+                   (Post.scan "default" (Just "foo/bar"))
+        , testPost "/rest/system/restart"  noParams noPayload Post.restart
+        , testPost "/rest/system/shutdown" noParams noPayload Post.shutdown
+        , testPost "/rest/system/reset"    noParams noPayload Post.reset
+        , testPost "/rest/system/upgrade"  noParams noPayload Post.upgrade
+        , testPost "/rest/db/ignores" 
                    [("folder", "default")] 
                    (createIgnoresMap ["file1", "file2", "foo/bar"])
-                   (Post.sendIgnores "default" ["file1", "file2", "foo/bar"])
-        , testPostConfig "/rest/config" noParams
+                   (Post.ignores "default" ["file1", "file2", "foo/bar"])
+        , testPostConfig "/rest/system/config" noParams
         ]
     ]
 
