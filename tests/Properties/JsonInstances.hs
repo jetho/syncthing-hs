@@ -56,11 +56,17 @@ instance ToJSON CacheEntry where
 
 instance ToJSON Connection where
     toJSON Connection{..} =
-        object [ "At"            .= encodeUTC getAt
-               , "InBytesTotal"  .= getInBytesTotal
-               , "OutBytesTotal" .= getOutBytesTotal
-               , "Address"       .= encodeAddr getAddress
-               , "ClientVersion" .= getClientVersion
+        object [ "at"            .= encodeUTC getAt
+               , "inBytesTotal"  .= getInBytesTotal
+               , "outBytesTotal" .= getOutBytesTotal
+               , "address"       .= encodeAddr getAddress
+               , "clientVersion" .= getClientVersion
+               ]
+
+instance ToJSON Connections where
+    toJSON Connections{..} =
+        object [ "connections"   .= getConnections
+               , "total"         .= getTotal
                ]
 
 instance ToJSON Model where

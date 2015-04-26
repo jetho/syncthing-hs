@@ -31,6 +31,7 @@ module Network.Syncthing.Types
     , VersioningConfig(..)
     , GuiConfig(..)
     , OptionsConfig(..)
+    , Connections(..)
     , Connection(..)
     , DirTree(..)
     , Error(..)

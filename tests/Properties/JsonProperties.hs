@@ -30,6 +30,7 @@ jsonProps = testGroup "JSON Parsers"
     , genProp "Completion"       (prop_json :: Completion -> Bool)
     , genProp "CacheEntry"       (prop_json :: CacheEntry -> Bool)
     , genProp "Connection"       (prop_json :: Connection -> Bool)
+    , genProp "Connections"      (prop_json :: Connections -> Bool)
     , genProp "Model"            (prop_json :: Model -> Bool)
     , genProp "Upgrade"          (prop_json :: Upgrade -> Bool)
     , genProp "Ignore"           (prop_json :: Ignore -> Bool)

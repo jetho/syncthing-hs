@@ -81,7 +81,7 @@ completion device folder =
 
 -- | Get the list of current connections and some metadata associated
 -- with the connection/peer.
-connections :: MonadSync m => SyncM m (M.Map Device Connection)
+connections :: MonadSync m => SyncM m Connections
 connections = query getRequest { path = "/rest/system/connections" }
 
 -- | Verifiy and format a device ID. Return either a valid device ID in
