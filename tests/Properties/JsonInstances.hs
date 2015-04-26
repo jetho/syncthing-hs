@@ -9,7 +9,9 @@ module Properties.JsonInstances where
 import           Control.Applicative              ((<$>), pure)
 import           Data.Aeson                       hiding (Error)
 import           Data.Maybe                       (fromMaybe)
+import           Data.Scientific                  (scientific)
 import qualified Data.Text                        as T
+import qualified Data.Vector                      as V
 
 import           Network.Syncthing.Internal
 
@@ -160,7 +162,10 @@ instance ToJSON Errors where
 
 instance ToJSON DirTree where
     toJSON Dir{..}  = toJSON getDirContents
-    toJSON File{..} = toJSON [getModTime, getFileSize] 
+    toJSON File{..} = Array $ V.fromList [modTime, fileSize]
+      where
+        modTime  = String . T.pack . encodeUTC $ getModTime
+        fileSize = Number $ scientific getFileSize 0
 
 instance ToJSON UsageReport where
     toJSON UsageReport{..} =
