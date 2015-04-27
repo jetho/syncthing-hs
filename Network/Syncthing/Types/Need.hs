@@ -26,7 +26,7 @@ data Progress = Progress {
     , getFlags           :: Int
     , getModified        :: Integer
     , getProgressVersion :: Int
-    , getLocalVersion    :: Int
+    , getLocalVersion    :: [Text]
     , getNumBlocks       :: Int
     , getSize            :: Integer
     } deriving (Eq, Show)

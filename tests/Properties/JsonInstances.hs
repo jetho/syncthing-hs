@@ -153,8 +153,8 @@ instance ToJSON SystemMsg where
 
 instance ToJSON Error where
     toJSON Error{..} =
-        object [ "Time"  .= encodeUTC getTime
-               , "Error" .= getMsg
+        object [ "time"  .= encodeUTC getTime
+               , "error" .= getMsg
                ]
 
 instance ToJSON Errors where

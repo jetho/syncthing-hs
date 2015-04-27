@@ -26,8 +26,8 @@ newtype Errors = Errors { getErrors :: [Error] }
 
 instance FromJSON Error where
     parseJSON (Object v) =
-        Error <$> (toUTC <$> (v .:  "Time"))
-              <*> (v .:  "Error")
+        Error <$> (toUTC <$> (v .:  "time"))
+              <*> (v .:  "error")
     parseJSON _          = mzero
 
 instance FromJSON Errors where
