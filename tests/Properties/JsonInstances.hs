@@ -128,6 +128,9 @@ instance ToJSON System where
                , "goroutines"       .= getGoRoutines 
                , "myID"             .= getMyId    
                , "sys"              .= getSys       
+               , "pathSeparator"    .= getPathSeparator
+               , "tilde"            .= getTilde       
+               , "uptime"           .= getUptime
                ]
 
 instance ToJSON (Either DeviceError Device) where

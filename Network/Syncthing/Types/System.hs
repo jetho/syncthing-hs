@@ -22,6 +22,9 @@ data System = System {
     , getGoRoutines    :: Int
     , getMyId          :: Text
     , getSys           :: Integer
+    , getPathSeparator :: Text
+    , getTilde         :: Text
+    , getUptime        :: Integer
     } deriving (Eq, Show)
 
 instance FromJSON System where
@@ -32,5 +35,8 @@ instance FromJSON System where
                <*> (v .:  "goroutines")
                <*> (v .:  "myID")
                <*> (v .:  "sys")
+               <*> (v .:  "pathSeparator")
+               <*> (v .:  "tilde")
+               <*> (v .:  "uptime")
     parseJSON _          = mzero
 
