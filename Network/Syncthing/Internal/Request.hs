@@ -88,14 +88,14 @@ post = Post . toJSON
 
 getRequest :: SyncRequest
 getRequest = SyncRequest {
-      path   = "/rest/ping"
+      path   = "/rest/system/ping"
     , method = get
     , params = []
     }
 
 postRequest :: SyncRequest
 postRequest = SyncRequest {
-      path   = "/rest/ping"
+      path   = "/rest/system/ping"
     , method = post ()
     , params = []
     }
