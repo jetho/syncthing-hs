@@ -76,8 +76,8 @@ config cfg = send postRequest { path   = "/rest/system/config"
 -- | Register a new error message.
 sendError :: MonadSync m => Text -> SyncM m ()
 sendError msg = send postRequest { path   = "/rest/system/error"
-                             , method = post msg
-                             }
+                                 , method = post msg
+                                 }
 
 -- | Remove all recent errors.
 clearErrors :: MonadSync m => SyncM m ()
