@@ -39,20 +39,20 @@ data Config = Config {
 
 instance FromJSON Config where
     parseJSON (Object v) =
-        Config <$> (v .: "Version")
-               <*> (v .: "Folders")
-               <*> (v .: "Devices")
-               <*> (v .: "GUI")
-               <*> (v .: "Options")
+        Config <$> (v .: "version")
+               <*> (v .: "folders")
+               <*> (v .: "devices")
+               <*> (v .: "gui")
+               <*> (v .: "options")
     parseJSON _          = mzero
 
 instance ToJSON Config where
     toJSON Config{..} =
-        object [ "Version"  .= getConfigVersion
-               , "Folders"  .= getFolderConfigs
-               , "Devices"  .= getDeviceConfigs
-               , "GUI"      .= getGuiConfig
-               , "Options"  .= getOptionsConfig
+        object [ "version"  .= getConfigVersion
+               , "folders"  .= getFolderConfigs
+               , "devices"  .= getDeviceConfigs
+               , "gui"      .= getGuiConfig
+               , "options"  .= getOptionsConfig
                ]
 
 
@@ -87,41 +87,50 @@ data FolderConfig = FolderConfig {
     , getReadOnly        :: Bool
     , getRescanIntervalS :: Int
     , getIgnorePerms     :: Bool
+    , getAutoNormalize   :: Bool
     , getVersioning      :: VersioningConfig
     , getLenientMtimes   :: Bool
     , getCopiers         :: Int
     , getPullers         :: Int
+    , getHashers         :: Int
+    , getOrder           :: Text
     , getFolderInvalid   :: Text
     } deriving (Eq, Show)
 
 instance FromJSON FolderConfig where
     parseJSON (Object v) =
-        FolderConfig <$> (v .: "ID")
-                     <*> (v .: "Path")
-                     <*> (map getFolderDevice <$> (v .: "Devices"))
-                     <*> (v .: "ReadOnly")
-                     <*> (v .: "RescanIntervalS")
-                     <*> (v .: "IgnorePerms")
-                     <*> (v .: "Versioning")
-                     <*> (v .: "LenientMtimes")
-                     <*> (v .: "Copiers")
-                     <*> (v .: "Pullers")
-                     <*> (v .: "Invalid")
+        FolderConfig <$> (v .: "id")
+                     <*> (v .: "path")
+                     <*> (map getFolderDevice <$> (v .: "devices"))
+                     <*> (v .: "readOnly")
+                     <*> (v .: "rescanIntervalS")
+                     <*> (v .: "ignorePerms")
+                     <*> (v .: "autoNormalize")
+                     <*> (v .: "versioning")
+                     <*> (v .: "lenientMTimes")
+                     <*> (v .: "copiers")
+                     <*> (v .: "pullers")
+                     <*> (v .: "hashers")
+                     <*> (v .: "order")
+                     <*> (v .: "invalid")
     parseJSON _          = mzero
 
 instance ToJSON FolderConfig where
     toJSON FolderConfig{..} =
-        object [ "ID"              .= getId
-               , "Path"            .= getPath
-               , "Devices"         .= map FolderDeviceConfig getFolderDevices
-               , "ReadOnly"        .= getReadOnly
-               , "RescanIntervalS" .= getRescanIntervalS
-               , "IgnorePerms"     .= getIgnorePerms
-               , "Versioning"      .= getVersioning
-               , "LenientMtimes"   .= getLenientMtimes
-               , "Copiers"         .= getCopiers
-               , "Pullers"         .= getPullers
-               , "Invalid"         .= getFolderInvalid
+        object [ "id"              .= getId
+               , "path"            .= getPath
+               , "devices"         .= map FolderDeviceConfig getFolderDevices
+               , "readOnly"        .= getReadOnly
+               , "rescanIntervalS" .= getRescanIntervalS
+               , "ignorePerms"     .= getIgnorePerms
+               , "autoNormalize"   .= getAutoNormalize
+               , "versioning"      .= getVersioning
+               , "lenientMTimes"   .= getLenientMtimes
+               , "copiers"         .= getCopiers
+               , "pullers"         .= getPullers
+               , "hashers"         .= getHashers
+               , "order"           .= getOrder
+               , "invalid"         .= getFolderInvalid
                ]
 
 
@@ -137,14 +146,14 @@ data VersioningConfig = VersioningConfig {
 
 instance FromJSON VersioningConfig where
     parseJSON (Object v) =
-        VersioningConfig <$> (v .: "Type")
-                         <*> (v .: "Params")
+        VersioningConfig <$> (v .: "type")
+                         <*> (v .: "params")
     parseJSON _          = mzero
 
 instance ToJSON VersioningConfig where
     toJSON VersioningConfig{..} =
-        object [ "Type"   .= getType
-               , "Params" .= getParams
+        object [ "type"   .= getType
+               , "params" .= getParams
                ]
 
 
@@ -157,29 +166,29 @@ data DeviceConfig = DeviceConfig {
       getDevice      :: Device
     , getDeviceName  :: Text
     , getAddresses   :: [AddressType]
-    , getCompression :: Bool
+    , getCompression :: Text
     , getCertName    :: Text
     , getIntroducer  :: Bool
     } deriving (Eq, Show)
 
 instance FromJSON DeviceConfig where
     parseJSON (Object v) =
-        DeviceConfig <$> (v .: "DeviceID")
-                     <*> (v .: "Name")
-                     <*> (map decodeAddressType <$> (v .: "Addresses"))
-                     <*> (v .: "Compression")
-                     <*> (v .: "CertName")
-                     <*> (v .: "Introducer")
+        DeviceConfig <$> (v .: "deviceID")
+                     <*> (v .: "name")
+                     <*> (map decodeAddressType <$> (v .: "addresses"))
+                     <*> (v .: "compression")
+                     <*> (v .: "certName")
+                     <*> (v .: "introducer")
     parseJSON _          = mzero
 
 instance ToJSON DeviceConfig where
     toJSON DeviceConfig{..} =
-        object [ "DeviceID"     .= getDevice
-               , "Name"         .= getDeviceName
-               , "Addresses"    .= map encodeAddressType getAddresses
-               , "Compression"  .= getCompression
-               , "CertName"     .= getCertName
-               , "Introducer"   .= getIntroducer
+        object [ "deviceID"     .= getDevice
+               , "name"         .= getDeviceName
+               , "addresses"    .= map encodeAddressType getAddresses
+               , "compression"  .= getCompression
+               , "certName"     .= getCertName
+               , "introducer"   .= getIntroducer
                ]
 
 
@@ -192,12 +201,12 @@ data FolderDeviceConfig = FolderDeviceConfig {
     } deriving (Eq, Show)
 
 instance FromJSON FolderDeviceConfig where
-    parseJSON (Object v) = FolderDeviceConfig <$> (v .: "DeviceID")
+    parseJSON (Object v) = FolderDeviceConfig <$> (v .: "deviceID")
     parseJSON _          = mzero
 
 instance ToJSON FolderDeviceConfig where
     toJSON (FolderDeviceConfig device) =
-        object [ "DeviceID" .= device ]
+        object [ "deviceID" .= device ]
 
 
 -------------------------------------------------------------------------------
@@ -216,22 +225,22 @@ data GuiConfig = GuiConfig {
 
 instance FromJSON GuiConfig where
     parseJSON (Object v) =
-        GuiConfig <$> (v .: "Enabled")
-                  <*> (decodeApiKey <$> (v .: "APIKey"))
-                  <*> (parseAddr <$> (v .: "Address"))
-                  <*> (v .: "User")
-                  <*> (v .: "Password")
-                  <*> (v .: "UseTLS")
+        GuiConfig <$> (v .: "enabled")
+                  <*> (decodeApiKey <$> (v .: "apiKey"))
+                  <*> (parseAddr <$> (v .: "address"))
+                  <*> (v .: "user")
+                  <*> (v .: "password")
+                  <*> (v .: "useTLS")
     parseJSON _          = mzero
 
 instance ToJSON GuiConfig where
     toJSON GuiConfig{..} =
-        object [ "Enabled"  .= getEnabled
-               , "APIKey"   .= encodeApiKey getApiKey
-               , "Address"  .= encodeAddr getGuiAddress
-               , "User"     .= getUser
-               , "Password" .= getPassword
-               , "UseTLS"   .= getUseTLS
+        object [ "enabled"  .= getEnabled
+               , "apiKey"   .= encodeApiKey getApiKey
+               , "address"  .= encodeAddr getGuiAddress
+               , "user"     .= getUser
+               , "password" .= getPassword
+               , "useTLS"   .= getUseTLS
                ]
 
 decodeApiKey :: Text -> Maybe Text
@@ -248,75 +257,81 @@ encodeApiKey = fromMaybe ""
 -- | Various config settings.
 data OptionsConfig = OptionsConfig {
       getListenAddress           :: [Addr]
-    , getGlobalAnnServers        :: [Text]
-    , getGlobalAnnEnabled        :: Bool
-    , getLocalAnnEnabled         :: Bool
-    , getLocalAnnPort            :: Int
-    , getLocalAnnMCAddr          :: Text
+    , getGlobalAnnounceServers   :: [Text]
+    , getGlobalAnnounceEnabled   :: Bool
+    , getLocalAnnounceEnabled    :: Bool
+    , getLocalAnnouncePort       :: Int
+    , getLocalAnnounceMCAddr     :: Text
     , getMaxSendKbps             :: Int
     , getMaxRecvKbps             :: Int
-    , getReconnectIntervalS      :: Int
+    , getReconnectionIntervalS   :: Int
     , getStartBrowser            :: Bool
-    , getUPnPEnabled             :: Bool
-    , getUPnPLease               :: Int
-    , getUPnPRenewal             :: Int
-    , getURAccepted              :: Int
-    , getURUniqueID              :: Text
+    , getUpnpEnabled             :: Bool
+    , getUpnpLeaseMinutes        :: Int
+    , getUpnpRenewalMinutes      :: Int
+    , getUpnpTimeoutSeconds      :: Int
+    , getUrAccepted              :: Int
+    , getUrUniqueID              :: Text
     , getRestartOnWakeup         :: Bool
     , getAutoUpgradeIntervalH    :: Int
     , getKeepTemporariesH        :: Int
     , getCacheIgnoredFiles       :: Bool
     , getProgressUpdateIntervalS :: Int
     , getSymlinksEnabled         :: Bool
+    , getLimitBandwidthInLan     :: Bool
 } deriving (Eq, Show)
 
 instance FromJSON OptionsConfig where
     parseJSON (Object v) =
-        OptionsConfig <$> (map parseAddr <$> (v .: "ListenAddress"))
-                      <*> (v .: "GlobalAnnServers")
-                      <*> (v .: "GlobalAnnEnabled")
-                      <*> (v .: "LocalAnnEnabled")
-                      <*> (v .: "LocalAnnPort")
-                      <*> (v .: "LocalAnnMCAddr")
-                      <*> (v .: "MaxSendKbps")
-                      <*> (v .: "MaxRecvKbps")
-                      <*> (v .: "ReconnectIntervalS")
-                      <*> (v .: "StartBrowser")
-                      <*> (v .: "UPnPEnabled")
-                      <*> (v .: "UPnPLease")
-                      <*> (v .: "UPnPRenewal")
-                      <*> (v .: "URAccepted")
-                      <*> (v .: "URUniqueID")
-                      <*> (v .: "RestartOnWakeup")
-                      <*> (v .: "AutoUpgradeIntervalH")
-                      <*> (v .: "KeepTemporariesH")
-                      <*> (v .: "CacheIgnoredFiles")
-                      <*> (v .: "ProgressUpdateIntervalS")
-                      <*> (v .: "SymlinksEnabled")
+        OptionsConfig <$> (map parseAddr <$> (v .: "listenAddress"))
+                      <*> (v .: "globalAnnounceServers")
+                      <*> (v .: "globalAnnounceEnabled")
+                      <*> (v .: "localAnnounceEnabled")
+                      <*> (v .: "localAnnouncePort")
+                      <*> (v .: "localAnnounceMCAddr")
+                      <*> (v .: "maxSendKbps")
+                      <*> (v .: "maxRecvKbps")
+                      <*> (v .: "reconnectionIntervalS")
+                      <*> (v .: "startBrowser")
+                      <*> (v .: "upnpEnabled")
+                      <*> (v .: "upnpLeaseMinutes")
+                      <*> (v .: "upnpRenewalMinutes")
+                      <*> (v .: "upnpTimeoutSeconds")
+                      <*> (v .: "urAccepted")
+                      <*> (v .: "urUniqueId")
+                      <*> (v .: "restartOnWakeup")
+                      <*> (v .: "autoUpgradeIntervalH")
+                      <*> (v .: "keepTemporariesH")
+                      <*> (v .: "cacheIgnoredFiles")
+                      <*> (v .: "progressUpdateIntervalS")
+                      <*> (v .: "symlinksEnabled")
+                      <*> (v .: "limitBandwidthInLan")
     parseJSON _          = mzero
 
 instance ToJSON OptionsConfig where
     toJSON OptionsConfig{..} =
-        object [ "ListenAddress"           .= map encodeAddr getListenAddress
-               , "GlobalAnnServers"        .= getGlobalAnnServers
-               , "GlobalAnnEnabled"        .= getGlobalAnnEnabled
-               , "LocalAnnEnabled"         .= getLocalAnnEnabled
-               , "LocalAnnPort"            .= getLocalAnnPort
-               , "LocalAnnMCAddr"          .= getLocalAnnMCAddr
-               , "MaxSendKbps"             .= getMaxSendKbps
-               , "MaxRecvKbps"             .= getMaxRecvKbps
-               , "ReconnectIntervalS"      .= getReconnectIntervalS
-               , "StartBrowser"            .= getStartBrowser
-               , "UPnPEnabled"             .= getUPnPEnabled
-               , "UPnPLease"               .= getUPnPLease
-               , "UPnPRenewal"             .= getUPnPRenewal
-               , "URAccepted"              .= getURAccepted
-               , "URUniqueID"              .= getURUniqueID
-               , "RestartOnWakeup"         .= getRestartOnWakeup
-               , "AutoUpgradeIntervalH"    .= getAutoUpgradeIntervalH
-               , "KeepTemporariesH"        .= getKeepTemporariesH
-               , "CacheIgnoredFiles"       .= getCacheIgnoredFiles
-               , "ProgressUpdateIntervalS" .= getProgressUpdateIntervalS
-               , "SymlinksEnabled"         .= getSymlinksEnabled
+        object [ "listenAddress"           .= map encodeAddr getListenAddress
+               , "globalAnnounceServers"   .= getGlobalAnnounceServers
+               , "globalAnnounceEnabled"   .= getGlobalAnnounceEnabled
+               , "localAnnounceEnabled"    .= getLocalAnnounceEnabled
+               , "localAnnouncePort"       .= getLocalAnnouncePort
+               , "localAnnounceMCAddr"     .= getLocalAnnounceMCAddr
+               , "maxSendKbps"             .= getMaxSendKbps
+               , "maxRecvKbps"             .= getMaxRecvKbps
+               , "reconnectionIntervalS"   .= getReconnectionIntervalS
+               , "startBrowser"            .= getStartBrowser
+               , "upnpEnabled"             .= getUpnpEnabled
+               , "upnpLeaseMinutes"        .= getUpnpLeaseMinutes
+               , "upnpRenewalMinutes"      .= getUpnpRenewalMinutes
+               , "upnpTimeoutSeconds"      .= getUpnpTimeoutSeconds
+               , "urAccepted"              .= getUrAccepted
+               , "urUniqueId"              .= getUrUniqueID
+               , "restartOnWakeup"         .= getRestartOnWakeup
+               , "autoUpgradeIntervalH"    .= getAutoUpgradeIntervalH
+               , "keepTemporariesH"        .= getKeepTemporariesH
+               , "cacheIgnoredFiles"       .= getCacheIgnoredFiles
+               , "progressUpdateIntervalS" .= getProgressUpdateIntervalS
+               , "symlinksEnabled"         .= getSymlinksEnabled
+               , "limitBandwidthInLan"     .= getLimitBandwidthInLan
                ]
 

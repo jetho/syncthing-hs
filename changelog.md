@@ -1,6 +1,6 @@
-0.1.3.0
+0.2.0.0
 -------
-* Update default configuration (Port 8080 -> Port 8384)
+* Update library for Syncthing v0.11
 * Refactor package internals
 
 0.1.2.0

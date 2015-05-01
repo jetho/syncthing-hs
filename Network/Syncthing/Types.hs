@@ -39,7 +39,7 @@ module Network.Syncthing.Types
     , Model(..)
     , ModelState(..)
     , Need(..)
-    , Progress(..)
+    , FileInfo(..)
     , System(..)
     , SystemMsg(..)
     , Upgrade(..)

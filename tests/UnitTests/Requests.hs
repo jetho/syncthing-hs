@@ -253,10 +253,10 @@ requestUnits = testGroup "Unit Tests for Requests"
                    [("folder", "default"), ("file", "foo/bar")] 
                    noPayload
                    (Post.prio "default" "foo/bar")
-        , testPost "/rest/system/discovery/hint"
+        , testPost "/rest/system/discovery"
                    [("device", "device1"), ("addr", "192.168.0.10:8080")] 
                    noPayload
-                   (Post.hint "device1" "192.168.0.10:8080")
+                   (Post.discovery "device1" "192.168.0.10:8080")
         , testPost "/rest/system/error" 
                    noParams 
                    (T.pack "Error 1") 

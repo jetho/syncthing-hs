@@ -18,7 +18,7 @@ module Network.Syncthing.Post
     (
     -- * System services
       config
-    , hint
+    , discovery
     , ping
     , sendError
     , clearErrors
@@ -59,9 +59,9 @@ prio folder filePath =
                       }
 
 -- | Add an entry to the discovery cache.
-hint:: MonadSync m => Device -> Server -> SyncM m ()
-hint device server=
-    send postRequest { path   = "/rest/system/discovery/hint"
+discovery :: MonadSync m => Device -> Server -> SyncM m ()
+discovery  device server =
+    send postRequest { path   = "/rest/system/discovery"
                      , params = [("device", device), ("addr", server)]
                      }
 

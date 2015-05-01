@@ -111,6 +111,8 @@ instance Arbitrary OptionsConfig where
                       <*> arbitrary
                       <*> arbitrary
                       <*> arbitrary
+                      <*> arbitrary
+                      <*> arbitrary
 
 instance Arbitrary DirTree where
     arbitrary = choose (0, 5) >>= dirTree
@@ -138,7 +140,7 @@ concat <$> mapM (derive makeArbitrary)
                 , ''ModelState
                 , ''Upgrade
                 , ''Ignore
-                , ''Progress
+                , ''FileInfo
                 , ''Need
                 , ''Sync
                 , ''DeviceError

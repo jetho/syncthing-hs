@@ -8,7 +8,7 @@ module Properties.JsonInstances where
 
 import           Control.Applicative              ((<$>), pure)
 import           Data.Aeson                       hiding (Error)
-import           Data.Maybe                       (fromMaybe)
+import           Data.Maybe                       (fromMaybe, maybeToList)
 import           Data.Scientific                  (scientific)
 import qualified Data.Text                        as T
 import qualified Data.Vector                      as V
@@ -109,16 +109,16 @@ instance ToJSON Need where
                , "rest"     .= getRest
                ]
 
-instance ToJSON Progress where
-    toJSON Progress{..} =
-        object [ "Name"         .= getName            
-               , "Flags"        .= getFlags           
-               , "Modified"     .= getModified        
-               , "Version"      .= getProgressVersion 
-               , "LocalVersion" .= getLocalVersion    
-               , "NumBlocks"    .= getNumBlocks       
-               , "Size"         .= getSize            
-               ]
+instance ToJSON FileInfo where
+    toJSON FileInfo{..} =
+        object $ [ "name"         .= getName            
+                 , "flags"        .= getFlags           
+                 , "modified"     .= encodeUTC getModified        
+                 , "version"      .= getFileVersion 
+                 , "localVersion" .= getLocalVersion    
+                 , "size"         .= getSize            
+                 ]
+                 ++ maybeToList (("numBlocks" .=) <$> getNumBlocks)
 
 instance ToJSON System where
     toJSON System{..} =
