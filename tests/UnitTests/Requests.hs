@@ -243,6 +243,9 @@ requestUnits = testGroup "Unit Tests for Requests"
         , testGet "/rest/db/browse"        
                   [("folder", "default"),("prefix", "foo/bar"),("levels", "2")]
                   (Get.browse "default" (Just "foo/bar") (Just 2))
+        , testGet "/rest/db/file"        
+                  [("folder", "default"), ("file", "foo/bar")]
+                  (Get.file "default" "foo/bar")
         , testGet "/rest/system/upgrade"        noParams Get.upgrade
         , testGet "/rest/system/version"        noParams Get.version
         , testGet "/rest/svc/lang"              noParams Get.lang

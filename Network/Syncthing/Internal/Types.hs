@@ -13,6 +13,7 @@ import           Network.Syncthing.Types.Config      as Ty
 import           Network.Syncthing.Types.Connection  as Ty
 import           Network.Syncthing.Types.DeviceId    as Ty
 import           Network.Syncthing.Types.DirTree     as Ty
+import           Network.Syncthing.Types.DBFile      as Ty
 import           Network.Syncthing.Types.FileInfo    as Ty
 import           Network.Syncthing.Types.Error       as Ty
 import           Network.Syncthing.Types.Ignore      as Ty

@@ -35,6 +35,7 @@ jsonProps = testGroup "JSON Parsers"
     , genProp "Upgrade"          (prop_json :: Upgrade -> Bool)
     , genProp "Ignore"           (prop_json :: Ignore -> Bool)
     , genProp "FileInfo"         (prop_json :: FileInfo -> Bool)
+    , genProp "DBFile"           (prop_json :: DBFile -> Bool)
     , genProp "Need"             (prop_json :: Need -> Bool)
     , genProp "Sync"             (prop_json :: Sync -> Bool)
     , genProp "DeviceId"         (prop_json :: EitherDeviceErrorId -> Bool)

@@ -39,6 +39,7 @@ module Network.Syncthing.Types
     , Model(..)
     , ModelState(..)
     , Need(..)
+    , DBFile(..)
     , FileInfo(..)
     , System(..)
     , SystemMsg(..)

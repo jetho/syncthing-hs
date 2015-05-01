@@ -140,6 +140,7 @@ concat <$> mapM (derive makeArbitrary)
                 , ''ModelState
                 , ''Upgrade
                 , ''Ignore
+                , ''DBFile
                 , ''FileInfo
                 , ''Need
                 , ''Sync

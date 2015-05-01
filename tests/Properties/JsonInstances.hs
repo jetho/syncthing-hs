@@ -120,6 +120,13 @@ instance ToJSON FileInfo where
                  ]
                  ++ maybeToList (("numBlocks" .=) <$> getNumBlocks)
 
+instance ToJSON DBFile where
+    toJSON DBFile{..} =
+        object [ "availability" .= getAvailability
+               , "global"       .= getGlobal
+               , "local"        .= getLocal
+               ]
+
 instance ToJSON System where
     toJSON System{..} =
         object [ "alloc"            .= getAlloc            

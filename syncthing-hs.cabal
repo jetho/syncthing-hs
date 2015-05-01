@@ -41,6 +41,7 @@ library
                      Network.Syncthing.Types.Connection
                      Network.Syncthing.Types.DeviceId
                      Network.Syncthing.Types.DirTree
+                     Network.Syncthing.Types.DBFile
                      Network.Syncthing.Types.FileInfo
                      Network.Syncthing.Types.Error
                      Network.Syncthing.Types.Ignore

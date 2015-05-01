@@ -31,7 +31,7 @@ module Network.Syncthing.Get
     -- * Database Services
     , browse
     , completion
-    --, file
+    , file
     , ignores
     , need
     , dbStatus
@@ -83,6 +83,14 @@ completion device folder =
 -- with the connection/peer.
 connections :: MonadSync m => SyncM m Connections
 connections = query getRequest { path = "/rest/system/connections" }
+
+-- | Returns most data available about a given file, including version and
+-- availability.
+file :: MonadSync m => FolderName -> Path -> SyncM m DBFile
+file folder filename = query getRequest { path   = "/rest/db/file"
+                                        , params = [ ("folder", folder)
+                                                   , ("file", filename) ]
+                                        }
 
 -- | Verifiy and format a device ID. Return either a valid device ID in
 -- modern format, or an error.
