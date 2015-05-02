@@ -33,6 +33,7 @@ module Network.Syncthing.Types
     , OptionsConfig(..)
     , Connections(..)
     , Connection(..)
+    , DeviceInfo(..)
     , DirTree(..)
     , Error(..)
     , Ignore(..)

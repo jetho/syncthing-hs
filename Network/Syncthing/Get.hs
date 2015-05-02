@@ -37,7 +37,7 @@ module Network.Syncthing.Get
     , dbStatus
 
     -- * Statistics Services
-    --, device 
+    , devices
     --, folder 
 
     -- * Miscellaneous Services
@@ -101,6 +101,10 @@ deviceId = deviceId' >=> either (liftLeft . InvalidDeviceId) liftRight
     deviceId' device = query getRequest { path   = "/rest/svc/deviceid"
                                         , params = [("id", device)]
                                         }
+
+-- | Returns general statistics about devices.
+devices :: MonadSync m => SyncM m (M.Map Device DeviceInfo)
+devices = query getRequest { path = "/rest/stats/device" }
 
 -- | Fetch the contents of the local discovery cache.
 discovery :: MonadSync m => SyncM m (M.Map Device [CacheEntry])

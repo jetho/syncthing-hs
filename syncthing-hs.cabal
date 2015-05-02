@@ -40,6 +40,7 @@ library
                      Network.Syncthing.Types.Config
                      Network.Syncthing.Types.Connection
                      Network.Syncthing.Types.DeviceId
+                     Network.Syncthing.Types.DeviceInfo
                      Network.Syncthing.Types.DirTree
                      Network.Syncthing.Types.DBFile
                      Network.Syncthing.Types.FileInfo

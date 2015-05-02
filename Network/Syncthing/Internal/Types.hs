@@ -12,6 +12,7 @@ import           Network.Syncthing.Types.Completion  as Ty
 import           Network.Syncthing.Types.Config      as Ty
 import           Network.Syncthing.Types.Connection  as Ty
 import           Network.Syncthing.Types.DeviceId    as Ty
+import           Network.Syncthing.Types.DeviceInfo  as Ty
 import           Network.Syncthing.Types.DirTree     as Ty
 import           Network.Syncthing.Types.DBFile      as Ty
 import           Network.Syncthing.Types.FileInfo    as Ty

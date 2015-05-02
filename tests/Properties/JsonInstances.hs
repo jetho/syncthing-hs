@@ -170,6 +170,9 @@ instance ToJSON Error where
 instance ToJSON Errors where
     toJSON = singleField "errors" . getErrors 
 
+instance ToJSON DeviceInfo where
+    toJSON DeviceInfo{..} = object [ "lastSeen" .= encodeUTC getLastSeen ]
+
 instance ToJSON DirTree where
     toJSON Dir{..}  = toJSON getDirContents
     toJSON File{..} = Array $ V.fromList [modTime, fileSize]

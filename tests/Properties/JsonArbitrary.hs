@@ -150,5 +150,6 @@ concat <$> mapM (derive makeArbitrary)
                 , ''System
                 , ''UsageReport
                 , ''Connections
+                , ''DeviceInfo
                 ]
 
