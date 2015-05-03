@@ -151,5 +151,7 @@ concat <$> mapM (derive makeArbitrary)
                 , ''UsageReport
                 , ''Connections
                 , ''DeviceInfo
+                , ''FolderInfo
+                , ''LastFile
                 ]
 

@@ -172,6 +172,15 @@ instance ToJSON Errors where
 
 instance ToJSON DeviceInfo where
     toJSON DeviceInfo{..} = object [ "lastSeen" .= encodeUTC getLastSeen ]
+    
+instance ToJSON FolderInfo where
+    toJSON FolderInfo{..} = object [ "lastFile" .= getLastFile ]
+
+instance ToJSON LastFile where
+    toJSON LastFile{..} = 
+        object [ "filename" .= getFileName
+               , "at"       .= encodeUTC getSyncedAt 
+               ]
 
 instance ToJSON DirTree where
     toJSON Dir{..}  = toJSON getDirContents

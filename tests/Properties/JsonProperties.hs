@@ -52,5 +52,7 @@ jsonProps = testGroup "JSON Parsers"
     , genProp "DirTree"          (prop_json :: DirTree -> Bool)
     , genProp "UsageReport"      (prop_json :: UsageReport -> Bool)
     , genProp "DeviceInfo"       (prop_json :: DeviceInfo -> Bool)
+    , genProp "FolderInfo"       (prop_json :: FolderInfo -> Bool)
+    , genProp "LastFile"         (prop_json :: LastFile -> Bool)
     ]
 

@@ -42,6 +42,8 @@ module Network.Syncthing.Types
     , Need(..)
     , DBFile(..)
     , FileInfo(..)
+    , FolderInfo(..)
+    , LastFile(..)
     , System(..)
     , SystemMsg(..)
     , Upgrade(..)

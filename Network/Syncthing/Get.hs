@@ -38,7 +38,7 @@ module Network.Syncthing.Get
 
     -- * Statistics Services
     , devices
-    --, folder 
+    , folders
 
     -- * Miscellaneous Services
     , deviceId
@@ -171,4 +171,8 @@ version = query getRequest { path = "/rest/system/version" }
 -- the Accept-Language header sent by the browser.
 lang :: MonadSync m => SyncM m [Text]
 lang = query getRequest { path = "/rest/svc/lang" }
+
+-- | Returns general statistics about folders. 
+folders :: MonadSync m => SyncM m (M.Map FolderName FolderInfo)
+folders = query getRequest { path = "/rest/stats/folder" }
 

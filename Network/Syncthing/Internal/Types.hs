@@ -16,6 +16,7 @@ import           Network.Syncthing.Types.DeviceInfo  as Ty
 import           Network.Syncthing.Types.DirTree     as Ty
 import           Network.Syncthing.Types.DBFile      as Ty
 import           Network.Syncthing.Types.FileInfo    as Ty
+import           Network.Syncthing.Types.FolderInfo  as Ty
 import           Network.Syncthing.Types.Error       as Ty
 import           Network.Syncthing.Types.Ignore      as Ty
 import           Network.Syncthing.Types.Model       as Ty

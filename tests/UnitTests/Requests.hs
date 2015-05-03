@@ -250,6 +250,7 @@ requestUnits = testGroup "Unit Tests for Requests"
         , testGet "/rest/system/version"        noParams Get.version
         , testGet "/rest/svc/lang"              noParams Get.lang
         , testGet "/rest/stats/device"          noParams Get.devices
+        , testGet "/rest/stats/folder"          noParams Get.folders
         ]
     , testGroup "POST Requests"
         [ testPost "/rest/system/ping"          noParams noPayload Post.ping
