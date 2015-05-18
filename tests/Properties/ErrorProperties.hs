@@ -1,5 +1,6 @@
 
 {-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE FlexibleContexts  #-}
 
 module Properties.ErrorProperties
     ( errorProps

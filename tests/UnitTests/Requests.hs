@@ -271,11 +271,19 @@ requestUnits = testGroup "Unit Tests for Requests"
         , testPost "/rest/db/scan" 
                    [("folder", "default")] 
                    noPayload 
-                   (Post.scan "default" Nothing)
+                   (Post.scan "default" Nothing Nothing)
         , testPost "/rest/db/scan"
                    [("folder", "default"), ("sub", "foo/bar")] 
                    noPayload 
-                   (Post.scan "default" (Just "foo/bar"))
+                   (Post.scan "default" (Just "foo/bar") Nothing)
+        , testPost "/rest/db/scan"
+                   [("folder", "default"), ("next", "10")] 
+                   noPayload 
+                   (Post.scan "default" Nothing (Just 10))
+        , testPost "/rest/db/scan"
+                   [("folder", "default"), ("sub", "foo/bar"), ("next", "10")] 
+                   noPayload 
+                   (Post.scan "default" (Just "foo/bar") (Just 10))
         , testPost "/rest/system/restart"  noParams noPayload Post.restart
         , testPost "/rest/system/shutdown" noParams noPayload Post.shutdown
         , testPost "/rest/system/reset"    noParams noPayload Post.reset

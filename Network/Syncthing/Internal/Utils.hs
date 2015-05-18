@@ -12,8 +12,8 @@ import           Control.Applicative            ((<$>))
 import           Data.Maybe                     (fromMaybe)
 import qualified Data.Text                      as T
 import           Data.Time.Clock                (UTCTime)
+import           Data.Time.Locale.Compat        (defaultTimeLocale)
 import           Data.Time.Format               (formatTime, parseTime)
-import           System.Locale                  (defaultTimeLocale)
 import           Text.Regex.Posix               ((=~))
 
 import           Network.Syncthing.Types.Common

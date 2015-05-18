@@ -1,3 +1,8 @@
+0.3.0.0
+-------
+* Add support for GHC 7.10
+* Update Get.config and Post.scan requests
+
 0.2.0.0
 -------
 * Update library for Syncthing v0.11

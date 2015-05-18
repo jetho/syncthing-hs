@@ -89,7 +89,6 @@ data FolderConfig = FolderConfig {
     , getIgnorePerms     :: Bool
     , getAutoNormalize   :: Bool
     , getVersioning      :: VersioningConfig
-    , getLenientMtimes   :: Bool
     , getCopiers         :: Int
     , getPullers         :: Int
     , getHashers         :: Int
@@ -107,7 +106,6 @@ instance FromJSON FolderConfig where
                      <*> (v .: "ignorePerms")
                      <*> (v .: "autoNormalize")
                      <*> (v .: "versioning")
-                     <*> (v .: "lenientMTimes")
                      <*> (v .: "copiers")
                      <*> (v .: "pullers")
                      <*> (v .: "hashers")
@@ -125,7 +123,6 @@ instance ToJSON FolderConfig where
                , "ignorePerms"     .= getIgnorePerms
                , "autoNormalize"   .= getAutoNormalize
                , "versioning"      .= getVersioning
-               , "lenientMTimes"   .= getLenientMtimes
                , "copiers"         .= getCopiers
                , "pullers"         .= getPullers
                , "hashers"         .= getHashers

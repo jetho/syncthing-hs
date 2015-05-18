@@ -36,8 +36,8 @@ module Network.Syncthing.Post
 import           Control.Applicative                ((<$>))
 import           Control.Monad                      (join, (>=>))
 import qualified Data.Map                           as Map
-import           Data.Maybe                         (maybeToList)
-import           Data.Text                          (Text)
+import           Data.Maybe                         (catMaybes)
+import           Data.Text                          (Text, pack)
 
 import           Network.Syncthing.Internal.Monad
 import           Network.Syncthing.Internal.Request
@@ -95,13 +95,18 @@ ignores folder ignoresList =
     ignoresMap = Map.singleton "ignore" ignoresList
 
 -- | Request rescan of a folder. Restrict the scan to a relative subpath
--- within the folder by specifying the optional path parameter.
-scan:: MonadSync m => FolderName -> Maybe Path -> SyncM m ()
-scan folder subPath =
+-- within the folder by specifying the optional path parameter. The
+-- optional int argument delays Syncthing's automated rescan interval for a 
+-- given amount of seconds.
+scan:: MonadSync m => FolderName -> Maybe Path -> Maybe Int-> SyncM m ()
+scan folder subPath next =
     send postRequest { path   = "/rest/db/scan"
-                     , params = [("folder", folder)]
-                                ++ maybeToList (("sub",) <$> subPath)
+                     , params = ("folder", folder) : optionalParams
                      }
+  where 
+    optionalParams = catMaybes [ ("sub",) <$> subPath
+                               , ("next",) . pack . show <$> next
+                               ]
 
 -- | Restart Syncthing.
 restart :: MonadSync m => SyncM m SystemMsg
