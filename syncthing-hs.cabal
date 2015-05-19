@@ -101,7 +101,7 @@ test-Suite tests
                      , text >=1.1.1.0
                      , transformers >=0.2.2.1
                      , vector >= 0.10.12.3
-                     , wreq >=0.3.0.0
+                     , wreq >=0.4.0.0
   other-modules:     Properties.ErrorProperties
                      Properties.JsonArbitrary
                      Properties.JsonInstances
