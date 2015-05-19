@@ -1,36 +1,35 @@
 language: haskell
 
 env:
- - GHCVER=7.8.4
- - GHCVER=7.10.1
- - GHCVER=head
+ - GHCVER=7.8.4 CABALVER=1.18
+ - GHCVER=7.10.1 CABALVER=1.22
+ - GHCVER=head CABALVER=head
 
 matrix:
   allow_failures:
-   - env: GHCVER=head
+   - env: GHCVER=head CABALVER=head
 
 before_install:
  - travis_retry sudo add-apt-repository -y ppa:hvr/ghc
  - travis_retry sudo apt-get update
  - travis_retry sudo apt-get install --force-yes happy-1.19.4 alex-3.1.3 
  - export PATH=/opt/alex/3.1.3/bin:/opt/happy/1.19.4/bin:$PATH
- - travis_retry sudo apt-get install cabal-install-1.22 ghc-$GHCVER
- - export CABAL=cabal-1.22
- - export PATH=/opt/ghc/$GHCVER/bin:$PATH
+ - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
+ - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$HOME/.cabal/bin:$PATH
 
 install:
- - $CABAL --version
+ - cabal --version
  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
- - $CABAL update
- - $CABAL install --only-dependencies --enable-tests --enable-benchmarks
+ - travis_retry cabal update
+ - cabal install --only-dependencies --enable-tests --enable-benchmarks
 
 script:
- - $CABAL configure --enable-tests --enable-benchmarks -v2  
- - $CABAL build   
- - $CABAL test
- - $CABAL check
- - $CABAL sdist  
+ - cabal configure --enable-tests --enable-benchmarks -v2  
+ - cabal build   
+ - cabal test
+ - cabal check
+ - cabal sdist  
 
 # Check that the resulting source distribution can be built & installed.
- - SRC_TGZ=$(cabal info . | awk '{print $2;exit}').tar.gz &&
+ - SRC_TGZ=$($CABAL info . | awk '{print $2;exit}').tar.gz &&
    (cd dist && cabal install --force-reinstalls "$SRC_TGZ")
