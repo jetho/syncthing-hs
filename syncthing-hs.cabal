@@ -3,7 +3,7 @@ version:             0.3.0.0
 synopsis:            Haskell bindings for the Syncthing REST API
 description:         
     .
-    see: <https://github.com/syncthing/syncthing/wiki/REST-Interface>
+    see: <http://docs.syncthing.net/dev/rest.html>
     .
     A short tutorial is available at: 
     <http://jetho.org/posts/2015-03-07-syncthing-hs-tutorial.html>
