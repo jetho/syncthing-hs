@@ -36,7 +36,7 @@ module Network.Syncthing.Post
 import           Control.Applicative                ((<$>))
 import           Control.Monad                      (join, (>=>))
 import qualified Data.Map                           as Map
-import           Data.Maybe                         (catMaybes)
+import           Data.Maybe                         (catMaybes, maybeToList)
 import           Data.Text                          (Text, pack)
 
 import           Network.Syncthing.Internal.Monad
@@ -116,10 +116,13 @@ restart = query postRequest { path = "/rest/system/restart" }
 shutdown :: MonadSync m => SyncM m SystemMsg
 shutdown = query postRequest { path = "/rest/system/shutdown" }
 
--- | Reset Syncthing by renaming all folder directories to temporary,
--- unique names, wiping all indexes and restarting.
-reset :: MonadSync m => SyncM m SystemMsg
-reset = query postRequest { path = "/rest/system/reset" }
+-- | Erase the current index database and restart Syncthing. Erase the
+-- entire database or just a specific folder by specifying the folder parameter.
+reset :: MonadSync m => Maybe FolderName -> SyncM m SystemMsg
+reset folder = 
+    query postRequest { path   = "/rest/system/reset" 
+                      , params = maybeToList $ ("folder",) <$> folder
+                      }
 
 -- | Perform an upgrade to the newest release and restart. Does nothing if
 -- there is no newer version.

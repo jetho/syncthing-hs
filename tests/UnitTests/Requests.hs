@@ -286,7 +286,11 @@ requestUnits = testGroup "Unit Tests for Requests"
                    (Post.scan "default" (Just "foo/bar") (Just 10))
         , testPost "/rest/system/restart"  noParams noPayload Post.restart
         , testPost "/rest/system/shutdown" noParams noPayload Post.shutdown
-        , testPost "/rest/system/reset"    noParams noPayload Post.reset
+        , testPost "/rest/system/reset" noParams noPayload (Post.reset Nothing)
+        , testPost "/rest/system/reset" 
+                   [("folder", "foo")] 
+                   noPayload 
+                   (Post.reset $ Just "foo")
         , testPost "/rest/system/upgrade"  noParams noPayload Post.upgrade
         , testPost "/rest/db/ignores" 
                    [("folder", "default")] 

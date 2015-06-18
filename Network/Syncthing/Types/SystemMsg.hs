@@ -8,15 +8,18 @@ module Network.Syncthing.Types.SystemMsg
 import           Control.Applicative ((<$>))
 import           Control.Monad       (MonadPlus (mzero))
 import           Data.Aeson          (FromJSON, Value (..), parseJSON, (.:))
+import           Data.List           (find)
 import           Data.Maybe          (fromMaybe)
-import           Data.Text           (Text)
+import           Data.Text           (Text, unpack)
+import           Text.Regex.Posix    ((=~))
 
 
 -- | System messages.
 data SystemMsg
     = Restarting
     | ShuttingDown
-    | ResettingFolders
+    | ResettingDatabase
+    | ResettingFolder
     | OtherSystemMsg Text
     deriving (Eq, Show)
 
@@ -25,11 +28,15 @@ instance FromJSON SystemMsg where
     parseJSON _          = mzero
 
 decodeSystemMsg :: Text -> SystemMsg
-decodeSystemMsg msg = fromMaybe (OtherSystemMsg msg) maybeMsg
-  where 
-    maybeMsg = lookup msg
-        [ ("restarting",        Restarting)
-        , ("shutting down",     ShuttingDown)
-        , ("resetting folders", ResettingFolders)
+decodeSystemMsg msg =
+      fromMaybe (OtherSystemMsg msg) $
+                snd <$> find (\patTup -> unpack msg =~ fst patTup) msgPatterns
+  where
+    msgPatterns :: [(String, SystemMsg)]
+    msgPatterns =
+        [ ("restarting",            Restarting)
+        , ("shutting down",         ShuttingDown)
+        , ("resetting database",    ResettingDatabase)
+        , ("resetting folder",      ResettingFolder)
         ]
 

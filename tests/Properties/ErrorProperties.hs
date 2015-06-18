@@ -46,7 +46,7 @@ prop_deviceErr = ap (==) (decodeDeviceError . encodeDeviceError)
 
 errorProps :: TestTree
 errorProps = testGroup "Decoding Errors"
-    [ testProperty "NoSuchFolder"(prop_folderErr :: FolderErrText -> Bool)
-    , testProperty "DeviceError" (prop_deviceErr :: DeviceError -> Bool)
+    [ testProperty "NoSuchFolder" (prop_folderErr :: FolderErrText -> Bool)
+    , testProperty "DeviceError"  (prop_deviceErr :: DeviceError -> Bool)
     ]
 

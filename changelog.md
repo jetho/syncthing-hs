@@ -1,3 +1,7 @@
+X.X.X.X
+-------
+* Add folder parameter to reset POST request
+
 0.3.0.0
 -------
 * Add support for GHC 7.10

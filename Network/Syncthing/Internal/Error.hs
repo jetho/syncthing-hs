@@ -65,7 +65,8 @@ decodeError =
         , (deviceIdLength, InvalidDeviceId IncorrectLength)
         , (deviceIdCheckDigit, InvalidDeviceId IncorrectCheckDigit)
         , ("no such folder", NoSuchFolder )
-        , ("Folder .*? does not exist", NoSuchFolder )
+        , ("Folder .*? does not exist", NoSuchFolder)
+        , ("Unknown folder", NoSuchFolder)
         ]
 
 decodeDeviceError :: T.Text -> DeviceError

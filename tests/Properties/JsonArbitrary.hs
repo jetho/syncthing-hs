@@ -48,10 +48,14 @@ instance Arbitrary Connection where
 instance Arbitrary SystemMsg where
     arbitrary = oneof $ otherSystemMsg : knownMessages
       where
-        knownMessages  = map pure [Restarting, ShuttingDown, ResettingFolders]
+        knownMessages  = map pure [ Restarting , ShuttingDown
+                                  , ResettingFolder , ResettingDatabase ]
         otherSystemMsg = OtherSystemMsg <$> notReservedMsg
-        notReservedMsg = arbitrary `suchThat` flip notElem reservedMsgs
-        reservedMsgs   = ["restarting", "shutting down", "resetting folders"]
+        notReservedMsg = arbitrary `suchThat` (not . isKnown)
+        reservedMsgs   = [ "restarting", "shutting down", "resetting database"]
+        isKnown msg    = or [ msg `elem` reservedMsgs 
+                            , "resetting folder" `T.isPrefixOf` msg 
+                            ]
 
 instance Arbitrary Model where
     arbitrary =

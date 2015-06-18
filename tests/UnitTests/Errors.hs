@@ -97,6 +97,7 @@ errorUnits = testGroup "Error Handling Unit Tests"
         , testHandledEx NotAuthorized $ statusCodeEx status401 "Not Authorized"
         , testHandledEx NotFound $ statusCodeEx status404 "404 page not found"
         , testHandledEx NoSuchFolder $ statusCodeEx status500 "no such folder"
+        , testHandledEx NoSuchFolder $ statusCodeEx status500 "Unknown folder test"
         , testHandledEx (InvalidDeviceId IncorrectLength)
             (statusCodeEx status500 "device ID invalid: incorrect length")
         , testHandledEx (InvalidDeviceId IncorrectCheckDigit)
