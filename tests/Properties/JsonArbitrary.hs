@@ -46,9 +46,9 @@ instance Arbitrary Connection where
                            <*> arbitrary
 
 instance Arbitrary SystemMsg where
-    arbitrary = oneof $ [otherSystemMsg, folderResetMsg] ++ knownMessages
+    arbitrary = oneof $ [otherSystemMsg, folderResetMsg] ++ simpleMessages
       where
-        knownMessages  = map pure [Restarting , ShuttingDown, ResettingDatabase]
+        simpleMessages  = map pure [Restarting, ShuttingDown, ResettingDatabase]
         folderResetMsg = ResettingFolder . getNonEmptyText <$> arbitrary
         otherSystemMsg = OtherSystemMsg <$> notReservedMsg
         notReservedMsg = arbitrary `suchThat` (not . isKnown)

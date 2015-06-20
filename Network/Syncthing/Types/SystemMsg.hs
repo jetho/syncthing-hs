@@ -5,11 +5,10 @@ module Network.Syncthing.Types.SystemMsg
     ( SystemMsg(..)
     ) where
 
-import           Control.Applicative  ((<$>), (*>), (<|>), pure)
+import           Control.Applicative  ((<$>), (*>), (<*), (<|>), pure)
 import           Control.Monad        (MonadPlus (mzero))
 import           Data.Aeson           (FromJSON, Value (..), parseJSON, (.:))
 import qualified Data.Attoparsec.Text as A
-import           Data.Maybe           (fromMaybe)
 import           Data.Text            (Text)
 
 import           Network.Syncthing.Types.Common (FolderName)
@@ -30,7 +29,9 @@ instance FromJSON SystemMsg where
 
 parseSystemMsg :: Text -> SystemMsg
 parseSystemMsg msg = 
-    fromMaybe (OtherSystemMsg msg) $ A.maybeResult $ A.parse systemMsgParser msg
+    case A.parseOnly (systemMsgParser <* A.endOfInput) msg of
+        Left _  -> OtherSystemMsg msg
+        Right m -> m
 
 systemMsgParser :: A.Parser SystemMsg
 systemMsgParser = 
