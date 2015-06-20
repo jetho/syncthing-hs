@@ -46,13 +46,13 @@ instance Arbitrary Connection where
                            <*> arbitrary
 
 instance Arbitrary SystemMsg where
-    arbitrary = oneof $ otherSystemMsg : knownMessages
+    arbitrary = oneof $ [otherSystemMsg, folderResetMsg] ++ knownMessages
       where
         knownMessages  = map pure [Restarting , ShuttingDown, ResettingDatabase]
-        folderResetMsg = ResettingFolder <$> arbitrary
+        folderResetMsg = ResettingFolder . getNonEmptyText <$> arbitrary
         otherSystemMsg = OtherSystemMsg <$> notReservedMsg
         notReservedMsg = arbitrary `suchThat` (not . isKnown)
-        reservedMsgs   = [ "restarting", "shutting down", "resetting database"]
+        reservedMsgs   = ["restarting", "shutting down", "resetting database"]
         isKnown msg    = or [ msg `elem` reservedMsgs 
                             , "resetting folder" `T.isPrefixOf` msg 
                             ]

@@ -5,10 +5,10 @@ module Network.Syncthing.Types.SystemMsg
     ( SystemMsg(..)
     ) where
 
-import           Control.Applicative  ((<$>), (*>), (<|>))
+import           Control.Applicative  ((<$>), (*>), (<|>), pure)
 import           Control.Monad        (MonadPlus (mzero))
 import           Data.Aeson           (FromJSON, Value (..), parseJSON, (.:))
-import           Data.Attoparsec.Text (Parser, parse, maybeResult, takeText)
+import qualified Data.Attoparsec.Text as A
 import           Data.Maybe           (fromMaybe)
 import           Data.Text            (Text)
 
@@ -20,7 +20,7 @@ data SystemMsg
     = Restarting
     | ShuttingDown
     | ResettingDatabase
-    | ResettingFolder FolderName
+    | ResettingFolder Text
     | OtherSystemMsg Text
     deriving (Eq, Show)
 
@@ -30,12 +30,12 @@ instance FromJSON SystemMsg where
 
 parseSystemMsg :: Text -> SystemMsg
 parseSystemMsg msg = 
-    fromMaybe (OtherSystemMsg msg) $ maybeResult $ parse systemMsgParser msg
+    fromMaybe (OtherSystemMsg msg) $ A.maybeResult $ A.parse systemMsgParser msg
 
-systemMsgParser :: Parser SystemMsg
+systemMsgParser :: A.Parser SystemMsg
 systemMsgParser = 
         "restarting" *> pure Restarting
     <|> "shutting down" *> pure ShuttingDown
     <|> "resetting database" *> pure ResettingDatabase
-    <|> ResettingFolder <$> ("resetting folder " *> takeText) 
+    <|> ResettingFolder <$> ("resetting folder " *> A.takeText)
 
