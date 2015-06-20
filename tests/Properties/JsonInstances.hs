@@ -156,11 +156,11 @@ instance ToJSON SystemMsg where
     toJSON msg = object [ "ok" .= decodedSystemMsg ]
       where 
         decodedSystemMsg = case msg of
-            Restarting          -> "restarting"
-            ShuttingDown        -> "shutting down"
-            ResettingFolder     -> "resetting folder"
-            ResettingDatabase   -> "resetting database"
-            OtherSystemMsg m    -> m
+            Restarting              -> "restarting"
+            ShuttingDown            -> "shutting down"
+            ResettingFolder folder  -> "resetting folder " `T.append` folder
+            ResettingDatabase       -> "resetting database"
+            OtherSystemMsg m        -> m
 
 instance ToJSON Error where
     toJSON Error{..} =
