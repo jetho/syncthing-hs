@@ -19,7 +19,7 @@ data SystemMsg
     = Restarting
     | ShuttingDown
     | ResettingDatabase
-    | ResettingFolder Text
+    | ResettingFolder FolderName
     | OtherSystemMsg Text
     deriving (Eq, Show)
 
@@ -29,12 +29,12 @@ instance FromJSON SystemMsg where
 
 parseSystemMsg :: Text -> SystemMsg
 parseSystemMsg msg = 
-    case A.parseOnly (systemMsgParser <* A.endOfInput) msg of
+    case A.parseOnly sysMsgParser msg of
         Left _  -> OtherSystemMsg msg
         Right m -> m
 
-systemMsgParser :: A.Parser SystemMsg
-systemMsgParser = 
+sysMsgParser :: A.Parser SystemMsg
+sysMsgParser = 
         "restarting" *> pure Restarting
     <|> "shutting down" *> pure ShuttingDown
     <|> "resetting database" *> pure ResettingDatabase
