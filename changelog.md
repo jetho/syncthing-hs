@@ -1,6 +1,7 @@
-X.X.X.X
+0.4.0.0
 -------
 * Add folder parameter to reset POST request
+* Fix link to Syncthing wiki
 
 0.3.0.0
 -------
