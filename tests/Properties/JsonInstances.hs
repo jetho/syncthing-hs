@@ -8,7 +8,7 @@ module Properties.JsonInstances where
 
 import           Control.Applicative              ((<$>), pure)
 import           Data.Aeson                       hiding (Error)
-import           Data.Maybe                       (fromMaybe, maybeToList)
+import           Data.Maybe
 import           Data.Scientific                  (scientific)
 import qualified Data.Text                        as T
 import qualified Data.Vector                      as V
@@ -21,12 +21,12 @@ singleField fieldName = object . pure . (fieldName .=)
 
 encodeMaybe = fromMaybe ""
 
-encodeUTC = encodeMaybe . fmap fromUTC 
+encodeUTC = encodeMaybe . fmap fromUTC
 
-encodeInvalid = encodeMaybe . fmap T.unpack 
+encodeInvalid = encodeMaybe . fmap T.unpack
 
 encodeModelState = encodeMaybe . fmap encodeState
-  where encodeState state = 
+  where encodeState state =
             case state of
                 Idle     -> "idle"
                 Scanning -> "scanning"
@@ -45,10 +45,10 @@ instance ToJSON Ping where
     toJSON = singleField "ping" . getPing
 
 instance ToJSON Completion where
-    toJSON = singleField "completion" . getCompletion 
+    toJSON = singleField "completion" . getCompletion
 
 instance ToJSON Sync where
-    toJSON = singleField "configInSync" . getSync 
+    toJSON = singleField "configInSync" . getSync
 
 instance ToJSON CacheEntry where
     toJSON CacheEntry{..} =
@@ -73,20 +73,20 @@ instance ToJSON Connections where
 
 instance ToJSON Model where
     toJSON Model{..} =
-        object [ "globalBytes"   .= getGlobalBytes   
-               , "globalDeleted" .= getGlobalDeleted 
-               , "globalFiles"   .= getGlobalFiles   
-               , "inSyncBytes"   .= getInSyncBytes   
-               , "inSyncFiles"   .= getInSyncFiles   
-               , "localBytes"    .= getLocalBytes    
-               , "localDeleted"  .= getLocalDeleted  
-               , "localFiles"    .= getLocalFiles    
-               , "needBytes"     .= getNeedBytes     
-               , "needFiles"     .= getNeedFiles     
-               , "state"         .= encodeModelState getState         
-               , "stateChanged"  .= encodeUTC getStateChanged  
+        object [ "globalBytes"   .= getGlobalBytes
+               , "globalDeleted" .= getGlobalDeleted
+               , "globalFiles"   .= getGlobalFiles
+               , "inSyncBytes"   .= getInSyncBytes
+               , "inSyncFiles"   .= getInSyncFiles
+               , "localBytes"    .= getLocalBytes
+               , "localDeleted"  .= getLocalDeleted
+               , "localFiles"    .= getLocalFiles
+               , "needBytes"     .= getNeedBytes
+               , "needFiles"     .= getNeedFiles
+               , "state"         .= encodeModelState getState
+               , "stateChanged"  .= encodeUTC getStateChanged
                , "invalid"       .= encodeInvalid getInvalid
-               , "version"       .= getModelVersion  
+               , "version"       .= getModelVersion
                ]
 
 instance ToJSON Upgrade where
@@ -98,9 +98,10 @@ instance ToJSON Upgrade where
 
 instance ToJSON Ignore where
     toJSON Ignore{..} =
-        object [ "ignore"   .= getIgnores
-               , "patterns" .= getPatterns
-               ]
+        object $ catMaybes
+            [ ("ignore" .=) <$> getIgnores
+            , ("patterns" .=) <$> getPatterns
+            ]
 
 instance ToJSON Need where
     toJSON Need{..} =
@@ -111,12 +112,12 @@ instance ToJSON Need where
 
 instance ToJSON FileInfo where
     toJSON FileInfo{..} =
-        object $ [ "name"         .= getName            
-                 , "flags"        .= getFlags           
-                 , "modified"     .= encodeUTC getModified        
-                 , "version"      .= getFileVersion 
-                 , "localVersion" .= getLocalVersion    
-                 , "size"         .= getSize            
+        object $ [ "name"         .= getName
+                 , "flags"        .= getFlags
+                 , "modified"     .= encodeUTC getModified
+                 , "version"      .= getFileVersion
+                 , "localVersion" .= getLocalVersion
+                 , "size"         .= getSize
                  ]
                  ++ maybeToList (("numBlocks" .=) <$> getNumBlocks)
 
@@ -129,24 +130,24 @@ instance ToJSON DBFile where
 
 instance ToJSON System where
     toJSON System{..} =
-        object [ "alloc"            .= getAlloc            
-               , "cpuPercent"       .= getCpuPercent           
-               , "extAnnounceOK"    .= getExtAnnounceOK        
-               , "goroutines"       .= getGoRoutines 
-               , "myID"             .= getMyId    
-               , "sys"              .= getSys       
-               , "pathSeparator"    .= getPathSeparator
-               , "tilde"            .= getTilde       
-               , "uptime"           .= getUptime
-               ]
+        object $ [ "alloc"            .= getAlloc
+                 , "cpuPercent"       .= getCpuPercent
+                 , "goroutines"       .= getGoRoutines
+                 , "myID"             .= getMyId
+                 , "sys"              .= getSys
+                 , "pathSeparator"    .= getPathSeparator
+                 , "tilde"            .= getTilde
+                 , "uptime"           .= getUptime
+                 ]
+                 ++ maybeToList (("extAnnounceOK" .=) <$> getExtAnnounceOK)
 
 instance ToJSON (Either DeviceError Device) where
-    toJSON = object . pure . either deviceError deviceId 
-      where deviceError = ("error" .=) . encodeDeviceError 
-            deviceId    = ("id" .=) 
+    toJSON = object . pure . either deviceError deviceId
+      where deviceError = ("error" .=) . encodeDeviceError
+            deviceId    = ("id" .=)
 
 encodeDeviceError :: DeviceError -> T.Text
-encodeDeviceError err = 
+encodeDeviceError err =
     case err of
         IncorrectLength     -> "device ID invalid: incorrect length"
         IncorrectCheckDigit -> "check digit incorrect"
@@ -154,7 +155,7 @@ encodeDeviceError err =
 
 instance ToJSON SystemMsg where
     toJSON msg = object [ "ok" .= decodedSystemMsg ]
-      where 
+      where
         decodedSystemMsg = case msg of
             Restarting              -> "restarting"
             ShuttingDown            -> "shutting down"
@@ -169,18 +170,18 @@ instance ToJSON Error where
                ]
 
 instance ToJSON Errors where
-    toJSON = singleField "errors" . getErrors 
+    toJSON = singleField "errors" . getErrors
 
 instance ToJSON DeviceInfo where
     toJSON DeviceInfo{..} = object [ "lastSeen" .= encodeUTC getLastSeen ]
-    
+
 instance ToJSON FolderInfo where
     toJSON FolderInfo{..} = object [ "lastFile" .= getLastFile ]
 
 instance ToJSON LastFile where
-    toJSON LastFile{..} = 
+    toJSON LastFile{..} =
         object [ "filename" .= getFileName
-               , "at"       .= encodeUTC getSyncedAt 
+               , "at"       .= encodeUTC getSyncedAt
                ]
 
 instance ToJSON DirTree where
@@ -192,18 +193,18 @@ instance ToJSON DirTree where
 
 instance ToJSON UsageReport where
     toJSON UsageReport{..} =
-        object [ "folderMaxFiles" .= getFolderMaxFiles 
-               , "folderMaxMiB"   .= getFolderMaxMiB   
-               , "longVersion"    .= getLongVersionR   
-               , "memorySize"     .= getMemorySize     
-               , "memoryUsageMiB" .= getMemoryUsageMiB 
-               , "numDevices"     .= getNumDevices     
-               , "numFolders"     .= getNumFolders     
-               , "platform"       .= getPlatform       
-               , "sha256Perf"     .= getSHA256Perf     
-               , "totFiles"       .= getTotFiles       
-               , "totMiB"         .= getTotMiB         
-               , "uniqueID"       .= getUniqueId       
-               , "version"        .= getVersionR       
+        object [ "folderMaxFiles" .= getFolderMaxFiles
+               , "folderMaxMiB"   .= getFolderMaxMiB
+               , "longVersion"    .= getLongVersionR
+               , "memorySize"     .= getMemorySize
+               , "memoryUsageMiB" .= getMemoryUsageMiB
+               , "numDevices"     .= getNumDevices
+               , "numFolders"     .= getNumFolders
+               , "platform"       .= getPlatform
+               , "sha256Perf"     .= getSHA256Perf
+               , "totFiles"       .= getTotFiles
+               , "totMiB"         .= getTotMiB
+               , "uniqueID"       .= getUniqueId
+               , "version"        .= getVersionR
                ]
 
