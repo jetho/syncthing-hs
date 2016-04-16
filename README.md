@@ -7,11 +7,7 @@ syncthing-hs
 
 Haskell bindings for the [Syncthing REST API](http://docs.syncthing.net/dev/rest.html).
 
-Tutorial
---------
-
-A short tutorial is available at: 
-[http://jetho.org/posts/2015-03-07-syncthing-hs-tutorial.html](http://jetho.org/posts/2015-03-07-syncthing-hs-tutorial.html)
+See [tutorial.md]() for a short tutorial.
 
 
 Installation
@@ -19,6 +15,7 @@ Installation
 
     cabal update
     cabal install syncthing-hs
+
 
 Usage Example
 -------------
