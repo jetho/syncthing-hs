@@ -7,7 +7,7 @@ syncthing-hs
 
 Haskell bindings for the [Syncthing REST API](http://docs.syncthing.net/dev/rest.html).
 
-See [tutorial.md]() for a short tutorial.
+See [tutorial.md](tutorial.md) for a short tutorial.
 
 
 Installation
